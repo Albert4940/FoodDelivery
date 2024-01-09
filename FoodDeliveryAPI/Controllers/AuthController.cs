@@ -1,4 +1,5 @@
 ﻿using FoodDeliveryAPI.Models;
+using FoodDeliveryAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -51,8 +52,7 @@ namespace FoodDeliveryAPI.Controllers
 
         private User Authenticate(User user)
         {
-            var currentUser = UserConstants.Users.FirstOrDefault(x => x.UserName.Equals(user.UserName, StringComparison.CurrentCultureIgnoreCase)
-            && x.Password == user.Password);
+            var currentUser = UserService.Get(user);
 
             if (currentUser != null) return currentUser;
 
