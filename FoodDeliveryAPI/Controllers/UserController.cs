@@ -1,4 +1,5 @@
-﻿using FoodDeliveryAPI.Models;
+﻿using FoodDeliveryAPI.Data;
+using FoodDeliveryAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,12 @@ namespace FoodDeliveryAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly FoodDeliveryContext _context;
+        public UserController(FoodDeliveryContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet("admin")]
         [Authorize]
         public async Task<IActionResult> AdminsEndPoint()
