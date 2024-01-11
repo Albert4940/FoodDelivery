@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Login Page";
 }
-<h1>Login Page</h1>
+<h1>Login Page @Html.DisplayFor(model => model.UserName)</h1>
 <form asp-action="LoginUser" asp-controller="User">
     <div asp-validation-summary="ModelOnly"></div>
     <label asp-for="UserName">User Name</label>

@@ -22,8 +22,12 @@ namespace FoodDeliveryWebApp.Controllers
         public IActionResult Index()
         {
             User user = GetCurrentUser();
-            if(user != null)
+           
+            if (user != null)
+            {
+                TempData["UserName"] = user.UserName;
                 return View(user);
+            }               
             return View();
         }
 
