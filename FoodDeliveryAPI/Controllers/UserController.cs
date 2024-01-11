@@ -1,4 +1,6 @@
-﻿using FoodDeliveryAPI.Models;
+﻿using FoodDeliveryAPI.Data;
+using FoodDeliveryAPI.Models;
+using FoodDeliveryAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +12,30 @@ namespace FoodDeliveryAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly FoodDeliveryContext _context;
+        private readonly IConfiguration _configuration;
+        public UserController(FoodDeliveryContext context, IConfiguration configuration)
+        {
+            _context = context;
+            _configuration = configuration;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("auth")]
+        public async Task<IActionResult> Auth(User userLogin)
+        {
+            var user = await UserService.Authenticate(userLogin, _context);
+
+            if (user != null)
+            {
+                var token = TokenService.Generate(user, _configuration);
+                return Ok(token);
+            }
+
+            return NotFound("User not found");
+        }
+
+
         [HttpGet("admin")]
         [Authorize]
         public async Task<IActionResult> AdminsEndPoint()
