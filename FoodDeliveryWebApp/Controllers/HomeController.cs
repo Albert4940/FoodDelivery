@@ -1,6 +1,7 @@
 using FoodDeliveryWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NuGet.Common;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 
@@ -26,6 +27,8 @@ namespace FoodDeliveryWebApp.Controllers
             if (user != null)
             {
                 TempData["UserName"] = user.UserName;
+
+                HttpContext.Session.SetString("UserName", user.UserName);
                 return View(user);
             }               
             return View();
