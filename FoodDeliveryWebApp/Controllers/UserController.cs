@@ -79,5 +79,11 @@ namespace FoodDeliveryWebApp.Controllers
             }
         }
 
+        public async Task<IActionResult> LogOut()
+        {
+
+            HttpContext.Session.Clear();//
+            return Redirect("~/Home/Index");
+;        }
     }
 }
