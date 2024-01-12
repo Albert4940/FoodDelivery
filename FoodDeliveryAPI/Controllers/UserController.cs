@@ -35,7 +35,7 @@ namespace FoodDeliveryAPI.Controllers
             return NotFound("User not found");
         }
 
-
+        //user/auth
         [HttpGet("admin")]
         [Authorize]
         public async Task<IActionResult> AdminsEndPoint()

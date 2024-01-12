@@ -1,6 +1,7 @@
 ﻿using FoodDeliveryWebApp.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Net;
 using System.Text;
@@ -85,5 +86,73 @@ namespace FoodDeliveryWebApp.Controllers
             HttpContext.Session.Clear();//
             return Redirect("~/Home/Index");
 ;        }
+
+        
+         public async Task<IActionResult> Register()
+        {
+
+            return View();
+        }
+
+        [HttpPost]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register([Bind("Id,UserName,Password")] User user)
+        {
+           //If USer existe 
+
+           /* if (ModelState.IsValid)
+            {
+               
+                return RedirectToAction(nameof(Index));
+            }*/
+           if(user.UserName != null && user.Password != null)
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    user.Id = "01";
+                    StringContent stringContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+
+                    try
+                    {
+                        using (var response = await httpClient.PostAsync("https://localhost:44339/api/user/", stringContent))
+                        {
+
+                            if (response.IsSuccessStatusCode)
+                            {
+
+                                string result = await response.Content.ReadAsStringAsync();
+
+                               // HttpContext.Session.SetString("JWToken", token);
+                                 TempData["Result"] = result;
+                                return View(user);
+                            }
+                            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                            {
+
+                                TempData["Message"] = "Incorrect UserId or Password!";
+                                return View(user);
+                            }
+                            else
+                            {
+                                TempData["Message"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                                return View(user);
+                            }
+
+                           
+                        }
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        // Handle any exceptions related to the HTTP request (e.g., network issues)
+                        ViewBag.Message = $"Error: {ex.Message}";
+                        return View(user);
+                    }
+                }
+               // return RedirectToAction(nameof(Index));
+            }
+              
+
+            return View(user);
+        }
     }
 }
