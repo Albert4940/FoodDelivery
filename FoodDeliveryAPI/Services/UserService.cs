@@ -20,6 +20,11 @@ namespace FoodDeliveryAPI.Services
             && x.Password == user.Password);*/
         public static async Task<User> Get(User user, FoodDeliveryContext context) => await context.users.FirstOrDefaultAsync(u => u.UserName == user.UserName && u.Password == user.Password);
 
+        public static async Task Add(User user, FoodDeliveryContext context) {
+                context.Add(user);
+                await context.SaveChangesAsync();
+    } 
+
         public static async Task<User> Authenticate(User user, FoodDeliveryContext _context)
         {
             return await UserService.Get(user, _context);
