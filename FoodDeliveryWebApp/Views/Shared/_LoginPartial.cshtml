@@ -11,11 +11,12 @@
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 @TempData["UserName"]
             </a>
-            <ul class="dropdown-menu">
+            <!--Add margin right-->
+            <ul class="dropdown-menu" style="margin-right: 20px !important;">
                 <li><a class="dropdown-item" href="#">Action</a></li>
                 <li><a class="dropdown-item" href="#">Another action</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" asp-controller="User" asp-action="LogOut" >LogOut </a></li>
+                <li><a class="dropdown-item" asp-controller="User" asp-action="LogOut" >Log Out </a></li>
             </ul>
         </li>
     }

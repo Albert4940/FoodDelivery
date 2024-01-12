@@ -32,6 +32,11 @@ namespace FoodDeliveryAPI.Controllers
             {
                 //check if empty
                 //var token = TokenService.Generate(user, _configuration);
+                bool userExists = await UserService.CheckIfUserExists(userRegister, _context);
+
+                if (userExists)
+                    return Conflict("User Already exist !");
+
                 await UserService.Add(userRegister, _context);
                 return Ok("User Created");
             }

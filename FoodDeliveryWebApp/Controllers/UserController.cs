@@ -98,20 +98,22 @@ namespace FoodDeliveryWebApp.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([Bind("Id,UserName,Password")] User user)
         {
-           //If USer existe 
+            //If USer existe 
 
-           /* if (ModelState.IsValid)
-            {
-               
-                return RedirectToAction(nameof(Index));
-            }*/
-           if(user.UserName != null && user.Password != null)
-            {
+            /* if (ModelState.IsValid)
+             {
+
+                 return RedirectToAction(nameof(Index));
+             }*/
+            string error = "";
+            if (user.UserName != null && user.Password != null)
+            {               
                 using (var httpClient = new HttpClient())
                 {
                     user.Id = "01";
-                    StringContent stringContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
+                    StringContent stringContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+                    
                     try
                     {
                         using (var response = await httpClient.PostAsync("https://localhost:44339/api/user/", stringContent))
@@ -124,18 +126,17 @@ namespace FoodDeliveryWebApp.Controllers
 
                                // HttpContext.Session.SetString("JWToken", token);
                                  TempData["Result"] = result;
-                                return View(user);
                             }
                             else if (response.StatusCode == HttpStatusCode.Unauthorized)
                             {
 
-                                TempData["Message"] = "Incorrect UserId or Password!";
-                                return View(user);
+                                error = "Incorrect UserId or Password!";
                             }
-                            else
+                            else if(response.StatusCode == HttpStatusCode.Conflict) 
                             {
-                                TempData["Message"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
-                                return View(user);
+                                error = $"Error: {response.StatusCode.ToString()} - User already exists.";
+                            }else {
+                                error = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
                             }
 
                            
@@ -144,14 +145,13 @@ namespace FoodDeliveryWebApp.Controllers
                     catch (HttpRequestException ex)
                     {
                         // Handle any exceptions related to the HTTP request (e.g., network issues)
-                        ViewBag.Message = $"Error: {ex.Message}";
-                        return View(user);
+                        error = $"Error: {ex.Message}";
                     }
                 }
                // return RedirectToAction(nameof(Index));
             }
-              
 
+            TempData["Error"] = error;
             return View(user);
         }
     }

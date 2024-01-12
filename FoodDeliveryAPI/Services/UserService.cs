@@ -1,13 +1,14 @@
 ﻿using FoodDeliveryAPI.Data;
 using FoodDeliveryAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
 
 namespace FoodDeliveryAPI.Services
 {
     public static class UserService
     {
         /*private static readonly FoodDeliveryContext _context;
-
+        Add Try exception
         public static void setDbContext(FoodDeliveryContext context) => _context = context;*/
 
         public static List<User> Users = new()
@@ -21,6 +22,8 @@ namespace FoodDeliveryAPI.Services
         public static async Task<User> Get(User user, FoodDeliveryContext context) => await context.users.FirstOrDefaultAsync(u => u.UserName == user.UserName && u.Password == user.Password);
 
         public static async Task Add(User user, FoodDeliveryContext context) {
+            //That generate by database    
+                user.Id = null;
                 context.Add(user);
                 await context.SaveChangesAsync();
     } 
@@ -37,5 +40,7 @@ namespace FoodDeliveryAPI.Services
 
              return null;*/
         }
+
+        public static async Task<bool> CheckIfUserExists (User user, FoodDeliveryContext _context) =>  await UserService.Get(user, _context) != null;
     }
 }
