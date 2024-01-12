@@ -1,6 +1,7 @@
 ﻿using FoodDeliveryWebApp.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Net;
 using System.Text;
@@ -54,7 +55,7 @@ namespace FoodDeliveryWebApp.Controllers
                             
                             string token = await response.Content.ReadAsStringAsync();
                             HttpContext.Session.SetString("JWToken", token);
-                           // TempData["Message"] = token;
+                            // TempData["Message"] = token;
                             return Redirect("~/Home/Index");
                         }
                         else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -79,5 +80,79 @@ namespace FoodDeliveryWebApp.Controllers
             }
         }
 
+        public async Task<IActionResult> LogOut()
+        {
+
+            HttpContext.Session.Clear();//
+            return Redirect("~/Home/Index");
+;        }
+
+        
+         public async Task<IActionResult> Register()
+        {
+
+            return View();
+        }
+
+        [HttpPost]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register([Bind("Id,UserName,Password")] User user)
+        {
+            //If USer existe 
+
+            /* if (ModelState.IsValid)
+             {
+
+                 return RedirectToAction(nameof(Index));
+             }*/
+            string error = "";
+            if (user.UserName != null && user.Password != null)
+            {               
+                using (var httpClient = new HttpClient())
+                {
+                    user.Id = "01";
+
+                    StringContent stringContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+                    
+                    try
+                    {
+                        using (var response = await httpClient.PostAsync("https://localhost:44339/api/user/", stringContent))
+                        {
+
+                            if (response.IsSuccessStatusCode)
+                            {
+
+                                string result = await response.Content.ReadAsStringAsync();
+
+                               // HttpContext.Session.SetString("JWToken", token);
+                                 TempData["Result"] = result;
+                            }
+                            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                            {
+
+                                error = "Incorrect UserId or Password!";
+                            }
+                            else if(response.StatusCode == HttpStatusCode.Conflict) 
+                            {
+                                error = $"Error: {response.StatusCode.ToString()} - User already exists.";
+                            }else {
+                                error = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                            }
+
+                           
+                        }
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        // Handle any exceptions related to the HTTP request (e.g., network issues)
+                        error = $"Error: {ex.Message}";
+                    }
+                }
+               // return RedirectToAction(nameof(Index));
+            }
+
+            TempData["Error"] = error;
+            return View(user);
+        }
     }
 }

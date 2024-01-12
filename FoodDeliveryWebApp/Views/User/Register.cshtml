@@ -1,0 +1,32 @@
+﻿@model FoodDeliveryWebApp.Models.User
+@{
+    ViewData["Title"] = "Register Page";
+}
+<h1>Register Page</h1>
+@{
+    if (TempData["Result"] != null && TempData["Result"] != "")
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["Result"]
+        </div>
+    }
+
+    if (TempData["Error"] != null && TempData["Error"] != "")
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+}
+
+<form asp-action="Register" asp-controller="User">
+    <div asp-validation-summary="ModelOnly"></div>
+    <label asp-for="UserName">User Name</label>
+    <input asp-for="UserName" />
+    <label>Password</label>
+    <input asp-for="Password" />
+    <input type="submit" value="Register" />
+
+    <a class="" asp-controller="User" asp-action="Index">Login</a>
+</form>
+

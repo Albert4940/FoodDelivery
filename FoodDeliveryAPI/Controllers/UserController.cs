@@ -21,6 +21,33 @@ namespace FoodDeliveryAPI.Controllers
         }
 
         [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Register(User userRegister)
+        {
+
+
+            // var user = await UserService.Authenticate(userLogin, _context);
+            var user = userRegister;
+            if ((user.UserName != null) && user.Password != null)
+            {
+                //check if empty
+                //var token = TokenService.Generate(user, _configuration);
+                bool userExists = await UserService.CheckIfUserExists(userRegister, _context);
+
+                if (userExists)
+                    return Conflict("User Already exist !");
+
+                await UserService.Add(userRegister, _context);
+                return Ok("User Created");
+            }
+            else
+            {
+                return BadRequest();
+            }
+
+            return BadRequest();
+        }
+        [AllowAnonymous]
         [HttpPost("auth")]
         public async Task<IActionResult> Auth(User userLogin)
         {
@@ -35,7 +62,7 @@ namespace FoodDeliveryAPI.Controllers
             return NotFound("User not found");
         }
 
-
+        //user/auth
         [HttpGet("admin")]
         [Authorize]
         public async Task<IActionResult> AdminsEndPoint()
