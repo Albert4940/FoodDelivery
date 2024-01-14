@@ -16,6 +16,6 @@ namespace FoodDeliveryAPI.Models
         //change it to long
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
-        public virtual Category category { get; set; }
+       // public virtual Category? category { get; set; }
     }
 }
