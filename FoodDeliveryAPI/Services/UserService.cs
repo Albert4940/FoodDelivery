@@ -10,27 +10,29 @@ namespace FoodDeliveryAPI.Services
         /*private static readonly FoodDeliveryContext _context;
         Add Try exception
         public static void setDbContext(FoodDeliveryContext context) => _context = context;*/
+        private static FoodDeliveryContext _context;
 
-        public static List<User> Users = new()
+        // Method to initialize the context
+        public static void InitializeContext(FoodDeliveryContext context)
         {
-            new (){ UserName = "albert_admin", Password="1234"},
-            new(){ UserName = "dorce_admin", Password="1234"}
-        };
+            _context = context;
+        }
+
 
         /*public static User? Get(User user) => Users.FirstOrDefault(x => x.UserName.Equals(user.UserName, StringComparison.CurrentCultureIgnoreCase)
             && x.Password == user.Password);*/
-        public static async Task<User> Get(User user, FoodDeliveryContext context) => await context.users.FirstOrDefaultAsync(u => u.UserName == user.UserName && u.Password == user.Password);
+        public static async Task<User> Get(User user) => await _context.users.FirstOrDefaultAsync(u => u.UserName == user.UserName && u.Password == user.Password);
 
-        public static async Task Add(User user, FoodDeliveryContext context) {
+        public static async Task Add(User user) {
             //That generate by database    
                 user.Id = null;
-                context.Add(user);
-                await context.SaveChangesAsync();
+                _context.Add(user);
+                await _context.SaveChangesAsync();
     } 
 
-        public static async Task<User> Authenticate(User user, FoodDeliveryContext _context)
+        public static async Task<User> Authenticate(User user)
         {
-            return await UserService.Get(user, _context);
+            return await UserService.Get(user);
             // return await _context.users.FirstOrDefaultAsync(u => u.UserName == user.UserName && u.Password == user.Password);
             // var currentUser = UserService.Get(user);
             /* var user = await _context.users
@@ -41,6 +43,6 @@ namespace FoodDeliveryAPI.Services
              return null;*/
         }
 
-        public static async Task<bool> CheckIfUserExists (User user, FoodDeliveryContext _context) =>  await UserService.Get(user, _context) != null;
+        public static async Task<bool> CheckIfUserExists (User user) =>  await UserService.Get(user) != null;
     }
 }

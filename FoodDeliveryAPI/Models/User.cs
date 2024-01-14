@@ -12,5 +12,6 @@ namespace FoodDeliveryAPI.Models
         //Make it unique in database
         public string UserName { get; set; }
         public string Password { get; set; }
+
     }
 }

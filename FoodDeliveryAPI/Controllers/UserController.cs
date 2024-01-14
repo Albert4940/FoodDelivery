@@ -12,12 +12,11 @@ namespace FoodDeliveryAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly FoodDeliveryContext _context;
         private readonly IConfiguration _configuration;
         public UserController(FoodDeliveryContext context, IConfiguration configuration)
         {
-            _context = context;
             _configuration = configuration;
+            UserService.InitializeContext(context);
         }
 
         [AllowAnonymous]
@@ -32,12 +31,12 @@ namespace FoodDeliveryAPI.Controllers
             {
                 //check if empty
                 //var token = TokenService.Generate(user, _configuration);
-                bool userExists = await UserService.CheckIfUserExists(userRegister, _context);
+                bool userExists = await UserService.CheckIfUserExists(userRegister);
 
                 if (userExists)
                     return Conflict("User Already exist !");
 
-                await UserService.Add(userRegister, _context);
+                await UserService.Add(userRegister);
                 return Ok("User Created");
             }
             else
@@ -51,7 +50,7 @@ namespace FoodDeliveryAPI.Controllers
         [HttpPost("auth")]
         public async Task<IActionResult> Auth(User userLogin)
         {
-            var user = await UserService.Authenticate(userLogin, _context);
+            var user = await UserService.Authenticate(userLogin);
 
             if (user != null)
             {
