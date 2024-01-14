@@ -23,11 +23,11 @@ namespace FoodDeliveryAPI.Migrations
 
             modelBuilder.Entity("FoodDeliveryAPI.Models.Category", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("IconUrl")
                         .IsRequired()
@@ -37,27 +37,33 @@ namespace FoodDeliveryAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Title")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("categories");
                 });
 
             modelBuilder.Entity("FoodDeliveryAPI.Models.Food", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<double>("Calories")
                         .HasColumnType("float");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<long>("CategoryId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -72,11 +78,20 @@ namespace FoodDeliveryAPI.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("Title")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("foods");
                 });
@@ -100,15 +115,28 @@ namespace FoodDeliveryAPI.Migrations
                     b.ToTable("users");
                 });
 
+            modelBuilder.Entity("FoodDeliveryAPI.Models.Category", b =>
+                {
+                    b.HasOne("FoodDeliveryAPI.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("FoodDeliveryAPI.Models.Food", b =>
                 {
-                    b.HasOne("FoodDeliveryAPI.Models.Category", "category")
+                    b.HasOne("FoodDeliveryAPI.Models.Category", null)
                         .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("category");
+                    b.HasOne("FoodDeliveryAPI.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

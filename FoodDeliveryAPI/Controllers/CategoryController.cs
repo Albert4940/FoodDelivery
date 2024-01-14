@@ -18,6 +18,7 @@ namespace FoodDeliveryAPI.Controllers
         public CategoryController(FoodDeliveryContext context)
         {            
             CategoryService.InitializeContext(context);
+            UserService.InitializeContext(context);
         }
         // GET: api/<ValuesController>
         [HttpGet]
@@ -28,7 +29,7 @@ namespace FoodDeliveryAPI.Controllers
 
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> Get(int id)
+        public async Task<ActionResult<Category>> Get(long id)
         {
             var cat = await CategoryService.GetByID(id);
 
@@ -42,7 +43,7 @@ namespace FoodDeliveryAPI.Controllers
         public async Task<IActionResult> Post([FromBody] Category cat)
         {
             var category = cat;
-            if(cat.Title != null)
+            if(cat.Title != null && await UserService.GetByID(cat.UserId) != null)
             {
                 bool categoryExists = await CategoryService.CheckIfCategoryExists(category);
 
@@ -60,9 +61,9 @@ namespace FoodDeliveryAPI.Controllers
 
         // PUT api/<ValuesController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Category cat)
+        public async Task<IActionResult> Put(long id, [FromBody] Category cat)
         {
-            if (id != cat.Id)
+            if (id != cat.Id && await UserService.GetByID(cat.UserId) != null)
                 return BadRequest();
 
             //To avoid to put  the name that already exists 
@@ -95,7 +96,7 @@ namespace FoodDeliveryAPI.Controllers
 
         // DELETE api/<ValuesController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(long id)
         {
             var cat = await CategoryService.GetByID(id);
             if (cat is null)

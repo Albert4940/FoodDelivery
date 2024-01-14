@@ -16,6 +16,27 @@ namespace FoodDeliveryAPI.Data
             modelBuilder.Entity<Category>()
                 .HasIndex(c => c.Title)
                 .IsUnique();
+            modelBuilder.Entity<Category>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Food>()
+            .HasIndex(f => f.Title)
+            .IsUnique();
+
+            modelBuilder.Entity<Food>()
+            .HasOne<Category>()
+            .WithMany()
+            .HasForeignKey(f => f.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Food>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(f => f.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

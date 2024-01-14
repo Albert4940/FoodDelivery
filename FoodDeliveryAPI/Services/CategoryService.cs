@@ -19,7 +19,7 @@ namespace FoodDeliveryAPI.Services
             && x.Password == user.Password);*/
         public static async Task<List<Category>> GetAll() => await _context.categories.ToListAsync();
         public static async Task<Category> Get(Category category) => await _context.categories.AsNoTracking().FirstOrDefaultAsync(c => c.Title.Equals(category.Title));
-        public static async Task<Category>? GetByID(int? Id) => await _context.categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id);
+        public static async Task<Category>? GetByID(long? Id) => await _context.categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id);
 
         public static async Task Add(Category category)
         {
