@@ -40,7 +40,7 @@ namespace FoodDeliveryAPI.Controllers
 
         // POST api/<FoodController>
         [HttpPost]
-        
+        [Authorize]
         public async Task<IActionResult> Post([FromBody] Food food)
         {
            // var category = cat;
@@ -62,6 +62,7 @@ namespace FoodDeliveryAPI.Controllers
 
         // PUT api/<FoodController>/5
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Put(int id, [FromBody] Food food)
         {
             if (id != food.Id)
@@ -95,6 +96,7 @@ namespace FoodDeliveryAPI.Controllers
 
         // DELETE api/<FoodController>/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var food = await FoodService.GetByID(id);
