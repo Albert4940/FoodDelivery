@@ -67,10 +67,10 @@ namespace FoodDeliveryAPI.Controllers
 
             //To avoid to put  the name that already exists 
             //Put the title unique in database
-           /* bool categoryExists = await CategoryService.CheckIfCategoryExistsForUpdate(cat);
+            bool categoryExists = await CategoryService.CheckIfCategoryExistsForUpdate(cat);
 
             if (categoryExists)
-                return Conflict();*/
+                return Conflict();
             //_context.Entry(cat).State = EntityState.Modified;
 
             try
