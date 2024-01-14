@@ -18,6 +18,7 @@ namespace FoodDeliveryAPI.Controllers
         {
             FoodService.InitializeContext(context);
             CategoryService.InitializeContext(context);
+            UserService.InitializeContext(context);
         }
         // GET: api/<FoodController>
         [HttpGet]
@@ -28,7 +29,7 @@ namespace FoodDeliveryAPI.Controllers
 
         // GET api/<FoodController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Food>> Get(int id)
+        public async Task<ActionResult<Food>> Get(long id)
         {
             var food = await FoodService.GetByID(id);
 
@@ -44,7 +45,7 @@ namespace FoodDeliveryAPI.Controllers
         public async Task<IActionResult> Post([FromBody] Food food)
         {
            // var category = cat;
-            if (food.Title != null && food.CategoryId != 0 && await CategoryService.GetByID(food.CategoryId) != null)
+            if (food.Title != null && food.CategoryId != 0 && await CategoryService.GetByID(food.CategoryId) != null &&  await UserService.GetByID(food.UserId) != null)
             {
                 bool foodExists = await FoodService.CheckIfFoodExists(food);
 
@@ -63,12 +64,12 @@ namespace FoodDeliveryAPI.Controllers
         // PUT api/<FoodController>/5
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> Put(int id, [FromBody] Food food)
+        public async Task<IActionResult> Put(long id, [FromBody] Food food)
         {
             if (id != food.Id)
                 return BadRequest();
 
-            if (await CategoryService.GetByID(food.CategoryId) is null)
+            if (await CategoryService.GetByID(food.CategoryId) is null && await UserService.GetByID(food.UserId) is null)
                 return BadRequest();
 ;
             bool foodExists = await FoodService.CheckIfFoodExistsForUpdate(food);
@@ -97,7 +98,7 @@ namespace FoodDeliveryAPI.Controllers
         // DELETE api/<FoodController>/5
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(long id)
         {
             var food = await FoodService.GetByID(id);
             if (food is null)

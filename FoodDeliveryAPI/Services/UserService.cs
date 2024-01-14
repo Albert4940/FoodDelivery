@@ -22,6 +22,7 @@ namespace FoodDeliveryAPI.Services
         /*public static User? Get(User user) => Users.FirstOrDefault(x => x.UserName.Equals(user.UserName, StringComparison.CurrentCultureIgnoreCase)
             && x.Password == user.Password);*/
         public static async Task<User> Get(User user) => await _context.users.FirstOrDefaultAsync(u => u.UserName == user.UserName && u.Password == user.Password);
+        public static async Task<User> GetByID(string userID) => await _context.users.AsNoTracking().FirstOrDefaultAsync(u => u.Id.Equals(userID));
 
         public static async Task Add(User user) {
             //That generate by database    

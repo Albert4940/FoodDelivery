@@ -14,7 +14,7 @@ namespace FoodDeliveryAPI.Services
         }
 
         public static async Task<List<Food>> GetAll() => await _context.foods.ToListAsync();
-        public static async Task<Food> GetByID(int id) => await _context.foods.AsNoTracking().FirstOrDefaultAsync(f => f.Id == id);
+        public static async Task<Food> GetByID(long id) => await _context.foods.AsNoTracking().FirstOrDefaultAsync(f => f.Id == id);
         public static async Task<Food> Get(Food food) => await _context.foods.AsNoTracking().FirstOrDefaultAsync(f => f.Title.Equals(food.Title));
         public static async Task Add(Food food)
         {
