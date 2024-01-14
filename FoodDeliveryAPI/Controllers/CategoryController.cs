@@ -1,6 +1,7 @@
 ﻿using FoodDeliveryAPI.Data;
 using FoodDeliveryAPI.Models;
 using FoodDeliveryAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ namespace FoodDeliveryAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CategoryController : ControllerBase
     {
         public CategoryController(FoodDeliveryContext context)
@@ -19,16 +21,20 @@ namespace FoodDeliveryAPI.Controllers
         }
         // GET: api/<ValuesController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<List<Category>>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return Ok(await CategoryService.GetAll());
         }
 
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<Category>> Get(int id)
         {
-            return "value";
+            var cat = await CategoryService.GetByID(id);
+
+            if (cat is null)
+                return NotFound();
+            return Ok(cat);
         }
 
         // POST api/<ValuesController>
@@ -89,8 +95,15 @@ namespace FoodDeliveryAPI.Controllers
 
         // DELETE api/<ValuesController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            var cat = await CategoryService.GetByID(id);
+            if (cat is null)
+                return NotFound();
+
+            await CategoryService.Delete(cat);
+
+            return NoContent();
         }
     }
 }

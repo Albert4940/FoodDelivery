@@ -13,7 +13,7 @@ namespace FoodDeliveryAPI.Models
         public double Calories { get; set; }
         public string ImageURL { get; set; }
         public string Description { get; set; }
-
+        //change it to long
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
         public virtual Category category { get; set; }
