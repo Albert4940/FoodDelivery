@@ -22,7 +22,7 @@ namespace FoodDeliveryWebApp.Controllers
 
         public IActionResult Index()
         {
-            User user = GetCurrentUser();
+           User user = GetCurrentUser();
            
             if (user != null)
             {
@@ -30,10 +30,11 @@ namespace FoodDeliveryWebApp.Controllers
 
                 HttpContext.Session.SetString("UserName", user.UserName);
                 return View(user);
-            }               
+            }       
+            
+           // Food food = new Food { Id = 2};
             return View();
         }
-
         public User GetCurrentUser()
         {
             var accessToken = HttpContext.Session.GetString("JWToken");
@@ -55,7 +56,6 @@ namespace FoodDeliveryWebApp.Controllers
             ViewData["res"] = accessToken;
             return Redirect("~/Dashboard/Index");*/
         }
-
         public IActionResult Privacy()
         {
             return View();
