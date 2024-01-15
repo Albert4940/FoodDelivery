@@ -2,7 +2,23 @@
 @{
     ViewData["Title"] = "Login Page";
 }
-<h1>Login Page @Html.DisplayFor(model => model.UserName)</h1>
+<h1>Login Page</h1>
+@{
+    if (TempData["Result"] != null && TempData["Result"] != "")
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["Result"]
+        </div>
+    }
+
+    if (TempData["Error"] != null && TempData["Error"] != "")
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+}
+
 <form asp-action="LoginUser" asp-controller="User">
     <div asp-validation-summary="ModelOnly"></div>
     <label asp-for="UserName">User Name</label>
@@ -11,8 +27,7 @@
     <input asp-for="Password" />
     <input type="submit" value="Login" />
     <label>@Html.Raw(ViewBag.Message)</label>
-    
+
     <a class="" asp-controller="User" asp-action="Register">Register</a>
 
 </form>
-

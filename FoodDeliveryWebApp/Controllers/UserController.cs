@@ -11,8 +11,15 @@ namespace FoodDeliveryWebApp.Controllers
 
     public class UserController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(string UserName = null, string Password = null)
         {
+            if (string.IsNullOrEmpty(UserName) || string.IsNullOrEmpty(Password))
+            {
+                User user = new User { UserName = UserName, Password = Password };
+                return View(user);
+            }
+              
+
             return View();
         }
 
@@ -37,22 +44,23 @@ namespace FoodDeliveryWebApp.Controllers
                
             }
         }*/
-        public async Task<IActionResult> LoginUser(User user)
+        [HttpPost]
+        public async Task<IActionResult> LoginUser([Bind("Id,UserName,Password")] User user)
         {
-            
+
             using (var httpClient = new HttpClient())
             {
                 user.Id = "01";
                 StringContent stringContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
-               
+
                 try
                 {
                     using (var response = await httpClient.PostAsync("https://localhost:44339/api/user/auth", stringContent))
                     {
-                        
+
                         if (response.IsSuccessStatusCode)
                         {
-                            
+
                             string token = await response.Content.ReadAsStringAsync();
                             HttpContext.Session.SetString("JWToken", token);
                             // TempData["Message"] = token;
@@ -61,11 +69,16 @@ namespace FoodDeliveryWebApp.Controllers
                         else if (response.StatusCode == HttpStatusCode.Unauthorized)
                         {
 
-                            TempData["Message"] = "Incorrect UserId or Password!";
+                            TempData["Error"] = "Incorrect UserId or Password!";
+                        }
+                        else if(response.StatusCode == HttpStatusCode.NotFound)
+                        {
+                            TempData["Error"] = "Incorrect UserId or Password!";
+                            return RedirectToAction("Index", new { UserName = user.UserName, Password = user.Password });
                         }
                         else
                         {
-                            TempData["Message"]  = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                            TempData["Error"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
                         }
 
                         return Redirect("~/Home/Index");
@@ -85,10 +98,11 @@ namespace FoodDeliveryWebApp.Controllers
 
             HttpContext.Session.Clear();//
             return Redirect("~/Home/Index");
-;        }
+            ;
+        }
 
-        
-         public async Task<IActionResult> Register()
+
+        public async Task<IActionResult> Register()
         {
 
             return View();
@@ -107,13 +121,13 @@ namespace FoodDeliveryWebApp.Controllers
              }*/
             string error = "";
             if (user.UserName != null && user.Password != null)
-            {               
+            {
                 using (var httpClient = new HttpClient())
                 {
                     user.Id = "01";
 
                     StringContent stringContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
-                    
+
                     try
                     {
                         using (var response = await httpClient.PostAsync("https://localhost:44339/api/user/", stringContent))
@@ -124,8 +138,8 @@ namespace FoodDeliveryWebApp.Controllers
 
                                 string result = await response.Content.ReadAsStringAsync();
 
-                               // HttpContext.Session.SetString("JWToken", token);
-                                 TempData["Result"] = result;
+                                // HttpContext.Session.SetString("JWToken", token);
+                                TempData["Result"] = result;
                             }
                             else if (response.StatusCode == HttpStatusCode.Unauthorized)
                             {
@@ -133,14 +147,16 @@ namespace FoodDeliveryWebApp.Controllers
 
                                 error = "Incorrect UserId or Password!";
                             }
-                            else if(response.StatusCode == HttpStatusCode.Conflict) 
+                            else if (response.StatusCode == HttpStatusCode.Conflict)
                             {
                                 error = $"Error: {response.StatusCode.ToString()} - User already exists.";
-                            }else {
+                            }
+                            else
+                            {
                                 error = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
                             }
 
-                           
+
                         }
                     }
                     catch (HttpRequestException ex)
@@ -149,7 +165,7 @@ namespace FoodDeliveryWebApp.Controllers
                         error = $"Error: {ex.Message}";
                     }
                 }
-               // return RedirectToAction(nameof(Index));
+                // return RedirectToAction(nameof(Index));
             }
 
             TempData["Error"] = error;
