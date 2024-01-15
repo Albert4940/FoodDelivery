@@ -69,9 +69,17 @@ namespace FoodDeliveryAPI.Controllers
             if (id != food.Id)
                 return BadRequest();
 
-            if (await CategoryService.GetByID(food.CategoryId) is null && await UserService.GetByID(food.UserId) is null)
+            if (await CategoryService.GetByID(food.CategoryId) is null)
                 return BadRequest();
-;
+
+            if (await UserService.GetByID(food.UserId) is null)
+                return BadRequest();
+
+
+            var existingFoodByID = await FoodService.GetByID(food.Id);
+            if (existingFoodByID is null)
+                return NotFound();
+
             bool foodExists = await FoodService.CheckIfFoodExistsForUpdate(food);
 
             if (foodExists)
@@ -84,12 +92,12 @@ namespace FoodDeliveryAPI.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 //Check If Category is in DB
-                var existingFoodByID = await FoodService.GetByID(food.Id);
-                if (existingFoodByID is null)
-                    return NotFound();
-                else
-                {
-                    throw;
+                /* var existingFoodByID = await FoodService.GetByID(food.Id);*/
+                 if (await FoodService.GetByID(food.Id) is null)
+                     return NotFound();
+                 else
+                 {
+                throw;
                 }
             }
             return NoContent();

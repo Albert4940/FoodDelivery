@@ -63,8 +63,18 @@ namespace FoodDeliveryAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(long id, [FromBody] Category cat)
         {
-            if (id != cat.Id && await UserService.GetByID(cat.UserId) != null)
+            //Refactoring to have a single if
+            var userExist =   await UserService.GetByID(cat.UserId);
+
+            if (userExist is null)
                 return BadRequest();
+
+            if (id != cat.Id)
+                return BadRequest();
+
+            var existingCatByID = await CategoryService.GetByID(cat.Id);
+            if (existingCatByID is null)
+                return NotFound();
 
             //To avoid to put  the name that already exists 
             //Put the title unique in database
@@ -81,8 +91,7 @@ namespace FoodDeliveryAPI.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 //Check If Category is in DB
-                var existingCatByID = await CategoryService.GetByID(cat.Id);
-                if (existingCatByID is null)
+                if (await CategoryService.GetByID(cat.Id) is null)
                     return NotFound();
                 else
                 {
