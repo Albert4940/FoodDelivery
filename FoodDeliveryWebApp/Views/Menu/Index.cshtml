@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Menu</h1>
 @{
     if (TempData["Error"] != null && TempData["Error"] != "")
     {
@@ -14,79 +14,31 @@
         </div>
     }
 }
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
 @{
     if(@Model != null)
     {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Id)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Title)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Price)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Calories)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.ImageURL)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Description)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.CategoryId)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.UserId)
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Id)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Title)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Price)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Calories)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ImageURL)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Description)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CategoryId)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.UserId)
-                        </td>
-                        <td>
-                            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div class="card-group">
+        @foreach (var item in Model)
+        {
+
+            <div class="card w-50">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                            <img src="@Url.Content("~" + item.ImageURL)" class="w-25" alt="@item.Title image" />
+                    <div> 
+                        <button class="d-inline btn btn-primary">+</button>
+                    </div>
+                </div>
+
+                    <h5 class="card-title text-end">@Html.DisplayFor(modelItem => item.Title)</h5>
+                    <span class="d-block card-text text-end">@Html.DisplayFor(modelItem => item.Description)</span>
+                    
+                    <span class="d-block card-text text-end">$@Html.DisplayFor(modelItem => item.Price)</span>
+                </div>
+            </div>
+        }
+        </div>
     }
 }
 
