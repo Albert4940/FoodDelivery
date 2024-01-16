@@ -22,18 +22,26 @@ namespace FoodDeliveryWebApp.Controllers
 
         public IActionResult Index()
         {
-           User user = GetCurrentUser();
-           
-            if (user != null)
+            try
             {
-                TempData["UserName"] = user.UserName;
+                User user = GetCurrentUser();
 
-                HttpContext.Session.SetString("UserName", user.UserName);
-                return View(user);
-            }       
-            
-           // Food food = new Food { Id = 2};
-            return View();
+                if (user != null)
+                {
+                    TempData["UserName"] = user.UserName;
+
+                    HttpContext.Session.SetString("UserName", user.UserName);
+                    return View(user);
+                }
+                return View();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it in a way that makes sense for your application
+                // For now, we'll just pass an error message to the view
+                TempData["error"] = $"Error: {ex.Message}";
+                return View();
+            }
         }
         public User GetCurrentUser()
         {

@@ -19,22 +19,49 @@ namespace FoodDeliveryWebApp.Controllers
         // GET: MenuController
         public async Task<ActionResult> Index()
         {
-            var foods = await GetAllFoods();
-
-            return View(foods);
+            try
+            {
+                var foods = await GetAllFoods();
+                return foods is null ? View() : View(foods);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it in a way that makes sense for your application
+                // For now, we'll just pass an error message to the view
+                TempData["error"] = $"Error: {ex.Message}";
+                return View();
+            }
         }
 
         public async Task<List<Food>> GetAllFoods()
         {
-            HttpClient client = new HttpClient();       
-             HttpResponseMessage response = client.GetAsync(_client.BaseAddress + "/food").Result;
-             List<Food> foods = null;
+            List<Food> foods = null;
+            HttpClient client = new HttpClient();
+            try
+            {
+                using(var response = client.GetAsync(_client.BaseAddress + "/food").Result)
+                {
+                   
 
-             if (response.IsSuccessStatusCode)
-             {
-                 string data = response.Content.ReadAsStringAsync().Result;
-                 foods = JsonConvert.DeserializeObject<List<Food>>(data);
-             }
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string data = response.Content.ReadAsStringAsync().Result;
+                        foods = JsonConvert.DeserializeObject<List<Food>>(data);
+                    }
+                    else
+                    {
+                        TempData["Error"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                    }
+                }
+
+            }catch(HttpRequestException ex)
+            {
+                TempData["error"] = $"Error: {ex.Message}";
+                Redirect("~Menu/Index");
+            }
+                 
+            // HttpResponseMessage response = client.GetAsync(_client.BaseAddress + "/food").Result;
+            
 
              return foods;
         }

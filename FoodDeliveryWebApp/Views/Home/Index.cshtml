@@ -3,7 +3,14 @@
     ViewData["Title"] = "Home Page";
    
 }
-
+@{
+    if (TempData["Error"] != null && TempData["Error"] != "")
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+}
 <div class="text-center">
     <h1 class="display-4">Welcome @Html.DisplayFor(model => model.UserName)</h1>
     <h4>@TempData["Message"]</h4>
