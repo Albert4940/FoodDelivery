@@ -1,11 +1,10 @@
-﻿@model IEnumerable<FoodDeliveryWebApp.Models.Food>
+﻿
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Menu</h1>
 @{
     if (TempData["Error"] != null && TempData["Error"] != "")
     {
@@ -15,30 +14,4 @@
     }
 }
 
-@{
-    if(@Model != null)
-    {
-        <div class="card-group">
-        @foreach (var item in Model)
-        {
-
-            <div class="card w-50">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                            <img src="@Url.Content("~" + item.ImageURL)" class="w-25" alt="@item.Title image" />
-                    <div> 
-                        <button class="d-inline btn btn-primary">+</button>
-                    </div>
-                </div>
-
-                    <h5 class="card-title text-end">@Html.DisplayFor(modelItem => item.Title)</h5>
-                    <span class="d-block card-text text-end">@Html.DisplayFor(modelItem => item.Description)</span>
-                    
-                    <span class="d-block card-text text-end">$@Html.DisplayFor(modelItem => item.Price)</span>
-                </div>
-            </div>
-        }
-        </div>
-    }
-}
-
+<partial name="_MenuPartial" />

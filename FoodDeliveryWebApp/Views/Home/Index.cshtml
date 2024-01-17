@@ -1,4 +1,4 @@
-﻿@model FoodDeliveryWebApp.Models.User
+﻿
 @{
     ViewData["Title"] = "Home Page";
    
@@ -12,8 +12,9 @@
     }
 }
 <div class="text-center">
-    <h1 class="display-4">Welcome @Html.DisplayFor(model => model.UserName)</h1>
+    <h1 class="display-4">Welcome </h1>
     <h4>@TempData["Message"]</h4>
 
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+<partial name="_MenuPartial" />

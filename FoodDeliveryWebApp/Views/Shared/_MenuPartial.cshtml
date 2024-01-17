@@ -1,0 +1,29 @@
+﻿@model IEnumerable<FoodDeliveryWebApp.Models.Food>
+
+<h2>Menu</h2>
+@{
+    if (@Model != null)
+    {
+        <div id="card-group">
+            @foreach (var item in Model)
+            {
+
+                <div class="card m-1">
+                    <div class="card-body">
+                        <div id="calisse" class="d-flex justify-content-between align-items-center">
+                            <img src="@Url.Content("~" + item.ImageURL)" class="w-50" alt="@item.Title image" />
+                            <div>
+                                <button class="d-inline btn btn-primary">+</button>
+                            </div>
+                        </div>
+
+                        <h5 class="card-title text-end">@Html.DisplayFor(modelItem => item.Title)</h5>
+                        <span class="d-block card-text text-end">@Html.DisplayFor(modelItem => item.Description)</span>
+
+                        <span class="d-block card-text text-end">$@Html.DisplayFor(modelItem => item.Price)</span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
