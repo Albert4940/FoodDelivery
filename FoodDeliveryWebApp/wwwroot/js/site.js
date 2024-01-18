@@ -17,27 +17,21 @@ jQuery(document).ready(function () {
        
         $.get('/Menu/AddToCart/?id=' + idFood).done(
             function (data) {
-                
-              /*  if (data == 0) {
-                    btn.attr('presentDansListe-val', 'False');
-                    btn.html(' + ');
-                } else if (data == 1) {
-                    btn.attr('presentDansListe-val', 'True');
-                    btn.html(' - ');
-                }*/
+            
                cart =  addToCart(cart, data)
                updateCart(cart);
                updateBadge(cart);
-               //console.log(cart)
 
             }).fail(
                 function (jqXHR, textStatus, errorThrown) {
                     if (jqXHR.status == 401) {
                         window.location.href = "/User/Index";
+                    } else {
+                        console.log("Failed with Status Code : ")
+                        console.log("Error : " + errorThrown);
+                        console.log(textStatus);
                     }
-                    console.log("Failed with Status Code : ")
-                    console.log("Error : " + errorThrown);
-                    console.log(textStatus);
+                   
                 }
             );
 
@@ -55,7 +49,7 @@ jQuery(document).ready(function () {
         var existItem = cart.cartItems.find(x => x.id === item.id);
         
         if (existItem) {
-            cart.cartItems = cart.cartItems.map(x => x._id === existItem.Id ? item : x)
+            cart.cartItems = cart.cartItems.map(x => x._id === existItem.id ? item : x)
         } else {
             cart.cartItems = [...cart.cartItems,item]
         }
