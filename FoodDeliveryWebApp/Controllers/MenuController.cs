@@ -19,6 +19,9 @@ namespace FoodDeliveryWebApp.Controllers
         // GET: MenuController
         public async Task<ActionResult> Index()
         {
+
+               
+
             try
             {
                 var foods = await GetAllFoods();
@@ -66,6 +69,18 @@ namespace FoodDeliveryWebApp.Controllers
              return foods;
         }
 
+        // [SessionAuthorize]
+        public async Task<JsonResult> AddToCart(long id)
+        {
+            if (HttpContext.Session.GetString("JWToken") is null || HttpContext.Session.GetString("JWToken") == "")
+            {
+                return new JsonResult(new { error = "Unauthorized" }) { StatusCode = 401 };
+            }
+
+            var successData = new { message = "Item added to cart successfully" };
+
+            return Json(new Food () { Id = id, Title = "Poulet" });
+        }
         // GET: MenuController/Details/5
         /*public ActionResult Details(int id)
         {

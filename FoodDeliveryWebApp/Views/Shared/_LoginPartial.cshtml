@@ -1,15 +1,15 @@
 ﻿@{
-    //var userName = HttpContext.Session.GetString("JWToken"); 
-        //How to using model with partial
+    var UserName = Context.Session.GetString("UserName");
 }
 
 <ul class="navbar-nav">
-
-    @if (TempData["UserName"] != null)
+   
+    @if (UserName != null && UserName != "")
     {
+        
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                @TempData["UserName"]
+                @UserName
             </a>
             <!--Add margin right-->
             <ul class="dropdown-menu" style="margin-right: 20px !important;">

@@ -63,8 +63,11 @@ namespace FoodDeliveryWebApp.Controllers
 
                             string token = await response.Content.ReadAsStringAsync();
                             HttpContext.Session.SetString("JWToken", token);
+                            HttpContext.Session.SetString("UserName", user.UserName);
                             //HttpContext.Session.SetString("JWToken", new(){UserId:});
                             // TempData["Message"] = token;
+                            ViewData["UserName"] = user.UserName;
+                            //TempData["Token"] = HttpContext.Session.GetString("JWToken");
                             return Redirect("~/Home/Index");
                         }
                         else if (response.StatusCode == HttpStatusCode.Unauthorized)
