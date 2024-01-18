@@ -24,7 +24,7 @@ namespace FoodDeliveryWebApp.Controllers
         {
             try
             {
-                User user = GetCurrentUser();
+                /*User user = GetCurrentUser();
 
                 if (user != null)
                 {
@@ -32,8 +32,9 @@ namespace FoodDeliveryWebApp.Controllers
 
                     HttpContext.Session.SetString("UserName", user.UserName);
                     return View(user);
-                }
-                return View();
+                }*/
+                var foods = GetAllFoods();
+                return foods is null ? View() : View(foods);                
             }
             catch (Exception ex)
             {
@@ -43,6 +44,41 @@ namespace FoodDeliveryWebApp.Controllers
                 return View();
             }
         }
+
+        public  List<Food> GetAllFoods()
+        {
+            List<Food> foods = null;
+            HttpClient client = new HttpClient();
+            try
+            {
+                using (var response = client.GetAsync(_client.BaseAddress + "/food").Result)
+                {
+
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string data = response.Content.ReadAsStringAsync().Result;
+                        foods = JsonConvert.DeserializeObject<List<Food>>(data);
+                    }
+                    else
+                    {
+                        TempData["Error"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                    }
+                }
+
+            }
+            catch (HttpRequestException ex)
+            {
+                TempData["error"] = $"Error: {ex.Message}";
+                Redirect("~Menu/Index");
+            }
+
+            // HttpResponseMessage response = client.GetAsync(_client.BaseAddress + "/food").Result;
+
+
+            return foods;
+        }
+
         public User GetCurrentUser()
         {
             var accessToken = HttpContext.Session.GetString("JWToken");

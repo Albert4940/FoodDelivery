@@ -19,6 +19,9 @@ namespace FoodDeliveryWebApp.Controllers
         // GET: MenuController
         public async Task<ActionResult> Index()
         {
+
+               
+
             try
             {
                 var foods = await GetAllFoods();
@@ -66,6 +69,60 @@ namespace FoodDeliveryWebApp.Controllers
              return foods;
         }
 
+        public Food Get(long id)
+        {
+            
+            Food food = null;
+            HttpClient client = new HttpClient();
+            try
+            {
+                using (var response = client.GetAsync(_client.BaseAddress + "/food/" + id).Result)
+                {
+
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string data = response.Content.ReadAsStringAsync().Result;
+                        food = JsonConvert.DeserializeObject<Food>(data);
+                    }
+                    else
+                    {
+                        TempData["Error"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                    }
+                }
+
+            }
+            catch (HttpRequestException ex)
+            {
+                TempData["error"] = $"Error: {ex.Message}";
+                //Add throw Exception
+                Redirect("~Menu/Index");
+            }
+
+            // HttpResponseMessage response = client.GetAsync(_client.BaseAddress + "/food").Result;
+
+
+            return food;
+        }
+
+        // [SessionAuthorize]
+        public async Task<JsonResult> AddToCart(long id)
+        {
+            if (HttpContext.Session.GetString("JWToken") is null || HttpContext.Session.GetString("JWToken") == "")
+            {
+                return new JsonResult(new { error = "Unauthorized" }) { StatusCode = 401 };
+            }
+            else
+            {
+                var food = Get(id);
+                return Json(food);
+            }
+
+           /* var successData = new { message = "Item added to cart successfully" };
+
+            return Json(new Food () { Id = id, Title = "Poulet" });*/
+
+        }
         // GET: MenuController/Details/5
         /*public ActionResult Details(int id)
         {
