@@ -27,7 +27,7 @@ jQuery(document).ready(function () {
         
         let idFood = btn.attr('id');
        
-        $.get('/Menu/AddToCart/?id=' + idFood).done(
+        $.get('/Cart/AddToCart/?id=' + idFood).done(
             function (data) {
             
                cart =  addToCart(cart, data)
