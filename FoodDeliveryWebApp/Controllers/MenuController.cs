@@ -8,7 +8,7 @@ namespace FoodDeliveryWebApp.Controllers
 {
     public class MenuController : Controller
     {
-        Uri baseAdd = new Uri("https://localhost:44339/api");
+        Uri baseAdd = new Uri("https://localhost:7110/api");
         private readonly HttpClient _client;
 
         public MenuController()
@@ -105,24 +105,6 @@ namespace FoodDeliveryWebApp.Controllers
             return food;
         }
 
-        // [SessionAuthorize]
-        public async Task<JsonResult> AddToCart(long id)
-        {
-            if (HttpContext.Session.GetString("JWToken") is null || HttpContext.Session.GetString("JWToken") == "")
-            {
-                return new JsonResult(new { error = "Unauthorized" }) { StatusCode = 401 };
-            }
-            else
-            {
-                var food = Get(id);
-                return Json(food);
-            }
-
-           /* var successData = new { message = "Item added to cart successfully" };
-
-            return Json(new Food () { Id = id, Title = "Poulet" });*/
-
-        }
         // GET: MenuController/Details/5
         /*public ActionResult Details(int id)
         {

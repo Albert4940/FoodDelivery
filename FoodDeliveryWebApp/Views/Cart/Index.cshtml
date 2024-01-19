@@ -1,8 +1,11 @@
-﻿@*
+﻿@model FoodDeliveryWebApp.Models.Cart;
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
 }
+<h1>@ViewData["Title"]</h1>
+<h3>@TempData["error"]</h3>
 <div class="row">
     <div class="col-md-8 bg-danger">
         <div id="cart-alert" class="alert alert-info" role="alert">
@@ -40,3 +43,20 @@
         column-4
     </div>
 </div>
+@section Scripts{
+    <script>
+       /* let cart = localStorage.getItem('cart')
+            ? JSON.parse(localStorage.getItem('cart'))
+            : { cartItems: [], shippingAddress: "", paymentMethod: "PayPal" };
+
+        //let loading = false;
+    if (cart.cartItems.length > 0) {
+       // loading
+               $.post("/Cart/Index", cart).done(function (data) {
+                   console.log("Successfully : ",data)
+               }).fail(function (error) {
+                   console.error("Failed  : ",error)
+               })
+    }*/
+    </script>
+}
