@@ -8,7 +8,7 @@ namespace FoodDeliveryWebApp.Controllers
 {
     public class MenuController : Controller
     {
-        Uri baseAdd = new Uri("https://localhost:44339/api");
+        Uri baseAdd = new Uri("https://localhost:7110/api");
         private readonly HttpClient _client;
 
         public MenuController()

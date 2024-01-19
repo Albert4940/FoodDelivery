@@ -10,7 +10,7 @@ namespace FoodDeliveryWebApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        Uri baseAdd = new Uri("https://localhost:44339/api");
+        Uri baseAdd = new Uri("https://localhost:7110/api");
         private readonly HttpClient _client;
 
         public HomeController(ILogger<HomeController> logger)
