@@ -9,7 +9,7 @@
         public string ImageURL { get; set; }
         public string Description { get; set; }
         //change it to long
-
+        public int CountInStock { get; set; }
         public long CategoryId { get; set; }
 
 
