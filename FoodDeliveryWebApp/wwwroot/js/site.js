@@ -8,10 +8,10 @@ jQuery(document).ready(function () {
         ? JSON.parse(localStorage.getItem('cart'))
         : { cartItems: [], shippingAddress: "", paymentMethod: "PayPal" };*/
 
-    let cart = getCartData();
+    //let cart = getCartData();
 
 
-    updateBadge(cart)
+    updateBadge()
     
     //if
    // listCart(cart);
@@ -25,9 +25,9 @@ jQuery(document).ready(function () {
         $.get('/Cart/AddToCart/?id=' + idFood).done(
             function (data) {
             
-               cart =  addToCart(cart, data)
-               updateCart(cart);
-               updateBadge(cart);
+               //cart =  addToCart(cart, data)
+               //updateCart(cart);
+               //updateBadge(cart);
 
             }).fail(
                 function (jqXHR, textStatus, errorThrown) {
@@ -87,7 +87,7 @@ jQuery(document).ready(function () {
         return cart;
     }
     function updateBadge(cart) {
-        $(".badge").text(cart.cartItems.length)
+        //$.get
     }
     function addToCart(cart,item) {
         //let newCart = []

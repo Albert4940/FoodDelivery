@@ -1,7 +1,9 @@
 ﻿using FoodDeliveryWebApp.Data;
 using FoodDeliveryWebApp.Models;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Linq;
 
@@ -19,10 +21,37 @@ namespace FoodDeliveryWebApp.Controllers
             _context = context; 
         }
         // GET: CartController
-        public ActionResult Index()
+        public ActionResult Index(long Id, int CountInStock)
         {
-            var OrderItem = _context.OrderItems.FirstOrDefault() ?? new OrderItem();
-            ViewData["Title"] = OrderItem.Title;
+            long FoodId = Id;
+            int Qty = CountInStock;
+
+            //
+            try
+            {
+                AddToCart(FoodId, Qty);
+            }catch(Exception ex)
+            {
+                //if err redirect to Food Page
+
+            }
+           // TempData["Data"] = $"Data: {Id} - {CountInStock}";
+            var cart = _context.Carts.FirstOrDefault();
+             var orderItems = _context.OrderItems.ToList();
+             if(cart != null)
+             {
+                 var CartViewModel = new CartViewModel()
+                 {
+                     cart = cart,
+                     OrderItems = orderItems
+                 };
+
+                 UpdateBadge();
+
+                 return View(CartViewModel);
+              
+            }
+            //ViewData["Title"] = OrderItem.Title;
             //var cart = string.IsNullOrEmpty(cartData) ? new Cart() : JsonConvert.DeserializeObject<Cart>(cartData);
 
             /*Cart cartView = new Cart()
@@ -30,54 +59,133 @@ namespace FoodDeliveryWebApp.Controllers
                 
                 PaymentMethod = cart.PaymentMethod
             };*/
-            return View();
+            //return View();
+               
+                 return View();
+    }
+
+        public void UpdateBadge()
+        {
+            ViewData["countItem"] = _context.OrderItems.ToList().Count;
         }
 
-        public async Task AddOrderItem(Food food, long cartId)
+        public async Task AddOrderItem(Food food, long cartId, int qty)
         {
-            var OrderItem = new OrderItem() { Title = food.Title, CartId = cartId, Qty = 0, ImageURL = "", Price = 0, ProductId = food.Id };
-            try
+            //var OrderItem =
+            var OrderItem = _context.OrderItems.FirstOrDefault(o => o.ProductId == food.Id && o.CartId == cartId);
+            if(OrderItem is null)
             {
+                try
+                {
 
 
-                _context.Add(OrderItem);
-                await _context.SaveChangesAsync();
+                    _context.Add(new OrderItem() { 
+                        Title = food.Title, CartId = cartId, 
+                        Qty = qty, ImageURL = food.ImageURL, 
+                        Price = food.Price, ProductId = food.Id 
+                    });
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    //re-trhow
+                    TempData["error"] = ex.ToString();
+
+                }
             }
-            catch (Exception ex)
+            else
             {
-                TempData["error"] = ex.ToString();
-
+                OrderItem.Qty = qty;
+                _context.Entry(OrderItem).State = EntityState.Modified;
+                _context.Update(OrderItem);
+                await _context.SaveChangesAsync(); 
             }
+
         }
 
         // [SessionAuthorize]
         //[HttpPost]
-        public async Task<JsonResult> AddToCart(long id)
-        {
+        /*public async Task<JsonResult> AddToCart(long id)
+        {*/
            /* if (HttpContext.Session.GetString("JWToken") is null || HttpContext.Session.GetString("JWToken") == "")
             {
                 return new JsonResult(new { error = "Unauthorized" }) { StatusCode = 401 };
             }
             else
             {*/
-                var food = Get(id);
-            var cart = new Cart() { ItemsPrice = 0, TaxPrice = 0, ShippingPrice = 0, TotalPrice = 0};
-
-               
-            try
+                
+           /* var food = Get(id);
+            var cart = _context.Carts.FirstOrDefault() ;
+            if(cart is null)
             {
-                _context.Add(cart);
-                 await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = ex.ToString();
-            }
+                try
+                {
+                    _context.Add(new Cart() { ItemsPrice = 0, TaxPrice = 0, ShippingPrice = 0, TotalPrice = 0 });
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    TempData["error"] = ex.ToString();
+                }
 
                 var cartResult = _context.Carts.FirstOrDefault() ?? new Cart();
-            await AddOrderItem(food, cartResult.Id);
+                await AddOrderItem(food, cartResult.Id);
+            }
+            else
+            {
+                await AddOrderItem(food, cart.Id);
+            }
+               
+
                 
-                return Json(food);
+                return Json(food);*/
+
+
+            //}
+
+            /* var successData = new { message = "Item added to cart successfully" };
+
+             return Json(new Food () { Id = id, Title = "Poulet" });*/
+
+       // }
+
+        public async Task AddToCart(long FoodId, int Qty)
+        {
+            /* if (HttpContext.Session.GetString("JWToken") is null || HttpContext.Session.GetString("JWToken") == "")
+             {
+                 return new JsonResult(new { error = "Unauthorized" }) { StatusCode = 401 };
+             }
+             else
+             {*/
+
+            var food = Get(FoodId);
+            var cart = _context.Carts.FirstOrDefault();
+
+            if (cart is null)
+            {
+                try
+                {
+                    _context.Add(new Cart() { ItemsPrice = 0, TaxPrice = 0, ShippingPrice = 0, TotalPrice = 0 });
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    TempData["error"] = ex.ToString();
+                }
+
+                var cartResult = _context.Carts.FirstOrDefault() ?? new Cart();
+                await AddOrderItem(food, cartResult.Id, Qty);
+            }
+            else
+            {
+                await AddOrderItem(food, cart.Id, Qty);
+            }
+
+
+
+            //return Json(food);
+
+
             //}
 
             /* var successData = new { message = "Item added to cart successfully" };
@@ -85,7 +193,17 @@ namespace FoodDeliveryWebApp.Controllers
              return Json(new Food () { Id = id, Title = "Poulet" });*/
 
         }
-
+        public async Task<JsonResult> RemoveToCart(long id)
+        {
+            var OrderItem = await _context.OrderItems.FirstOrDefaultAsync(x => x.Id == id);
+            if(OrderItem is null)
+            {
+                return new JsonResult(new { error = "Not Found" }) { StatusCode = 404 };
+            }
+             _context.OrderItems.Remove(OrderItem);
+            await _context.SaveChangesAsync();
+            return Json(OrderItem);
+        }
         public Food Get(long id)
         {
 
