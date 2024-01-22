@@ -11,5 +11,6 @@
 
         public long ProductId { get; set; }
         public long CartId {  get; set; }
+        public long CountInStock { get; set; }
     }
 }

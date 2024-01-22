@@ -1,6 +1,7 @@
 ﻿using FoodDeliveryWebApp.Data;
 using FoodDeliveryWebApp.Models;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 
 namespace FoodDeliveryWebApp.Services
 {
@@ -14,6 +15,7 @@ namespace FoodDeliveryWebApp.Services
 
         public static OrderItem GetByID(long Id) => _context.OrderItems.FirstOrDefault(o => o.Id == Id);
 
+        public static async Task<List<OrderItem>> GetAll() => await _context.OrderItems.ToListAsync();
         public static async Task Update(OrderItem orderItem)
         {
             _context.Entry(orderItem).State = EntityState.Modified;
