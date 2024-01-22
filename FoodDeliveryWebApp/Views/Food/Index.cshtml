@@ -1,0 +1,100 @@
+﻿@model FoodDeliveryWebApp.Models.Food
+@{
+   /* for (var i = 1; i <= @Model.CountInStock; i++)
+    {
+        if (i == 1)
+        {
+            <option selected value="@i">@i</option>
+        }
+        else
+        {
+
+            <option value="@i">@i</option>
+        }
+    }*/
+    ViewData["Title"] = "Food";
+    if (TempData["Error"] != null && TempData["Error"] != "")
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+
+    /*var items = new List<SelectListItem>();
+    for(var i = 1; i <= Model.CountInStock; i++)
+    {
+        var listItem = new SelectListItem
+        {
+            Value = i.ToString(),
+            Text = i.ToString()
+        };
+
+        if (i == 1)
+    listItem.Selected = true; 
+        items.Add(listItem);
+    }
+    ViewBag.Items = items as List<SelectListItem>;*/
+    //public SelectList? Count;
+}
+
+<a asp-controller="Home" asp-action="Index">Go Back</a>
+
+<div>
+    <ul>
+        <li>
+            @Model.Title
+        </li>
+        <li>
+            @Model.Price
+        </li>
+    </ul>
+</div>
+<div>
+    <form asp-controller="Cart" asp-action="Index" >
+        <input type="hidden" asp-for="Id" />
+        <ul>
+            <li>Price : @Model.Price</li>
+            <li>
+                @{
+                    if(Model.CountInStock == 0)
+                    {
+                        <span>Out of stock</span>
+                    }
+                    else
+                    {
+                        <select asp-for="CountInStock" >
+                            @{
+                                for (var i = 1; i <= @Model.CountInStock; i++)
+                                {
+                                   /* if (i == 2)
+                                    {
+                                        <option  selected value="@i">@i</option>
+                                    }
+                                    else
+                                    {
+
+                                        <option value="@i">@i</option>
+                                    }*/
+                                   <option value="@i">@i</option>
+                                }
+                            }
+                        </select>
+                    }               
+
+                 }
+               
+            </li>
+            <li>
+                <button disabled="@(Model.CountInStock == 0)" type="submit" class="btn btn-primary" >Add To cart</button>
+            </li>
+        </ul>
+    </form>   
+</div>
+
+@section Scripts {
+    <script>
+        jQuery(document).ready(function () {           
+            $("#CountInStock option:last-child").removeAttr("selected");           
+        })
+    </script>
+}

@@ -28,7 +28,7 @@ namespace FoodDeliveryWebApp.Controllers
             using (var httpClient = new HttpClient())
             {
                 StringContent stringContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
-                using (var response = await httpClient.PostAsync("https://localhost:44339/api/user/auth", stringContent))
+                using (var response = await httpClient.PostAsync("https://localhost:7110/api/user/auth", stringContent))
                 {
                     string token = await response.Content.ReadAsStringAsync();
                     if (token == "Invalid credentials")
@@ -55,7 +55,7 @@ namespace FoodDeliveryWebApp.Controllers
 
                 try
                 {
-                    using (var response = await httpClient.PostAsync("https://localhost:44339/api/user/auth", stringContent))
+                    using (var response = await httpClient.PostAsync("https://localhost:7110/api/user/auth", stringContent))
                     {
 
                         if (response.IsSuccessStatusCode)
@@ -134,7 +134,7 @@ namespace FoodDeliveryWebApp.Controllers
 
                     try
                     {
-                        using (var response = await httpClient.PostAsync("https://localhost:44339/api/user/", stringContent))
+                        using (var response = await httpClient.PostAsync("https://localhost:7110/api/user/", stringContent))
                         {
 
                             if (response.IsSuccessStatusCode)

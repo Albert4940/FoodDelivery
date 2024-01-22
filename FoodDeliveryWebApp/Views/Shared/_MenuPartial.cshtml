@@ -10,7 +10,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <img src="@Url.Content("~" + item.ImageURL)" class="w-50" alt="@item.Title image" />
                         <div>
-                            <a class="d-inline btn btn-primary btn-add" id="@item.Id">+</a>
+                            <a class="d-inline btn btn-primary btn-add" asp-controller="Food" asp-action="Index" asp-route-id="@item.Id" id=" @item.Id">+</a>
                         </div>
                     </div>
 
@@ -24,9 +24,4 @@
     </div>
 }
 
-@section Scripts {
-    <script>
-        // Your JavaScript code specific to the MenuPartial
-        console.log("This script is from MenuPartial");
-    </script>
-}
+

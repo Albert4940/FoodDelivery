@@ -4,35 +4,30 @@
 // Write your JavaScript code.
 jQuery(document).ready(function () {
 
-    let cart = localStorage.getItem('cart')
+    /*let cart = localStorage.getItem('cart')
         ? JSON.parse(localStorage.getItem('cart'))
-        : { cartItems: [], shippingAddress: "", paymentMethod: "PayPal" };
+        : { cartItems: [], shippingAddress: "", paymentMethod: "PayPal" };*/
+
+    //let cart = getCartData();
 
 
-    updateBadge(cart)
-
-    if (cart.cartItems.length > 0) {
-        $.post("/Cart/Index", cart).done(function (data) {
-            console.log("Successfully : ",data)
-        }).fail(function (error) {
-            console.error("Failed  : ",error)
-        })
-    }
-
-    listCart(cart);
+    updateBadge()
+    
+    //if
+   // listCart(cart);
 
     
-    $('.btn-add').click(function (e) {
+    /*$('.btn-add').click(function (e) {
         var btn = $(this);
         
         let idFood = btn.attr('id');
        
-        $.get('/Menu/AddToCart/?id=' + idFood).done(
+        $.get('/Cart/AddToCart/?id=' + idFood).done(
             function (data) {
             
-               cart =  addToCart(cart, data)
-               updateCart(cart);
-               updateBadge(cart);
+               //cart =  addToCart(cart, data)
+               //updateCart(cart);
+               //updateBadge(cart);
 
             }).fail(
                 function (jqXHR, textStatus, errorThrown) {
@@ -47,15 +42,24 @@ jQuery(document).ready(function () {
                 }
             );
 
-    })
-
+    })*/
     function liCreator(data) {
+        let ImageURL =  data.imageURL;
         let liElt = "<li class='list-group-item'>"
-            liElt += "<div class='row'>"
-                liElt += "<div class='col-md-2'>"
-                     liElt += "<img src='~/img/c1.png'/>" 
-                liElt += "</div>"
-            liElt += "</div>"
+
+        liElt += "<div class='row'>"
+
+        liElt += "<div class='col-md-2'>"
+        //liElt += "<img src='@Url.Content(" + ImageURL + ")'/>" 
+        liElt += "<img src='" + ImageURL + "'/>" 
+        liElt += "</div>"
+
+        liElt += "<div class='col-md-3'>"
+        liElt += data.title
+        liElt += "</div >"
+
+        liElt += "</div>"
+
         liElt += "</li>"
         return liElt;
     }
@@ -65,7 +69,7 @@ jQuery(document).ready(function () {
             $('#cart-alert').css('display', 'block')
         else {
             $('#cart-list').css('display', 'block')
-            $('#cart-list').html(liCreator())
+            $('#cart-list').html(liCreator(cart.cartItems[0]))
         }
 
 
@@ -73,11 +77,21 @@ jQuery(document).ready(function () {
         $('.list-group').css('display', 'block')*/
     }
     function updateCart(cart) {
-        localStorage.setItem('cart', JSON.stringify(cart));
+        sessionStorage.setItem('cart', JSON.stringify(cart));
     }
 
-    function updateBadge(cart) {
-        $(".badge").text(cart.cartItems.length)
+    function getCartData() {
+        let cart = sessionStorage.getItem('cart')
+            ? JSON.parse(sessionStorage.getItem('cart'))
+            : { cartItems: [], shippingAddress: "", paymentMethod: "PayPal" };
+        return cart;
+    }
+    function updateBadge() {
+        $.get("/Cart/CountItems/").done(function (data) {
+            $(".badge").text(data);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.status);
+        })
     }
     function addToCart(cart,item) {
         //let newCart = []
