@@ -6,7 +6,7 @@
     var OrderItems = Model.OrderItems;
     var Cart = Model.cart;
 }
-<h1>@Model.OrderItems[0].CartId</h1>
+
 <h3>@TempData["error"]</h3>
 <h4>@TempData["Data"]</h4>
 <div class="row">
@@ -19,40 +19,55 @@
                 
                 if (OrderItems.Count == 0)
                 {
-                        <div  class="alert alert-info" role="alert">
-                            Your Cart is empty <a asp-controller="Menu" asp-action="Index">Go Back</a>
+                                        <div  class="alert alert-info" role="alert">
+                                            Your Cart is empty <a asp-controller="Menu" asp-action="Index">Go Back</a>
                         </div>
-                }
-            
+            }
+
         }
         <ul id="cart-list" class="list-group list-group-flush">
-            @foreach(var item in Model.OrderItems)
-            {
-                <li class="list-group-item">
-                    <div class="row">
-                        <div class="col-md-2">
-                            <img src="@Url.Content("~" + item.ImageURL)" class="w-50" />
-                        </div>
-                        <div class="col-md-3">
-                            @Html.DisplayFor(modelItem => item.Title)
-                        </div>
-                        <div class="col-md-2">
-                            @Html.DisplayFor(modelItem => item.Price)
-                        </div>
-                        <div class="col-md-2">
-                            @Html.DisplayFor(modelItem => item.Qty)
-                        </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-danger" id="@item.Id">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </li>
-            }
+            @{
+                var idForm = 0;
+                foreach(var item in Model.OrderItems)
+                {
+                    idForm++;
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <img src="@Url.Content("~" + item.ImageURL)" class="w-50" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.DisplayFor(modelItem => item.Title)
+                                    </div>
+                                    <div class="col-md-2">
+                                        @Html.DisplayFor(modelItem => item.Price)
+                                    </div>
+                                    <div class="col-md-2">
+                                        <form id="@idForm" class ="CountInStock">
+                                            <input type="hidden" value="@item.Qty"/>
+                                            <input type="hidden" value="@item.Id" />
+                                            <select >
+                                                @{
+                                            for (var i = 1; i <= item.CountInStock; i++)
+                                            {
+                                                <option value="@i">@i</option>
+                                            }
+                                                }
+                                            </select>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-danger" id="@item.Id">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                }
+            }           
            
         </ul>
     </div>
@@ -60,7 +75,8 @@
         <div class="card">
             <ul class="list-group">
                 <li class="list-group-item">
-                    <h2>Subtotal 900</h2>
+                    <h2>Subtotal ()</h2>
+                    <span id="total-price">@($"{Model.cart.TotalPrice:N2}")</span>
                 </li>
                 <li class="list-group-item">
                     <button class="btn btn-primary btn-block">
@@ -84,7 +100,8 @@
                    //get the number of items in order to show the alert message
                    console.log("Res ",data)
                     //$('#cart-list').load('/Cart/Index.html #cart-list');
-                  location.reload(true);
+                 // location.reload(true);
+                   location.href = "/Cart/Index";
                     //$('#cart-list').load(document.URL + ' #cart-list');
                     //$('#cart-alert').load(document.URL + ' #cart-alert');
 
@@ -92,19 +109,30 @@
                     console.log(jqXHR.status);
                })
            })
-        })
-       /* let cart = localStorage.getItem('cart')
-            ? JSON.parse(localStorage.getItem('cart'))
-            : { cartItems: [], shippingAddress: "", paymentMethod: "PayPal" };
 
-        //let loading = false;
-    if (cart.cartItems.length > 0) {
-       // loading
-               $.post("/Cart/Index", cart).done(function (data) {
-                   console.log("Successfully : ",data)
-               }).fail(function (error) {
-                   console.error("Failed  : ",error)
-               })
-    }*/
+           //selected the item quantity inside select
+            let Qty;
+            $(".CountInStock ").each(function(item, el){
+                let idForm = $(this).attr("id");
+                let qty = $("#" + idForm + " input").val()
+                $("#" + idForm + ">select option:nth-child(" + qty + ")").attr("selected", true)               
+            })
+
+            $(".CountInStock select").change(function () {
+                let qty = $(this).val();
+                let idOrderItem = $(this).prev().val();
+
+                $.post("/Cart/UpdateItem", { Id:idOrderItem, Qty:qty }).done(function (data) {
+
+                    $("#total-price").text(data.totalPrice.toFixed(2))  
+                    $(".badge").text(data.countItems)
+
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.status);
+                })
+               
+            })
+        })
+       
     </script>
 }

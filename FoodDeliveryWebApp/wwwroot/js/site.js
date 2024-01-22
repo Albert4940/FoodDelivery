@@ -17,7 +17,7 @@ jQuery(document).ready(function () {
    // listCart(cart);
 
     
-    $('.btn-add').click(function (e) {
+    /*$('.btn-add').click(function (e) {
         var btn = $(this);
         
         let idFood = btn.attr('id');
@@ -42,7 +42,7 @@ jQuery(document).ready(function () {
                 }
             );
 
-    })
+    })*/
     function liCreator(data) {
         let ImageURL =  data.imageURL;
         let liElt = "<li class='list-group-item'>"
@@ -86,8 +86,12 @@ jQuery(document).ready(function () {
             : { cartItems: [], shippingAddress: "", paymentMethod: "PayPal" };
         return cart;
     }
-    function updateBadge(cart) {
-        //$.get
+    function updateBadge() {
+        $.get("/Cart/CountItems/").done(function (data) {
+            $(".badge").text(data);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.status);
+        })
     }
     function addToCart(cart,item) {
         //let newCart = []
