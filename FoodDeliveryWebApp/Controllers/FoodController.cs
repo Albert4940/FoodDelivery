@@ -1,4 +1,5 @@
 ﻿using FoodDeliveryWebApp.Models;
+using FoodDeliveryWebApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -7,26 +8,23 @@ namespace FoodDeliveryWebApp.Controllers
 {
     public class FoodController : Controller
     {
-        Uri baseAdd = new Uri("https://localhost:7110/api");
-        private readonly HttpClient _client;
 
         public FoodController()
         {
-            _client = new HttpClient();
-            _client.BaseAddress = baseAdd;
+            FoodService.InitailizeHttp();
         }
 
         // GET: FoodController
         public ActionResult Index(long id)
         {
-            var food = GetFood(id);
-            food.CountInStock = 7;
+            //var food = GetFood(id);
+            var food = FoodService.Get(id);
+            food.CountInStock = 3;
            return food is null ?  View() :  View(food);
         }
 
-        public Food GetFood(long id)
+       /* public Food GetFood(long id)
         {
-
             Food food = null;
             HttpClient client = new HttpClient();
 
@@ -59,7 +57,7 @@ namespace FoodDeliveryWebApp.Controllers
 
 
             return food;
-        }
+        }*/
         
 
         // GET: FoodController/Details/5

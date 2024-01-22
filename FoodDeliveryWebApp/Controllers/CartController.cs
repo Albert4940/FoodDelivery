@@ -1,5 +1,6 @@
 ﻿using FoodDeliveryWebApp.Data;
 using FoodDeliveryWebApp.Models;
+using FoodDeliveryWebApp.Services;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,16 +12,69 @@ namespace FoodDeliveryWebApp.Controllers
 {
     public class CartController : Controller
     {
-        Uri baseAdd = new Uri("https://localhost:7110/api");
-        private readonly HttpClient _client;
+        //Uri baseAdd = new Uri("https://localhost:7110/api");
+        //private readonly HttpClient _client;
         private readonly FoodDeliveryWebAppDbContext _context;
         public CartController(FoodDeliveryWebAppDbContext context)
         {
-            _client = new HttpClient();
-            _client.BaseAddress = baseAdd;
+            /* _client = new HttpClient();
+             _client.BaseAddress = baseAdd;*/
+            FoodService.InitailizeHttp();
+            CartService.InintializeContextDb(context);
             _context = context; 
         }
-        // GET: CartController
+        //Get
+        [HttpGet]
+        public ActionResult Index()
+        {
+            /*long FoodId = Id;
+            int Qty = CountInStock;
+
+            //
+            try
+            {
+                AddToCart(FoodId, Qty);
+            }
+            catch (Exception ex)
+            {
+                //if err redirect to Food Page
+                TempData["Error"] = $"Error : {ex}";
+            }*/
+            // TempData["Data"] = $"Data: {Id} - {CountInStock}";
+            //var cart = _context.Carts.FirstOrDefault();
+
+            //add try block
+            var cart = CartService.Get();
+            var orderItems = _context.OrderItems.ToList();
+
+            if (cart != null)
+            {
+                var CartViewModel = new CartViewModel()
+                {
+                    cart = cart,
+                    OrderItems = orderItems
+                };
+
+                UpdateBadge();
+
+                return View(CartViewModel);
+
+            }
+            //ViewData["Title"] = OrderItem.Title;
+            //var cart = string.IsNullOrEmpty(cartData) ? new Cart() : JsonConvert.DeserializeObject<Cart>(cartData);
+
+            /*Cart cartView = new Cart()
+            {
+                
+                PaymentMethod = cart.PaymentMethod
+            };*/
+            //return View();
+
+            return View();
+        }
+
+        [HttpPost]
+        // Post: CartController
         public ActionResult Index(long Id, int CountInStock)
         {
             long FoodId = Id;
@@ -33,11 +87,13 @@ namespace FoodDeliveryWebApp.Controllers
             }catch(Exception ex)
             {
                 //if err redirect to Food Page
-
+                TempData["Error"] = $"Error : {ex}";
             }
-           // TempData["Data"] = $"Data: {Id} - {CountInStock}";
-            var cart = _context.Carts.FirstOrDefault();
-             var orderItems = _context.OrderItems.ToList();
+            // TempData["Data"] = $"Data: {Id} - {CountInStock}";
+            //var cart = _context.Carts.FirstOrDefault();
+            var cart = CartService.Get();
+            var orderItems = _context.OrderItems.ToList();
+
              if(cart != null)
              {
                  var CartViewModel = new CartViewModel()
@@ -158,9 +214,10 @@ namespace FoodDeliveryWebApp.Controllers
              else
              {*/
 
-            var food = Get(FoodId);
-            var cart = _context.Carts.FirstOrDefault();
+            var food = FoodService.Get(FoodId);
 
+            var cart = CartService.Get();
+            //var cart = _context.Carts.FirstOrDefault();
             if (cart is null)
             {
                 try
@@ -173,7 +230,7 @@ namespace FoodDeliveryWebApp.Controllers
                     TempData["error"] = ex.ToString();
                 }
 
-                var cartResult = _context.Carts.FirstOrDefault() ?? new Cart();
+                var cartResult = CartService.Get() ?? new Cart();
                 await AddOrderItem(food, cartResult.Id, Qty);
             }
             else
@@ -191,7 +248,42 @@ namespace FoodDeliveryWebApp.Controllers
             /* var successData = new { message = "Item added to cart successfully" };
 
              return Json(new Food () { Id = id, Title = "Poulet" });*/
+           
+            await UpdateCart();
+        }
 
+        public async Task UpdateCart()
+        {
+            // var cart = await _context.Carts.FirstOrDefaultAsync();
+            var cart = CartService.Get();
+            var OrderItems = await _context.OrderItems.ToListAsync();
+
+            double itemsPrice = 0;
+            double shippingPrice = 0;
+            double totalPrice = 0;
+
+            if(cart != null && OrderItems != null)
+            {
+                foreach(var item in OrderItems)
+                {
+                    itemsPrice +=  item.Price * item.Qty; 
+                }
+                totalPrice = itemsPrice + shippingPrice;
+                cart.ItemsPrice = itemsPrice;
+                cart.ShippingPrice = shippingPrice;
+                cart.TotalPrice = totalPrice;
+            }
+
+            _context.Entry(cart).State = EntityState.Modified;
+            _context.Update(cart);
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task<JsonResult> UpdateOrderItem(long Id, int Qty)
+        {
+            return Json($"{Id} - {Qty}");
+            //return Json(OrderItem);
         }
         public async Task<JsonResult> RemoveToCart(long id)
         {
@@ -202,43 +294,13 @@ namespace FoodDeliveryWebApp.Controllers
             }
              _context.OrderItems.Remove(OrderItem);
             await _context.SaveChangesAsync();
+
+
+            UpdateCart();
+
             return Json(OrderItem);
         }
-        public Food Get(long id)
-        {
 
-            Food food = null;
-            HttpClient client = new HttpClient();
-            try
-            {
-                using (var response = client.GetAsync(_client.BaseAddress + "/food/" + id).Result)
-                {
-
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string data = response.Content.ReadAsStringAsync().Result;
-                        food = JsonConvert.DeserializeObject<Food>(data);
-                    }
-                    else
-                    {
-                        TempData["Error"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
-                    }
-                }
-
-            }
-            catch (HttpRequestException ex)
-            {
-                TempData["error"] = $"Error: {ex.Message}";
-                //Add throw Exception
-                Redirect("~Menu/Index");
-            }
-
-            // HttpResponseMessage response = client.GetAsync(_client.BaseAddress + "/food").Result;
-
-
-            return food;
-        }
         // GET: CartController/Details/5
         public ActionResult Details(int id)
         {
