@@ -86,8 +86,12 @@ jQuery(document).ready(function () {
             : { cartItems: [], shippingAddress: "", paymentMethod: "PayPal" };
         return cart;
     }
-    function updateBadge(cart) {
-        //$.get
+    function updateBadge() {
+        $.get("/Cart/CountItems/").done(function (data) {
+            $(".badge").text(data);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.status);
+        })
     }
     function addToCart(cart,item) {
         //let newCart = []

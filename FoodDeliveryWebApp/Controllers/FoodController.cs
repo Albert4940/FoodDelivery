@@ -19,7 +19,7 @@ namespace FoodDeliveryWebApp.Controllers
         {
             //var food = GetFood(id);
             var food = FoodService.Get(id);
-            food.CountInStock = 3;
+
            return food is null ?  View() :  View(food);
         }
 

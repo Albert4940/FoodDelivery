@@ -21,6 +21,8 @@ namespace FoodDeliveryWebApp.Controllers
              _client.BaseAddress = baseAdd;*/
             FoodService.InitailizeHttp();
             CartService.InintializeContextDb(context);
+            OrderItemService.InintializeContextDb(context);
+
             _context = context; 
         }
         //Get
@@ -55,7 +57,7 @@ namespace FoodDeliveryWebApp.Controllers
                     OrderItems = orderItems
                 };
 
-                UpdateBadge();
+               // UpdateBadge();
 
                 return View(CartViewModel);
 
@@ -102,7 +104,7 @@ namespace FoodDeliveryWebApp.Controllers
                      OrderItems = orderItems
                  };
 
-                 UpdateBadge();
+                
 
                  return View(CartViewModel);
               
@@ -120,25 +122,33 @@ namespace FoodDeliveryWebApp.Controllers
                  return View();
     }
 
-        public void UpdateBadge()
+        public async Task<JsonResult> CountItems()
         {
-            ViewData["countItem"] = _context.OrderItems.ToList().Count;
+           return Json(await CountOrderItems());
         }
 
+        public async Task<long> CountOrderItems()
+        {
+            var OrderItems = await OrderItemService.GetAll();
+            return OrderItems.Sum(o => o.Qty);
+        }
         public async Task AddOrderItem(Food food, long cartId, int qty)
         {
             //var OrderItem =
+           
             var OrderItem = _context.OrderItems.FirstOrDefault(o => o.ProductId == food.Id && o.CartId == cartId);
+
             if(OrderItem is null)
             {
                 try
                 {
-
+                   
 
                     _context.Add(new OrderItem() { 
                         Title = food.Title, CartId = cartId, 
                         Qty = qty, ImageURL = food.ImageURL, 
-                        Price = food.Price, ProductId = food.Id 
+                        Price = food.Price, ProductId = food.Id,
+                        CountInStock = food.CountInStock
                     });
                     await _context.SaveChangesAsync();
                 }
@@ -152,6 +162,8 @@ namespace FoodDeliveryWebApp.Controllers
             else
             {
                 OrderItem.Qty = qty;
+                OrderItem.CountInStock = food.CountInStock;
+
                 _context.Entry(OrderItem).State = EntityState.Modified;
                 _context.Update(OrderItem);
                 await _context.SaveChangesAsync(); 
@@ -252,7 +264,7 @@ namespace FoodDeliveryWebApp.Controllers
             await UpdateCart();
         }
 
-        public async Task UpdateCart()
+        public async Task<Cart> UpdateCart()
         {
             // var cart = await _context.Carts.FirstOrDefaultAsync();
             var cart = CartService.Get();
@@ -277,12 +289,21 @@ namespace FoodDeliveryWebApp.Controllers
             _context.Entry(cart).State = EntityState.Modified;
             _context.Update(cart);
             await _context.SaveChangesAsync();
-
+            return cart;
         }
 
-        public async Task<JsonResult> UpdateOrderItem(long Id, int Qty)
+        [HttpPost]
+        public async Task<JsonResult> UpdateItem(long Id, int Qty)
         {
-            return Json($"{Id} - {Qty}");
+            var OrderItem = OrderItemService.GetByID(Id);
+            OrderItem.Qty = Qty;
+
+            await OrderItemService.Update(OrderItem);
+            var cart = await UpdateCart();
+
+            var countItems = await CountOrderItems();
+
+            return Json(new {TotalPrice = cart.TotalPrice,countItems});
             //return Json(OrderItem);
         }
         public async Task<JsonResult> RemoveToCart(long id)
@@ -296,7 +317,7 @@ namespace FoodDeliveryWebApp.Controllers
             await _context.SaveChangesAsync();
 
 
-            UpdateCart();
+            await UpdateCart();
 
             return Json(OrderItem);
         }
