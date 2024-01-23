@@ -33,6 +33,7 @@ namespace FoodDeliveryWebApp.Services
                     else
                     {
                         //Add throw Exception
+                        throw new Exception($"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}");
                         //TempData["Error"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
                     }
                 }
@@ -42,12 +43,11 @@ namespace FoodDeliveryWebApp.Services
             {
                 //TempData["error"] = $"Error: {ex.Message}";
                 //Add throw Exception
+                throw;
                 //Redirect("~Menu/Index");
             }
 
             // HttpResponseMessage response = client.GetAsync(_client.BaseAddress + "/food").Result;
-
-
             return food;
         }
     }

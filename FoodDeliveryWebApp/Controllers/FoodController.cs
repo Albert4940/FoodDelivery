@@ -17,10 +17,16 @@ namespace FoodDeliveryWebApp.Controllers
         // GET: FoodController
         public ActionResult Index(long id)
         {
-            //var food = GetFood(id);
-            var food = FoodService.Get(id);
+            try
+            {
+                var food = FoodService.Get(id);
+                return View(food);
+            }catch(Exception ex)
+            {
+                TempData["error"] = ex.Message.ToString();
+            }            
 
-           return food is null ?  View() :  View(food);
+           return View();
         }
 
        /* public Food GetFood(long id)

@@ -1,4 +1,5 @@
 ﻿using FoodDeliveryWebApp.Models;
+using FoodDeliveryWebApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -47,8 +48,18 @@ namespace FoodDeliveryWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginUser([Bind("Id,UserName,Password")] User user)
         {
-
-            using (var httpClient = new HttpClient())
+            try
+            {
+                var token = await UserService.Auth(user);
+                HttpContext.Session.SetString("JWToken", token);
+                HttpContext.Session.SetString("UserName", user.UserName);
+                return Redirect("~/Home/Index");
+            }catch(Exception ex)
+            {
+                TempData["Error"] = ex.Message.ToString();
+                return RedirectToAction("Index", new { UserName = user.UserName, Password = user.Password });
+            }
+            /*using (var httpClient = new HttpClient())
             {
                 user.Id = "01";
                 StringContent stringContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
@@ -94,7 +105,7 @@ namespace FoodDeliveryWebApp.Controllers
                     ViewBag.Message = $"Error: {ex.Message}";
                     return Redirect("~/Home/Index");
                 }
-            }
+            }*/
         }
 
         public async Task<IActionResult> LogOut()
