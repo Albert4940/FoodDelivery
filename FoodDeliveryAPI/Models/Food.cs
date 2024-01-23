@@ -13,8 +13,8 @@ namespace FoodDeliveryAPI.Models
         public double Calories { get; set; }
         public string ImageURL { get; set; }
         public string Description { get; set; }
-        //change it to long
-       
+        public long CountInStock { get; set; }
+
         public long CategoryId { get; set; }
 
        
