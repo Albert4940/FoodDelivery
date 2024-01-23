@@ -3,8 +3,8 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    var OrderItems = Model.OrderItems;
-    var Cart = Model.cart;
+    var OrderItems = Model?.OrderItems;
+    var Cart = Model?.cart;
 }
 
 <h3>@TempData["error"]</h3>
@@ -17,20 +17,20 @@
             
                 
                 
-                if (OrderItems.Count == 0)
+                if (OrderItems is null || OrderItems.Count == 0)
                 {
                                         <div  class="alert alert-info" role="alert">
                                             Your Cart is empty <a asp-controller="Menu" asp-action="Index">Go Back</a>
-                        </div>
+                </div>
             }
-
-        }
-        <ul id="cart-list" class="list-group list-group-flush">
-            @{
-                var idForm = 0;
-                foreach(var item in Model.OrderItems)
-                {
-                    idForm++;
+            else
+            {
+                <ul id="cart-list" class="list-group list-group-flush">
+                    @{
+                        var idForm = 0;
+                        foreach (var item in Model.OrderItems)
+                        {
+                            idForm++;
                             <li class="list-group-item">
                                 <div class="row">
                                     <div class="col-md-2">
@@ -43,15 +43,15 @@
                                         @Html.DisplayFor(modelItem => item.Price)
                                     </div>
                                     <div class="col-md-2">
-                                        <form id="@idForm" class ="CountInStock">
-                                            <input type="hidden" value="@item.Qty"/>
+                                        <form id="@idForm" class="CountInStock">
+                                            <input type="hidden" value="@item.Qty" />
                                             <input type="hidden" value="@item.Id" />
-                                            <select >
+                                            <select>
                                                 @{
-                                            for (var i = 1; i <= item.CountInStock; i++)
-                                            {
-                                                <option value="@i">@i</option>
-                                            }
+                                                    for (var i = 1; i <= item.CountInStock; i++)
+                                                    {
+                                                        <option value="@i">@i</option>
+                                                    }
                                                 }
                                             </select>
                                         </form>
@@ -66,20 +66,24 @@
                                     </div>
                                 </div>
                             </li>
-                }
-            }           
-           
-        </ul>
+                        }
+                    }
+
+                </ul>
+            }
+
+        }
+
     </div>
     <div  class="col-md-4">
         <div class="card">
             <ul class="list-group">
                 <li class="list-group-item">
                     <h2>Subtotal ()</h2>
-                    <span id="total-price">@($"{Model.cart.TotalPrice:N2}")</span>
+                    <span id="total-price">@(Cart is null ? "0.00" : $"{Cart.TotalPrice:N2}")</span>
                 </li>
                 <li class="list-group-item">
-                    <button class="btn btn-primary btn-block">
+                    <button class="btn btn-primary btn-block" disabled="@(Cart is null)">
                         Proceed To Checkout
                     </button>
                 </li>
