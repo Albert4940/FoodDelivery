@@ -29,49 +29,25 @@ namespace FoodDeliveryWebApp.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            /*long FoodId = Id;
-            int Qty = CountInStock;
-
-            //
             try
             {
-                AddToCart(FoodId, Qty);
-            }
-            catch (Exception ex)
-            {
-                //if err redirect to Food Page
-                TempData["Error"] = $"Error : {ex}";
-            }*/
-            // TempData["Data"] = $"Data: {Id} - {CountInStock}";
-            //var cart = _context.Carts.FirstOrDefault();
+                var cart = CartService.Get();
+                var orderItems = _context.OrderItems.ToList();
 
-            //add try block
-            var cart = CartService.Get();
-            var orderItems = _context.OrderItems.ToList();
-
-            if (cart != null)
-            {
-                var CartViewModel = new CartViewModel()
+                if (cart != null)
                 {
-                    cart = cart,
-                    OrderItems = orderItems
-                };
-
-               // UpdateBadge();
-
-                return View(CartViewModel);
-
-            }
-            //ViewData["Title"] = OrderItem.Title;
-            //var cart = string.IsNullOrEmpty(cartData) ? new Cart() : JsonConvert.DeserializeObject<Cart>(cartData);
-
-            /*Cart cartView = new Cart()
+                    var CartViewModel = new CartViewModel()
+                    {
+                        cart = cart,
+                        OrderItems = orderItems
+                    };
+                    return View(CartViewModel);
+                }
+            }catch(Exception ex)
             {
-                
-                PaymentMethod = cart.PaymentMethod
-            };*/
-            //return View();
-
+                TempData["Error"] = ex.Message.ToString();
+                return View();
+            }
             return View();
         }
 
@@ -142,8 +118,6 @@ namespace FoodDeliveryWebApp.Controllers
             {
                 try
                 {
-                   
-
                     _context.Add(new OrderItem() { 
                         Title = food.Title, CartId = cartId, 
                         Qty = qty, ImageURL = food.ImageURL, 
@@ -155,7 +129,7 @@ namespace FoodDeliveryWebApp.Controllers
                 catch (Exception ex)
                 {
                     //re-trhow
-                    TempData["error"] = ex.ToString();
+                    TempData["Error"] = ex.ToString();
 
                 }
             }
