@@ -16,7 +16,6 @@ namespace FoodDeliveryWebApp.Services
 
         public static Food Get(long id)
         {
-
             Food food = null;
             HttpClient client = new HttpClient();
             try
