@@ -1,96 +1,103 @@
 ﻿@model FoodDeliveryWebApp.Models.CartViewModel;
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+
 @{
     var OrderItems = Model?.OrderItems;
     var Cart = Model?.cart;
-}
 
-<h3>@TempData["error"]</h3>
-<h4>@TempData["Data"]</h4>
-<div class="row">
-    <div class="col-md-8">
-        
-        @{
-            //ViewData when data update without relod page
-            
-                
-                
-                if (OrderItems is null || OrderItems.Count == 0)
-                {
-                                        <div  class="alert alert-info" role="alert">
-                                            Your Cart is empty <a asp-controller="Menu" asp-action="Index">Go Back</a>
-                </div>
-            }
-            else
-            {
-                <ul id="cart-list" class="list-group list-group-flush">
-                    @{
-                        var idForm = 0;
-                        foreach (var item in Model.OrderItems)
-                        {
-                            idForm++;
-                            <li class="list-group-item">
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <img src="@Url.Content("~" + item.ImageURL)" class="w-50" />
-                                    </div>
-                                    <div class="col-md-3">
-                                        @Html.DisplayFor(modelItem => item.Title)
-                                    </div>
-                                    <div class="col-md-2">
-                                        @Html.DisplayFor(modelItem => item.Price)
-                                    </div>
-                                    <div class="col-md-2">
-                                        <form id="@idForm" class="CountInStock">
-                                            <input type="hidden" value="@item.Qty" />
-                                            <input type="hidden" value="@item.Id" />
-                                            <select>
-                                                @{
-                                                    for (var i = 1; i <= item.CountInStock; i++)
-                                                    {
-                                                        <option value="@i">@i</option>
-                                                    }
-                                                }
-                                            </select>
-                                        </form>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button class="btn btn-danger" id="@item.Id">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </li>
-                        }
+    if (TempData["Error"] != null && TempData["Error"] != "")
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+    else
+    {
+
+        <div class="row">
+            <div class="col-md-8">
+
+                @{
+                    //ViewData when data update without relod page
+
+
+
+                    if (OrderItems is null || OrderItems.Count == 0)
+                    {
+                        <div class="alert alert-info" role="alert">
+                            Your Cart is empty <a asp-controller="Menu" asp-action="Index">Go Back</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <ul id="cart-list" class="list-group list-group-flush">
+                            @{
+                                var idForm = 0;
+                                foreach (var item in Model.OrderItems)
+                                {
+                                    idForm++;
+                                    <li class="list-group-item">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <img src="@Url.Content("~" + item.ImageURL)" class="w-50" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                @Html.DisplayFor(modelItem => item.Title)
+                                            </div>
+                                            <div class="col-md-2">
+                                                @Html.DisplayFor(modelItem => item.Price)
+                                            </div>
+                                            <div class="col-md-2">
+                                                <form id="@idForm" class="CountInStock">
+                                                    <input type="hidden" value="@item.Qty" />
+                                                    <input type="hidden" value="@item.Id" />
+                                                    <select>
+                                                        @{
+                                                            for (var i = 1; i <= item.CountInStock; i++)
+                                                            {
+                                                                <option value="@i">@i</option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                </form>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button class="btn btn-danger" id="@item.Id">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            }
+
+                        </ul>
                     }
 
-                </ul>
-            }
+                }
 
-        }
-
-    </div>
-    <div  class="col-md-4">
-        <div class="card">
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <h2>Subtotal ()</h2>
-                    <span id="total-price">@(Cart is null ? "0.00" : $"{Cart.TotalPrice:N2}")</span>
-                </li>
-                <li class="list-group-item">
-                    <button class="btn btn-primary btn-block" disabled="@(Cart is null)">
-                        Proceed To Checkout
-                    </button>
-                </li>
-            </ul>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <h2>Subtotal ()</h2>
+                            <span id="total-price">@(Cart is null ? "0.00" : $"{Cart.TotalPrice:N2}")</span>
+                        </li>
+                        <li class="list-group-item">
+                            <button class="btn btn-primary btn-block" disabled="@(Cart is null)">
+                                Proceed To Checkout
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    }
+}
+
 @section Scripts{
     <script>
         jQuery(document).ready(function () { 
@@ -110,9 +117,10 @@
                     //$('#cart-alert').load(document.URL + ' #cart-alert');
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
+                    location.href = "/Cart/Index";
                     console.log(jqXHR.status);
                })
-           })
+           }) 
 
            //selected the item quantity inside select
             let Qty;
@@ -133,6 +141,7 @@
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     console.log(jqXHR.status);
+                    location.href = "/Cart/Index";
                 })
                
             })

@@ -2,6 +2,7 @@
 using FoodDeliveryWebApp.Models;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
+using System.Data;
 
 namespace FoodDeliveryWebApp.Services
 {
@@ -16,11 +17,56 @@ namespace FoodDeliveryWebApp.Services
         public static OrderItem GetByID(long Id) => _context.OrderItems.FirstOrDefault(o => o.Id == Id);
 
         public static async Task<List<OrderItem>> GetAll() => await _context.OrderItems.ToListAsync();
+
+        public static async Task Add(OrderItem orderItem)
+        {
+            _context.Add(orderItem);
+            await _context.SaveChangesAsync();
+        }
         public static async Task Update(OrderItem orderItem)
         {
             _context.Entry(orderItem).State = EntityState.Modified;
             _context.Update(orderItem);
             await _context.SaveChangesAsync();
+        }
+
+        public static async Task Remove(OrderItem orderItem)
+        {
+            _context.OrderItems.Remove(orderItem);
+            await _context.SaveChangesAsync();
+        }
+        public static async Task AddOrderItem(Food food, long cartId, int qty)
+        {
+           
+            var OrderItem = _context.OrderItems.FirstOrDefault(o => o.ProductId == food.Id && o.CartId == cartId);
+            try
+            {
+                if (OrderItem is null)
+                {
+                    await Add(new OrderItem()
+                    {
+                        Title = food.Title,
+                        CartId = cartId,
+                        Qty = qty,
+                        ImageURL = food.ImageURL,
+                        Price = food.Price,
+                        ProductId = food.Id,
+                        CountInStock = food.CountInStock
+                    });
+                }
+                else
+                {
+                    OrderItem.Qty = qty;
+                    OrderItem.CountInStock = food.CountInStock;
+                    await Update(OrderItem);
+                }
+            }
+            catch (Exception ex)
+            {                
+                throw;
+            }
+
+
         }
     }
 }
