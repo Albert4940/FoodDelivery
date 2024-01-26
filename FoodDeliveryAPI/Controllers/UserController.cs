@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using BC = BCrypt.Net.BCrypt;
 
 namespace FoodDeliveryAPI.Controllers
 {
@@ -19,6 +20,12 @@ namespace FoodDeliveryAPI.Controllers
             UserService.InitializeContext(context);
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            return Ok(await UserService.GetAll());
+        }
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register(User userRegister)
@@ -36,6 +43,8 @@ namespace FoodDeliveryAPI.Controllers
                 if (userExists)
                     return Conflict("User Already exist !");
 
+                user.Password = BC.HashPassword(user.Password, 12);
+
                 await UserService.Add(userRegister);
                 return Ok("User Created");
             }
@@ -52,13 +61,22 @@ namespace FoodDeliveryAPI.Controllers
         {
             var user = await UserService.Authenticate(userLogin);
 
-            if (user != null)
+            if (user == null || !BC.Verify(userLogin.Password, user.Password))
+            {
+                return NotFound("User not found");
+            }
+            else
+            {
+                var token = TokenService.Generate(user, _configuration);
+                return Ok(token);
+            }
+            /*if (user != null )
             {
                 var token = TokenService.Generate(user, _configuration);
                 return Ok(token);
             }
 
-            return NotFound("User not found");
+            return NotFound("User not found");*/
         }
 
         //user/auth

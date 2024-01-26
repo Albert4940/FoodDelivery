@@ -89,7 +89,7 @@ namespace FoodDeliveryWebApp.Services
                         }
                         else if (response.StatusCode == HttpStatusCode.NotFound)
                         {
-                            throw new Exception("Incorrect UserId or Password!");
+                            throw new Exception("Incorrect User or Password!");
                         }
                         else
                         {
