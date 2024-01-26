@@ -24,6 +24,7 @@ namespace FoodDeliveryAPI.Services
         public static async Task<User> Get(User user) => await _context.users.FirstOrDefaultAsync(u => u.UserName == user.UserName && u.Password == user.Password);
         public static async Task<User> GetByID(string userID) => await _context.users.AsNoTracking().FirstOrDefaultAsync(u => u.Id.Equals(userID));
 
+        public static async Task<List<User>> GetAll() => await _context.users.ToListAsync();
         public static async Task Add(User user) {
             //That generate by database    
                 user.Id = null;
@@ -33,8 +34,9 @@ namespace FoodDeliveryAPI.Services
 
         public static async Task<User> Authenticate(User user)
         {
-            return await UserService.Get(user);
-            // return await _context.users.FirstOrDefaultAsync(u => u.UserName == user.UserName && u.Password == user.Password);
+            // return await UserService.Get(user);
+            //return await _context.users.SingleOrDefault(x => x.UserName == user.UserName);
+             return await _context.users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
             // var currentUser = UserService.Get(user);
             /* var user = await _context.users
                   .FirstOrDefaultAsync(m => m.Id == id);

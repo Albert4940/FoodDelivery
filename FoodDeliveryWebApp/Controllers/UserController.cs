@@ -60,7 +60,8 @@ namespace FoodDeliveryWebApp.Controllers
         {
             try
             {
-                var data = await UserService.Register(user);                
+                var data = await UserService.Register(user);
+                TempData["Result"] = "User Register successfully!";
                 return Redirect("/User/Index");
             }
             catch(Exception ex)
