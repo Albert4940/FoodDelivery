@@ -38,6 +38,22 @@ namespace FoodDeliveryAPI.Services
             await _context.SaveChangesAsync();
 
         }
+
+        public static async Task<bool> ComapreQty(OrderItem foodOrder)
+        {
+            var food = await GetByID(foodOrder.ProductId);
+
+            if (food != null)
+            {
+                if (food.CountInStock >= foodOrder.Qty)
+                {
+                    return true;
+                }
+                else throw new Exception($"Insufficient Stock {food.Title} - {food.CountInStock}");
+            }
+            else throw new Exception($"Food Order Not Found ");
+            
+        }
         public static async Task<bool> CheckIfFoodExists(Food food) => await Get(food) != null;
 
         public static async Task<bool> CheckIfFoodExistsForUpdate(Food food)

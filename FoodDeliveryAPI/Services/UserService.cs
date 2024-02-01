@@ -2,6 +2,7 @@
 using FoodDeliveryAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Claims;
 
 namespace FoodDeliveryAPI.Services
 {
@@ -47,5 +48,20 @@ namespace FoodDeliveryAPI.Services
         }
 
         public static async Task<bool> CheckIfUserExists (User user) =>  await UserService.Get(user) != null;
+        /*public static User GetCurrent()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            if (identity != null)
+            {
+                var userClaims = identity.Claims;
+
+                return new User
+                {
+                    UserName = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
+                };
+            }
+            return null;
+        }*/
     }
 }

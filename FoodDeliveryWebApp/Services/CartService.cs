@@ -11,6 +11,7 @@ namespace FoodDeliveryWebApp.Services
         public static void InintializeContextDb( FoodDeliveryWebAppDbContext context)
         {
             _context = context;
+
         }
 
         public static Cart Get() => _context.Carts.FirstOrDefault();

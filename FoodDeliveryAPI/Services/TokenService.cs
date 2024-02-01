@@ -16,6 +16,7 @@ namespace FoodDeliveryAPI.Services
             var claims = new[]
             {
                  new Claim(ClaimTypes.NameIdentifier,user.UserName),
+                 new Claim(ClaimTypes.PrimarySid,user.Id)
              };
 
             var token = new JwtSecurityToken(configuration["Jwt:Issuer"],

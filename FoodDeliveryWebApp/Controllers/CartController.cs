@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Net;
+using System.Text;
 
 namespace FoodDeliveryWebApp.Controllers
 {
@@ -218,6 +220,49 @@ namespace FoodDeliveryWebApp.Controllers
                 return new JsonResult(new { error = ex.Message.ToString() });
             }
 
+        }
+
+        public async Task<IActionResult> Checkout()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                //Check Bind 
+               
+                StringContent stringContent = new StringContent(JsonConvert.SerializeObject(new { cart = CartService.Get(),orderItems=await OrderItemService.GetAll()}), Encoding.UTF8, "application/json");;
+
+                try
+                {
+                    using (var response = await httpClient.PostAsync("https://localhost:7110/api/order/", stringContent))
+                    {
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            string result = await response.Content.ReadAsStringAsync();
+                          //  Console.WriteLine(result);
+                            
+                        }
+                        else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        {
+                            throw new Exception("User Unauthorized!");
+                        }
+                        else if (response.StatusCode == HttpStatusCode.Conflict)
+                        {
+                            throw new Exception($"Error: {response.StatusCode.ToString()} - User already exists.");
+                        }
+                        else
+                        {
+                            throw new Exception($"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}");
+                        }
+
+
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    throw;
+                }
+            }
+            return Redirect("~/Cart/Index");
         }
 
         // GET: CartController/Details/5

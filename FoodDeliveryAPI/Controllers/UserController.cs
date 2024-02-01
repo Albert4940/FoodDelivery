@@ -100,6 +100,7 @@ namespace FoodDeliveryAPI.Controllers
 
                 return new User
                 {
+                    Id = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.PrimarySid)?.Value,
                     UserName = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
                 };
             }

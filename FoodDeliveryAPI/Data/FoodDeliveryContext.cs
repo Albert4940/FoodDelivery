@@ -1,4 +1,5 @@
 ﻿using FoodDeliveryAPI.Models;
+using FoodDeliveryWebApp.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDeliveryAPI.Data
@@ -11,6 +12,7 @@ namespace FoodDeliveryAPI.Data
         public DbSet<Category>  categories{ get; set; } = null;
         public DbSet<Food> foods { get; set; } = null;
 
+        public DbSet<Order> order { get; set; } = null;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Category>()
@@ -36,6 +38,12 @@ namespace FoodDeliveryAPI.Data
             .HasOne<User>()
             .WithMany()
             .HasForeignKey(f => f.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(o => o.UserId)
             .OnDelete(DeleteBehavior.Restrict);
         }
     }
