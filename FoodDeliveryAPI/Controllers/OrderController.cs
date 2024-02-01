@@ -18,13 +18,23 @@ namespace FoodDeliveryAPI.Controllers
         public OrderController(FoodDeliveryContext context)
         {
             OrderService.InitializeContext(context);
+            OrderItemService.InitializeContext(context);
             FoodService.InitializeContext(context);
         }
         // GET: api/<OrderController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        [Authorize]
+        public async Task<ActionResult<List<Order>>> Get()
         {
-            return new string[] { "value1", "value2" };
+            var CurrentUser = GetCurrent();
+
+            var Orders = await OrderService.GetAll();
+            var OrdersUser = Orders.FindAll(o => o.UserId == CurrentUser.Id);
+
+            return Ok(new {
+                Order = OrdersUser,
+                OrderItems = await OrderItemService.GetAll()
+            });
         }
 
         // GET api/<OrderController>/5
@@ -57,6 +67,11 @@ namespace FoodDeliveryAPI.Controllers
                 }
                 
                 var OrderCreated = await OrderService.Add(Order);
+                /*Address.UserId = CurrentUser.Id;
+                var AddressResult = await AddressService.Add(Address);*/
+
+                //await OrderItemService.AddRange(OrderItems,OrderCreated.Id);
+
                 return Ok(OrderCreated);
             }
            

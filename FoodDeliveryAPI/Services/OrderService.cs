@@ -19,6 +19,10 @@ namespace FoodDeliveryAPI.Services
             return order;
         }
 
+        public static async Task<List<Order>> GetAll()
+        {
+            return await _context.orders.ToListAsync();
+        }
         public static async Task<decimal> GetTotalPrice(List<OrderItem> OrderItems)
         {
             decimal total = 0;

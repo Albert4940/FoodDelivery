@@ -12,7 +12,9 @@ namespace FoodDeliveryAPI.Data
         public DbSet<Category>  categories{ get; set; } = null;
         public DbSet<Food> foods { get; set; } = null;
 
-        public DbSet<Order> order { get; set; } = null;
+        public DbSet<Order> orders { get; set; } = null;
+
+        public DbSet<OrderItem> order_items { get; set; } = null;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Category>()
@@ -27,13 +29,11 @@ namespace FoodDeliveryAPI.Data
             modelBuilder.Entity<Food>()
             .HasIndex(f => f.Title)
             .IsUnique();
-
             modelBuilder.Entity<Food>()
             .HasOne<Category>()
             .WithMany()
             .HasForeignKey(f => f.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<Food>()
             .HasOne<User>()
             .WithMany()
@@ -44,6 +44,12 @@ namespace FoodDeliveryAPI.Data
             .HasOne<User>()
             .WithMany()
             .HasForeignKey(o => o.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderItem>()
+            .HasOne<Order>()
+            .WithMany()
+            .HasForeignKey(o => o.OrderId)
             .OnDelete(DeleteBehavior.Restrict);
         }
     }

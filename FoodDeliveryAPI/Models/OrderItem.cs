@@ -10,7 +10,7 @@
         public decimal Price { get; set; }
 
         public long ProductId { get; set; }
-        public long CartId {  get; set; }
+        public long OrderId {  get; set; }
         public long CountInStock { get; set; }
     }
 }
