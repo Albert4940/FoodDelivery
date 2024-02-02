@@ -84,27 +84,11 @@ namespace FoodDeliveryAPI.Controllers
         [Authorize]
         public async Task<IActionResult> AdminsEndPoint()
         {
-            var currentUser = GetCurrent();
+            var currentUser = UserService.GetCurrent(HttpContext);
             var res = $"Hi {currentUser.UserName}";
             // return new User { UserName = currentUser.UserName};
             return Ok(currentUser);
         }
 
-        private User GetCurrent()
-        {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-
-            if (identity != null)
-            {
-                var userClaims = identity.Claims;
-
-                return new User
-                {
-                    Id = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.PrimarySid)?.Value,
-                    UserName = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
-                };
-            }
-            return null;
-        }
     }
 }

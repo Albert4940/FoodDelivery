@@ -20,13 +20,15 @@ namespace FoodDeliveryAPI.Controllers
             OrderService.InitializeContext(context);
             OrderItemService.InitializeContext(context);
             FoodService.InitializeContext(context);
+            UserService.InitializeContext(context);
+            
         }
         // GET: api/<OrderController>
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<List<Order>>> Get()
         {
-            var CurrentUser = GetCurrent();
+            var CurrentUser = UserService.GetCurrent(HttpContext);
 
             var Orders = await OrderService.GetAll();
             var OrdersUser = Orders.FindAll(o => o.UserId == CurrentUser.Id);
@@ -49,55 +51,51 @@ namespace FoodDeliveryAPI.Controllers
         [Authorize]
         public async Task<ActionResult<Object>> Post(OrderRequest OrderRequest)
         {
-            var CurrentUser = GetCurrent();
-            if(CurrentUser != null) {
-                Order Order = OrderRequest.Order;
-                List<OrderItem> OrderItems = OrderRequest?.OrderItems;
-                ShippingAddress Address = OrderRequest.ShippingAddress;
-                //check is null
-
-                try
-                {
-                    Order.UserId = CurrentUser.Id;
-                    Order.TotalPrice = await OrderService.GetTotalPrice(OrderItems);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
-                
-                var OrderCreated = await OrderService.Add(Order);
-                /*Address.UserId = CurrentUser.Id;
-                var AddressResult = await AddressService.Add(Address);*/
-
-                //await OrderItemService.AddRange(OrderItems,OrderCreated.Id);
-
-                return Ok(OrderCreated);
-            }
-           
-
-
-            /*var AddressResult = await AddressService.Add(Address);
-            var OrderItemsResult = await OrderItemService.AddRange(OrderItems);*/
-            return Ok(CurrentUser);
-        }
-
-        private User GetCurrent()
-        {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-
-            if (identity != null)
+            try
             {
-                var userClaims = identity.Claims;
-
-                return new User
+                var CurrentUser = UserService.GetCurrent(HttpContext);
+                if (CurrentUser != null)
                 {
-                    Id = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.PrimarySid)?.Value,
-                    UserName = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
-                };
+                    Order Order = OrderRequest.Order;
+                    List<OrderItem> OrderItems = OrderRequest?.OrderItems;
+                    ShippingAddress Address = OrderRequest.ShippingAddress;
+                    Order OrderCreated = null;
+                    //check is null
+
+                    try
+                    {
+                        Order.UserId = CurrentUser.Id;
+                        Order.TotalPrice = await OrderService.GetTotalPrice(OrderItems);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
+
+                    try
+                    {
+                        OrderCreated = await OrderService.Add(Order);
+                        await OrderItemService.AddRange(OrderItems, OrderCreated.Id);
+                        /* Address.UserId = CurrentUser.Id;
+                         await AddressService.Add(Address);*/
+                    }
+                    catch (Exception ex)
+                    {
+                        await OrderService.Delete(OrderCreated);
+                        return BadRequest(ex.Message);
+                    }
+
+                    return Ok(OrderCreated);
+                }
             }
-            return null;
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return Ok();
         }
+
 
         // PUT api/<OrderController>/5
         [HttpPut("{id}")]

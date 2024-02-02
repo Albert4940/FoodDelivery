@@ -35,5 +35,11 @@ namespace FoodDeliveryAPI.Services
 
             return total;
         }
+
+        public static async Task Delete(Order order)
+        {
+            _context.orders.Remove(order);
+            await _context.SaveChangesAsync();
+        }
     }
 }

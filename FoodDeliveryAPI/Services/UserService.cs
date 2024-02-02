@@ -12,7 +12,6 @@ namespace FoodDeliveryAPI.Services
         Add Try exception
         public static void setDbContext(FoodDeliveryContext context) => _context = context;*/
         private static FoodDeliveryContext _context;
-
         // Method to initialize the context
         public static void InitializeContext(FoodDeliveryContext context)
         {
@@ -48,9 +47,10 @@ namespace FoodDeliveryAPI.Services
         }
 
         public static async Task<bool> CheckIfUserExists (User user) =>  await UserService.Get(user) != null;
-        /*public static User GetCurrent()
+        
+        public static User GetCurrent(HttpContext httpContext)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            var identity = httpContext.User.Identity as ClaimsIdentity;
 
             if (identity != null)
             {
@@ -58,10 +58,11 @@ namespace FoodDeliveryAPI.Services
 
                 return new User
                 {
+                    Id = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.PrimarySid)?.Value,
                     UserName = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
                 };
             }
             return null;
-        }*/
+        }
     }
 }

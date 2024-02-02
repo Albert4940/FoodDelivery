@@ -14,6 +14,9 @@ namespace FoodDeliveryAPI.Services
 
         public static async Task AddRange(List<OrderItem> OrderItems, long OrderId)
         {
+            if (OrderId == 0)
+                throw new Exception("OrderId null");
+
             foreach (var item in OrderItems)
             {
                 item.OrderId = OrderId;

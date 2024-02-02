@@ -10,8 +10,8 @@
         public decimal TotalPrice { get; set; }
 
         public string PaymentMethod { get; set; }
-        public bool IsPaid { get; set; }
-        public bool IsDelivered { get; set; }
+        public bool IsPaid { get; set; } = false;
+        public bool IsDelivered { get; set; } = false;
        // public 
     }
 }
