@@ -17,13 +17,59 @@ namespace FoodDeliveryWebApp.Controllers
             FoodService.InitailizeHttp();
             CartService.InintializeContextDb(context);
             OrderItemService.InintializeContextDb(context);
+            ShippingAddressService.InintializeContextDb(context);
         }
+
         // GET: OrderController
         public ActionResult Index()
         {
             return View();
         }
 
+        public IActionResult PaymentMethod()
+        {
+            var model = new Payment();
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult PaymentMethod(Payment model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Validate and process payment method data
+            TempData["Result"] = model.PaymentMethodSelected.ToString();
+            var method = new Payment();
+            return View(method);
+            //return RedirectToAction("Address");
+        }
+
+        /*public IActionResult Address()
+        {
+            var model = TempData["PaymentMethod"] as PaymentMethodViewModel;
+            if (model == null)
+            {
+                return RedirectToAction("PaymentMethod");
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Address(AddressViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Validate and process address data
+            // Once all steps are completed, finalize submission
+            return RedirectToAction("Finalize");
+        }*/
         // GET: OrderController/Details/5
         public ActionResult Details(int id)
         {
@@ -33,6 +79,19 @@ namespace FoodDeliveryWebApp.Controllers
         // GET: OrderController/Create
         public ActionResult Create()
         {
+            try {
+                var token = HttpContext.Session.GetString("JWToken");
+                if (token is null || token == "")
+                    return Redirect("/User/Index?redirect=Order");
+
+                var Address = ShippingAddressService.Get();
+                return View(new CartViewModel { ShippingAddress = Address });
+
+            }catch(Exception ex)
+            {
+                TempData["Error"] = ex.Message.ToString();
+            }
+
             return View();
         }
 
@@ -41,6 +100,15 @@ namespace FoodDeliveryWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(CartViewModel Order)
         {
+            try
+            {
+                await ShippingAddressService.Add(Order.ShippingAddress);
+            }catch(Exception ex)
+            {
+                TempData["Error"] = ex.Message.ToString();
+                return View();
+            }
+
             using (var httpClient = new HttpClient())
             {
                 // Get token from session
@@ -66,7 +134,7 @@ namespace FoodDeliveryWebApp.Controllers
                         if (response.IsSuccessStatusCode)
                         {
                             string result = await response.Content.ReadAsStringAsync();
-                            TempData["Result"] = result.ToString();
+                            return RedirectToAction(nameof(Index));
                             //  Console.WriteLine(result);
                         }
                         else if (response.StatusCode == HttpStatusCode.Unauthorized)

@@ -11,7 +11,7 @@ namespace FoodDeliveryWebApp.Data
         }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
-
+        public DbSet<ShippingAddress> ShippingAddresses { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<OrderItem>()

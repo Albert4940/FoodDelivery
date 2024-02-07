@@ -1,0 +1,41 @@
+﻿@model FoodDeliveryWebApp.Models.Payment;
+@{
+    ViewData["Title"] = "Payment Method Page";
+   
+}
+<h1>Order Page</h1>
+@{
+    if (TempData["Result"] != null && TempData["Result"] != "")
+    {
+        <div class="alert alert-info" role="alert">
+            @TempData["Result"]
+        </div>
+    }
+    if (TempData["Error"] != null && TempData["Error"] != "")
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+}
+<form asp-action="PaymentMethod" asp-controller="Order">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-3 ">
+                <div class="card-header">
+                    Payment method
+                </div>
+                <div class="card-body">
+                    @foreach (var item in Model.PaymentMethodes)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="PaymentMethodSelected" value="@item.PaymentMethod" />
+                            @item.PaymentMethod
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="submit" value="Continue" />
+</form>

@@ -1,0 +1,27 @@
+﻿@model FoodDeliveryWebApp.Models.CartViewModel;
+@{
+    ViewData["Title"] = "Order Page";
+
+    var Cart = Model?.cart;
+    var Address = Model?.ShippingAddress;
+}
+<h1>Order Page</h1>
+@{
+    if (TempData["Result"] != null && TempData["Result"] != "")
+    {
+        <div class="alert alert-info" role="alert">
+            @TempData["Result"]
+        </div>
+    }
+    if (TempData["Error"] != null && TempData["Error"] != "")
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+    else
+    {
+        @Html.Partial("_PaymentMethod", Model.ShippingAddress)
+
+    }
+}
