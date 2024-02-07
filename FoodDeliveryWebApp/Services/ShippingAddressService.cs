@@ -1,5 +1,6 @@
 ﻿using FoodDeliveryWebApp.Data;
 using FoodDeliveryWebApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodDeliveryWebApp.Services
 {
@@ -13,12 +14,20 @@ namespace FoodDeliveryWebApp.Services
 
         }
 
-        public static ShippingAddress Get() => _context.ShippingAddresses.FirstOrDefault();
+        public static ShippingAddress Get() => _context.ShippingAddresses.AsNoTracking().FirstOrDefault();
 
         public static async Task Add(ShippingAddress ShippingAddress)
         {
             ShippingAddress.UserId = "String";
             _context.Add(ShippingAddress);
+            await _context.SaveChangesAsync();
+        }
+
+        public static async Task Update(ShippingAddress entity)
+        {
+            entity.UserId = "String";
+            _context.Entry(entity).State = EntityState.Modified;
+            _context.Update(entity);
             await _context.SaveChangesAsync();
         }
     }
