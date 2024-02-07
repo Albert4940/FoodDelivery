@@ -1,0 +1,48 @@
+﻿@model FoodDeliveryWebApp.Models.ShippingAddress;
+@{
+    ViewData["Title"] = "Address Shipping  Page";
+    
+}
+<h1>Payment Method Page</h1> 
+@{
+    if (TempData["Result"] != null && TempData["Result"] != "")
+    {
+        <div class="alert alert-info" role="alert">
+            @TempData["Result"]
+        </div>
+    }
+    if (TempData["Error"] != null && TempData["Error"] != "")
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+}
+<form asp-action="Address" asp-controller="Order">
+    <input type="hidden" asp-for="Id" value="@Model?.Id"/>
+    <div class="card mb-3">
+        <div class="card-header">
+            Shipping Address
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label">Address</label>
+                <input type="text" class="form-control" asp-for="Address" placeholder="323, Rue Jhon Doe">
+            </div>
+            <div class="mb-3">
+                <label asp-for="City" class="form-label">City</label>
+                <input type="text" class="form-control" asp-for="City" placeholder="Quebec">
+            </div>
+            <div class="mb-3">
+                <label asp-for="PostalCode" class="form-label">PostalCode</label>
+                <input type="text" class="form-control" asp-for="PostalCode" placeholder="Z0S1S0">
+            </div>
+            <div class="mb-3">
+                <label asp-for="Country" class="form-label">County</label>
+                <input type="text" class="form-control" asp-for="Country" placeholder="Canada">
+            </div>
+        </div>
+    </div>
+    <a class="" asp-controller="Order" asp-action="PaymentMethod">Prev</a>
+    <input type="submit" value="Continue" />
+</form>

@@ -3,7 +3,7 @@
     ViewData["Title"] = "Payment Method Page";
    
 }
-<h1>Order Page</h1>
+<h1>Payment Method Page</h1>
 @{
     if (TempData["Result"] != null && TempData["Result"] != "")
     {
@@ -11,6 +11,14 @@
             @TempData["Result"]
         </div>
     }
+
+    if (TempData["PaymentMethod"] != null && TempData["PaymentMethod"] != "")
+    {
+        <div class="alert alert-info" role="alert">
+            Payment @TempData["PaymentMethod"]
+        </div>
+    }
+
     if (TempData["Error"] != null && TempData["Error"] != "")
     {
         <div class="alert alert-danger" role="alert">
@@ -29,8 +37,8 @@
                     @foreach (var item in Model.PaymentMethodes)
                     {
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" asp-for="PaymentMethodSelected" value="@item.PaymentMethod" />
-                            @item.PaymentMethod
+                            <input class="form-check-input" type="radio" asp-for="PaymentMethodSelected" value="@item" />
+                            @item
                         </div>
                     }
                 </div>
