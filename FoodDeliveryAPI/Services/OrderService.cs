@@ -14,6 +14,8 @@ namespace FoodDeliveryAPI.Services
         }
         public static async Task<Order> Add(Order order)
         {
+            order.Id = 0;
+
             _context.Add(order);
             await _context.SaveChangesAsync();
             return order;

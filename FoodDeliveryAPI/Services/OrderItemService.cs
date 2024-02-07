@@ -19,8 +19,10 @@ namespace FoodDeliveryAPI.Services
 
             foreach (var item in OrderItems)
             {
+                item.Id = 0;
                 item.OrderId = OrderId;
             }
+
             _context.AddRange(OrderItems);
             _context.SaveChangesAsync();
         }
