@@ -41,9 +41,10 @@ namespace FoodDeliveryAPI.Controllers
 
         // GET api/<OrderController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        [Authorize]
+        public async Task<ActionResult> Get(long id)
         {
-            return "value";
+            return Ok();
         }
 
         // POST api/<OrderController>
@@ -61,6 +62,7 @@ namespace FoodDeliveryAPI.Controllers
                     List<OrderItem> OrderItems = OrderRequest?.OrderItems;
                     ShippingAddress Address = OrderRequest.ShippingAddress;
                     Order OrderCreated = null;
+                    
                     //check is null
 
                     try
@@ -77,6 +79,8 @@ namespace FoodDeliveryAPI.Controllers
                     {
                         OrderCreated = await OrderService.Add(Order);
                         await OrderItemService.AddRange(OrderItems, OrderCreated.Id);
+
+                        await FoodService.UpdateCountInStock(OrderItems);
                         /* Address.UserId = CurrentUser.Id;
                          await AddressService.Add(Address);*/
                     }
