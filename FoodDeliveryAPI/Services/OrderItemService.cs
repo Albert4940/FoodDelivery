@@ -31,5 +31,8 @@ namespace FoodDeliveryAPI.Services
         {
             return await _context.order_items.ToListAsync();
         }
+
+
+        public static async Task<List<OrderItem>> GetByOrderID(long Id) => await _context.order_items.Where(o => o.OrderId == Id).ToListAsync();
     }
 }

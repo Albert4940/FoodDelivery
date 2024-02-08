@@ -43,24 +43,17 @@ namespace FoodDeliveryAPI.Services
 
             
             var records = _context.foods.Where(f => FoodIds.Contains(f.Id)).ToList();
-            /*if (records.Count != FoodIds.Count)
-                throw new Exception("Some food missing");*/
-            //records.ForEach(r => { });
-            //return the food id is missing
+            int countRecords = records == null ? 0 : records.Count;
 
-            /*records.ForEach(f =>
-            {
-                var qty = f.CountInStock - ;
-                f.CountInStock = 
-            })*/
+            //return the food id is missing
+            if (countRecords != FoodIds.Length)
+                throw new Exception("Some food missing");
            
             for (int i = 0; i < OrderItems.Count; i++)
             {
                 var qty = records[i].CountInStock - OrderItems[i].Qty;
                 records[i].CountInStock = qty;
             }
-
-            // return records;
             _context.SaveChanges();
         }
 

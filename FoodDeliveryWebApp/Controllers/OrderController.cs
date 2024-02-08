@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -25,7 +26,14 @@ namespace FoodDeliveryWebApp.Controllers
         // GET: OrderController
         public ActionResult Index(long OrderId = 0)
         {
-            /*HttpClient client = new HttpClient();
+           
+            HttpClient client = new HttpClient();
+            var token = HttpContext.Session.GetString("JWToken");
+            
+
+            // Add token to request headers
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             try
             {
                 using (var response = client.GetAsync("https://localhost:7110/api/order/" + OrderId).Result)
@@ -35,13 +43,14 @@ namespace FoodDeliveryWebApp.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         string data = response.Content.ReadAsStringAsync().Result;
-                        var Cart = JsonConvert.DeserializeObject<Cart>(data);
+                        var CartViewModel = JsonConvert.DeserializeObject<CartViewModel>(data);
+                        TempData["Result"] = $"{CartViewModel.cart.Id} - {CartViewModel.OrderItems.Count}";
                     }
                     else
                     {
                         //Add throw Exception
                         //throw new Exception($"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}");
-                        TempData["Error"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                        TempData["Error"] = $"Error iNDEX: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
                     }
                 }
 
@@ -52,8 +61,8 @@ namespace FoodDeliveryWebApp.Controllers
                 //Add throw Exception
                 //throw;
                 //Redirect("~Menu/Index");
-            }*/
-            TempData["Result"] = OrderId;
+            }
+            
             return View();
         }
 
@@ -204,7 +213,8 @@ namespace FoodDeliveryWebApp.Controllers
                             string result = await response.Content.ReadAsStringAsync();
                             var OrderResult = JsonConvert.DeserializeObject<Cart>(result);
 
-                            return RedirectToAction("Index", new { OrderId = OrderResult.Id});
+                            //var OrderResult = JsonConvert.DeserializeObject<CartViewModel>(result);
+                            return RedirectToAction("Index", OrderResult.Id);
                             //  Console.WriteLine(result);
                         }
                         else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -218,7 +228,8 @@ namespace FoodDeliveryWebApp.Controllers
                         else
                         {
                             // throw new Exception($"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}");
-                            TempData["Error"] = $"Error: {response.ToString()} - {response.ReasonPhrase}";
+                            TempData["Error"] = $"Error Create method: {response.ToString()} - {response.ReasonPhrase}";
+                            return View();
                         }
                     }
                 }

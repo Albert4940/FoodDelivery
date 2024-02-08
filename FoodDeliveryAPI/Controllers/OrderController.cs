@@ -44,7 +44,13 @@ namespace FoodDeliveryAPI.Controllers
         [Authorize]
         public async Task<ActionResult> Get(long id)
         {
-            return Ok();
+
+            var Order = await OrderService.GetByID(id);
+            var OrderItems = await OrderItemService.GetByOrderID(id);
+             if (Order is null)
+                  return NotFound();
+
+             return Ok(new {cart = Order,OrderItems});            
         }
 
         // POST api/<OrderController>
@@ -62,8 +68,10 @@ namespace FoodDeliveryAPI.Controllers
                     List<OrderItem> OrderItems = OrderRequest?.OrderItems;
                     ShippingAddress Address = OrderRequest.ShippingAddress;
                     Order OrderCreated = null;
-                    
+
                     //check is null
+                    if (OrderItems is null || OrderItems.Count == 0)
+                        return BadRequest();
 
                     try
                     {
@@ -80,7 +88,8 @@ namespace FoodDeliveryAPI.Controllers
                         OrderCreated = await OrderService.Add(Order);
                         await OrderItemService.AddRange(OrderItems, OrderCreated.Id);
 
-                        await FoodService.UpdateCountInStock(OrderItems);
+                        //Sawait FoodService.UpdateCountInStock(OrderItems);
+
                         /* Address.UserId = CurrentUser.Id;
                          await AddressService.Add(Address);*/
                     }
@@ -91,6 +100,7 @@ namespace FoodDeliveryAPI.Controllers
                     }
 
                     return Ok(OrderCreated);
+                    //return Ok(await Get(OrderCreated.Id));
                 }
             }
             catch(Exception ex)
@@ -101,7 +111,23 @@ namespace FoodDeliveryAPI.Controllers
             return Ok();
         }
 
+        [HttpPost("AddRange")]
+        public async Task<ActionResult> AddRange(List<OrderItem> orders)
+        {
+          
 
+                    //try
+                    //{
+                        //OrderCreated = await OrderService.Add(Order);
+                        await OrderItemService.AddRange(orders, 35);
+                        return Ok(orders);
+                        //Sawait FoodService.UpdateCountInStock(OrderItems);
+
+                        /* Address.UserId = CurrentUser.Id;
+                         await AddressService.Add(Address);*/
+                    
+
+        }
         // PUT api/<OrderController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
