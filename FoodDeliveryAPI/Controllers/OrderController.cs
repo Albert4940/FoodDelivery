@@ -88,7 +88,7 @@ namespace FoodDeliveryAPI.Controllers
                         OrderCreated = await OrderService.Add(Order);
                         await OrderItemService.AddRange(OrderItems, OrderCreated.Id);
 
-                        //Sawait FoodService.UpdateCountInStock(OrderItems);
+                        await FoodService.UpdateCountInStock(OrderItems);
 
                         /* Address.UserId = CurrentUser.Id;
                          await AddressService.Add(Address);*/
@@ -119,7 +119,7 @@ namespace FoodDeliveryAPI.Controllers
                     //try
                     //{
                         //OrderCreated = await OrderService.Add(Order);
-                        await OrderItemService.AddRange(orders, 35);
+                        await OrderItemService.AddRange(orders, 40);
                         return Ok(orders);
                         //Sawait FoodService.UpdateCountInStock(OrderItems);
 

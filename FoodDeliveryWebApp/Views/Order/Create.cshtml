@@ -13,8 +13,7 @@
         <div class="alert alert-info" role="alert">
             @TempData["Result"]
         </div>
-    }
-    if (TempData["Error"] != null && TempData["Error"] != "")
+    } else if (TempData["Error"] != null && TempData["Error"] != "")
     {
         <div class="alert alert-danger" role="alert">
             @TempData["Error"]

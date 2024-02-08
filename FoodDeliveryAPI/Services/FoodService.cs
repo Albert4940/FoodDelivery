@@ -54,7 +54,7 @@ namespace FoodDeliveryAPI.Services
                 var qty = records[i].CountInStock - OrderItems[i].Qty;
                 records[i].CountInStock = qty;
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public static async Task Delete(Food food)

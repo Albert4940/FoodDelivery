@@ -26,7 +26,7 @@ namespace FoodDeliveryWebApp.Controllers
         // GET: OrderController
         public ActionResult Index(long OrderId = 0)
         {
-           
+            //TempData["Result"] = OrderId.ToString();
             HttpClient client = new HttpClient();
             var token = HttpContext.Session.GetString("JWToken");
             
@@ -44,20 +44,21 @@ namespace FoodDeliveryWebApp.Controllers
                     {
                         string data = response.Content.ReadAsStringAsync().Result;
                         var CartViewModel = JsonConvert.DeserializeObject<CartViewModel>(data);
+                        return View(CartViewModel);
                         TempData["Result"] = $"{CartViewModel.cart.Id} - {CartViewModel.OrderItems.Count}";
                     }
                     else
                     {
                         //Add throw Exception
                         //throw new Exception($"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}");
-                        TempData["Error"] = $"Error iNDEX: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                        TempData["Error"] = $"Error INDEX: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
                     }
                 }
 
             }
             catch (HttpRequestException ex)
             {
-                TempData["error"] = $"Error: {ex.Message}";
+                TempData["error"] = $"Error Index: {ex.Message}";
                 //Add throw Exception
                 //throw;
                 //Redirect("~Menu/Index");
@@ -211,10 +212,11 @@ namespace FoodDeliveryWebApp.Controllers
                         if (response.IsSuccessStatusCode)
                         {
                             string result = await response.Content.ReadAsStringAsync();
-                            var OrderResult = JsonConvert.DeserializeObject<Cart>(result);
-
+                             var OrderResult = JsonConvert.DeserializeObject<Cart>(result);
+                            //TempData["Result"] = OrderResult.Id.ToString();
+                            //return View();
                             //var OrderResult = JsonConvert.DeserializeObject<CartViewModel>(result);
-                            return RedirectToAction("Index", OrderResult.Id);
+                            return RedirectToAction("Index", new { OrderId = OrderResult.Id });
                             //  Console.WriteLine(result);
                         }
                         else if (response.StatusCode == HttpStatusCode.Unauthorized)

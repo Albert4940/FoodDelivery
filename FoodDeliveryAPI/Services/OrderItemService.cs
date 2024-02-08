@@ -23,8 +23,16 @@ namespace FoodDeliveryAPI.Services
                 item.OrderId = OrderId;
             }
 
-            _context.AddRange(OrderItems);
-            _context.SaveChangesAsync();
+            try
+            {
+                _context.AddRange(OrderItems);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+
         }
 
         public static async Task<List<OrderItem>> GetAll()
