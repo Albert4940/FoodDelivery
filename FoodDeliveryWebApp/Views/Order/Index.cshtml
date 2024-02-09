@@ -4,8 +4,9 @@
 
     var Cart = Model?.cart;
     var Address = Model?.ShippingAddress;
+    var OrderItems = Model?.OrderItems;
 }
-<h1>Order Page</h1>
+<h1>OrderScreen : @Cart.Id</h1>
 @{
     if (TempData["Result"] != null && TempData["Result"] != "")
     {
@@ -21,78 +22,96 @@
     }
     else
     {
-        <form asp-action="Create" asp-controller="Order">
-            <div class="row">
-               <div class="col-8">
-                    <div class="card mb-3 ">
-                       <div class="card-header">
-                            Payment method
-                       </div>
-                       <div class="card-body">
-                            <div class="form-check">
-                               <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked>
-                               <label class="form-check-label" for="flexRadioDefault1">
-                                        PayPal
-                               </label>
-                             </div>
-                       </div>
-                   </div>
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            Shipping Address
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label asp-for="ShippingAddress.Address" class="form-label">Address</label>
-                                <input type="text" class="form-control" asp-for="ShippingAddress.Address" placeholder="323, Rue Jhon Doe">
-                            </div>
-                            <div class="mb-3">
-                                <label asp-for="ShippingAddress.City" class="form-label">City</label>
-                                <input type="text" class="form-control" asp-for="ShippingAddress.City" placeholder="Quebec">
-                            </div>
-                            <div class="mb-3">
-                                <label asp-for="ShippingAddress.PostalCode" class="form-label">PostalCode</label>
-                                <input type="text" class="form-control" asp-for="ShippingAddress.PostalCode" placeholder="Z0S1S0">
-                            </div>
-                            <div class="mb-3">
-                                <label asp-for="ShippingAddress.Country" class="form-label">County</label>
-                                <input type="text" class="form-control" asp-for="ShippingAddress.Country" placeholder="Canada">
-                            </div>
-                        </div>
-                    </div>
-               </div>
-               <div class="col-4">
-                   <div class="card">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <h2>Order Summary</h2>
-                                <span id="total-price"></span>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="row">
-                                    <div class="col">Items</div>
-                                    <div class="col">$45</div>
+        <div class="row">
+            <div class="col-8">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <h2>Shipping</h2>
+                        <p>
+                            <strong>Name: </strong>
+                        </p>
+                        <p>
+                            <strong>Address: </strong>
+                            @Address.Address, @Address.City, 
+                            @Address.PostalCode,
+                            @Address.Country
+                        </p>
+                    </li>
+
+                    <li class="list-group-item">
+                        <h2>Payment Method</h2>
+                        <p>
+                            <strong>Method: </strong>
+                            @TempData["PaymentMethod"]
+                        </p>
+                    </li>
+                    <li class="list-group-item">
+                        <h2>Order Items</h2>
+                        @{
+                            if (OrderItems is null || OrderItems.Count == 0)
+                            {
+                                <div class="alert alert-info" role="alert">
+                                    Order is empty
                                 </div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="row">
-                                    <div class="col">Tax</div>
-                                    <div class="col">$45</div>
-                                </div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="row">
-                                    <div class="col">Total</div>
-                                    <!--<div class="col">@(Cart is null ? "0.00" : $"{Cart.TotalPrice:N2}")</div>-->
-                                </div>
-                            </li>
-                            <li class="list-group-item">
-                                <input type="submit" class="btn btn-primary btn-block" value="Pay Order"/>                                  
-                            </li>
-                        </ul>
-                   </div>
-               </div>
+                            }
+                            else
+                            {
+                                <ul class="list-group">
+                                    @foreach (var item in OrderItems)
+                                    {
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-1">
+                                                    <img src="@Url.Content("~" + item.ImageURL)" />
+                                                </div>
+                                                <div class="col">
+                                                    @item.Title
+                                                </div>
+                                                <div class="col-4">
+                                                    @item.Qty X @item.Price = $ @(item.Qty * (item.Price * 100) / 100)
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        }
+                    </li>
+                </ul>
             </div>
-        </form>
+            <div class="col-4">
+                <div class="card">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <h2>Order Summary</h2>                            
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col">Items</div>
+                                <div class="col">$@($"{Cart.ItemsPrice:N2}")</div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col">Tax</div>
+                                <div class="col">$@Cart.TaxPrice</div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col">Shipping</div>
+                                <div class="col">$@Cart.ShippingPrice</div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col">Total</div>
+                                <div class="col">@(Cart is null ? "0.00" : $"{Cart.TotalPrice:N2}")</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     }
 }
