@@ -21,6 +21,7 @@ namespace FoodDeliveryAPI.Services
             return order;
         }
 
+        public static async Task<Order> GetByID(long Id) => await _context.orders.AsNoTracking().FirstOrDefaultAsync(o => o.Id == Id);
         public static async Task<List<Order>> GetAll()
         {
             return await _context.orders.ToListAsync();

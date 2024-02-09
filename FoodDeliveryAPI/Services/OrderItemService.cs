@@ -23,13 +23,24 @@ namespace FoodDeliveryAPI.Services
                 item.OrderId = OrderId;
             }
 
-            _context.AddRange(OrderItems);
-            _context.SaveChangesAsync();
+            try
+            {
+                _context.AddRange(OrderItems);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+
         }
 
         public static async Task<List<OrderItem>> GetAll()
         {
             return await _context.order_items.ToListAsync();
         }
+
+
+        public static async Task<List<OrderItem>> GetByOrderID(long Id) => await _context.order_items.Where(o => o.OrderId == Id).ToListAsync();
     }
 }

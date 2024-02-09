@@ -32,6 +32,31 @@ namespace FoodDeliveryAPI.Services
             await _context.SaveChangesAsync();
         }
 
+        public static async Task UpdateCountInStock(List<OrderItem> OrderItems)
+        {
+            long[] FoodIds = new long[OrderItems.Count];
+
+            for(int i = 0; i < OrderItems.Count; i++)
+            {
+                FoodIds[i] = OrderItems[i].ProductId;
+            }
+
+            
+            var records = _context.foods.Where(f => FoodIds.Contains(f.Id)).ToList();
+            int countRecords = records == null ? 0 : records.Count;
+
+            //return the food id is missing
+            if (countRecords != FoodIds.Length)
+                throw new Exception("Some food missing");
+           
+            for (int i = 0; i < OrderItems.Count; i++)
+            {
+                var qty = records[i].CountInStock - OrderItems[i].Qty;
+                records[i].CountInStock = qty;
+            }
+            await _context.SaveChangesAsync();
+        }
+
         public static async Task Delete(Food food)
         {
             _context.foods.Remove(food);
