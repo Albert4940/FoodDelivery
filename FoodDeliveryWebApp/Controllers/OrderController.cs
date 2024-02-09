@@ -47,6 +47,7 @@ namespace FoodDeliveryWebApp.Controllers
                         string data = response.Content.ReadAsStringAsync().Result;
 
                         var CartViewModel = JsonConvert.DeserializeObject<CartViewModel>(data);
+                        CartViewModel.ShippingAddress = ShippingAddressService.Get();
                         return View(CartViewModel);
                         TempData["Result"] = $"{CartViewModel.cart.Id} - {CartViewModel.OrderItems.Count}";
 
@@ -218,17 +219,11 @@ namespace FoodDeliveryWebApp.Controllers
                         if (response.IsSuccessStatusCode)
                         {
                             string result = await response.Content.ReadAsStringAsync();
-<<<<<<< HEAD
+
                             var OrderResult = JsonConvert.DeserializeObject<Cart>(result);
 
-                            return RedirectToAction("Index", new { OrderId = OrderResult.Id});
-=======
-                             var OrderResult = JsonConvert.DeserializeObject<Cart>(result);
-                            //TempData["Result"] = OrderResult.Id.ToString();
-                            //return View();
-                            //var OrderResult = JsonConvert.DeserializeObject<CartViewModel>(result);
                             return RedirectToAction("Index", new { OrderId = OrderResult.Id });
->>>>>>> FDA-51369174
+
                             //  Console.WriteLine(result);
                         }
                         else if (response.StatusCode == HttpStatusCode.Unauthorized)
