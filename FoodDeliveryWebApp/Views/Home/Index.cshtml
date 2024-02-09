@@ -1,4 +1,21 @@
 ﻿
+<style>
+
+    @@media (max-width: 767px){
+        #showcase-text
+        {
+            width:100% !important;
+        }
+
+        #btn-order
+        {
+            display:block;
+        }
+        #showcase-img{
+            display:none;
+        }
+    }
+</style>
 @{
     ViewData["Title"] = "Home Page";
     // Access the session variable   
@@ -11,11 +28,22 @@
         </div>
     }
 }
-<div class="text-center">
-    <h1 class="display-4">Welcome </h1>
-    <h4>@TempData["Message"]</h4>
 
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div id="showcase" class="mb-5 d-flex">
+    <div id="showcase-text"class="text-md-start text-center w-50">
+        <h1>
+            The Fastest Food Delivery in <span>Quebec</span>
+        </h1>
+        <p class="d-block">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus nam delectus sed, vel quaerat, libero nesciunt debitis, architecto repudiandae accusamus aut exercitationem nisi non doloribus! Temporibus officia architecto reiciendis blanditiis.
+        </p>
+        <a id="btn-order" asp-action="Index" asp-controller="Menu" class="btn btn-primary d-xs-block">
+            Order Now
+        </a>
+    </div>
+    <div id="showcase-img" class="w-50">
+        <img src="~/img/c1.png" class="img-fluid" />
+    </div>
 </div>
 <partial name="_MenuPartial" />
 
