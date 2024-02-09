@@ -18,9 +18,9 @@
             max-width: 300px !important;
             min-width: 300px !important;
         }
-        #calisse {
-         =
-          <!-- width:100px;-->
+
+        header{
+            margin-bottom: 130px;
         }
     </style>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -28,8 +28,8 @@
     <link rel="stylesheet" href="~/FoodDeliveryWebApp.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <header >
+        <nav class="navbar fixed-top navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-5">
             <div class="container-fluid ">
                 <a class="navbar-brand m-3" asp-area="" asp-controller="Home" asp-action="Index">Foodvery</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -61,7 +61,7 @@
 
     </header>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3 ">
             @RenderBody()
         </main>
     </div>
