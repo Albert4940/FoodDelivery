@@ -9,17 +9,17 @@ namespace FoodDeliveryWebApp.Controllers
     public class FoodController : Controller
     {
 
-        public FoodController()
+        public FoodController(IHttpClientFactory httpClientFactory)
         {
-            FoodService.InitailizeHttp();
+            FoodService.InitailizeHttp(httpClientFactory);
         }
 
         // GET: FoodController
-        public ActionResult Index(long id)
+        public async Task<ActionResult> Index(long id)
         {
             try
             {
-                var food = FoodService.Get(id);
+                var food = await FoodService.Get(id);
                 return View(food);
             }catch(Exception ex)
             {

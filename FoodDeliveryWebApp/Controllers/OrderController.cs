@@ -17,7 +17,7 @@ namespace FoodDeliveryWebApp.Controllers
 
         public OrderController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
         {
-            FoodService.InitailizeHttp();
+            FoodService.InitailizeHttp(httpClientFactory);
             CartService.InintializeContextDb(context);
             OrderItemService.InintializeContextDb(context);
             ShippingAddressService.InintializeContextDb(context);
@@ -42,50 +42,7 @@ namespace FoodDeliveryWebApp.Controllers
             {
                 TempData["Error"] = $"Error INDEX: {ex.Message}";
             }
-            //TempData["Result"] = OrderId.ToString();
-            /*HttpClient client = new HttpClient();
-            var token = HttpContext.Session.GetString("JWToken");
             
-
-            // Add token to request headers
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-
-            try
-            {
-                using (var response = client.GetAsync("https://localhost:7110/api/order/" + OrderId).Result)
-                {
-
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string data = response.Content.ReadAsStringAsync().Result;
-
-                        var CartViewModel = JsonConvert.DeserializeObject<CartViewModel>(data);
-                        CartViewModel.ShippingAddress = ShippingAddressService.Get();
-                        return View(CartViewModel);
-                        TempData["Result"] = $"{CartViewModel.cart.Id} - {CartViewModel.OrderItems.Count}";
-
-                    }
-                    else
-                    {
-                        //Add throw Exception
-                        //throw new Exception($"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}");
-                        TempData["Error"] = $"Error INDEX: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
-
-                    }
-                }
-
-            }
-            catch (HttpRequestException ex)
-            {
-                TempData["error"] = $"Error Index: {ex.Message}";
-                //Add throw Exception
-                //throw;
-                //Redirect("~Menu/Index");
-            }*/
-            
-
             return View();
         }
 
@@ -160,11 +117,6 @@ namespace FoodDeliveryWebApp.Controllers
                 return View(model);
             }
         }
-        // GET: OrderController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
 
         // GET: OrderController/Create
         public async Task<ActionResult> Create()
@@ -195,19 +147,10 @@ namespace FoodDeliveryWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(CartViewModel Order)
         {
-            /*try
+            try
             {
-                await ShippingAddressService.Add(Order.ShippingAddress);
-            }catch(Exception ex)
-            {
-                TempData["Error"] = ex.Message.ToString();
-                return View();
-            }*/
-
-            using (var httpClient = new HttpClient())
-            {
-                // Get token from session
                 var token = HttpContext.Session.GetString("JWToken");
+                
                 var CartOrder = CartService.Get();
                 var ShippingAddress = ShippingAddressService.Get();
                 
@@ -215,98 +158,23 @@ namespace FoodDeliveryWebApp.Controllers
                 ShippingAddress.Id = 0;
                 ShippingAddress.UserId = "string";
 
-                // Add token to request headers
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                //Check Bind 
-                StringContent stringContent = new StringContent(JsonConvert.SerializeObject(new { 
-                    Order = CartOrder, 
-                    OrderItems = await OrderItemService.GetAll(), 
-                    ShippingAddress
-                }), Encoding.UTF8, "application/json");
-
-                //TempData["Result"] = stringContent;
-
-                try
+                var model = new CartViewModel
                 {
-                    using (var response = await httpClient.PostAsync("https://localhost:7110/api/order/", stringContent))
-                    {
-                        if (response.IsSuccessStatusCode)
-                        {
-                            string result = await response.Content.ReadAsStringAsync();
+                    OrderItems = await OrderItemService.GetAll(),
+                    ShippingAddress = ShippingAddress,
+                    cart = CartOrder
+                };
 
-                            var OrderResult = JsonConvert.DeserializeObject<Cart>(result);
-
-                            return RedirectToAction("Index", new { OrderId = OrderResult.Id });
-
-                            //  Console.WriteLine(result);
-                        }
-                        else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                        {
-                            throw new Exception("User Unauthorized!");
-                        }
-                        else if (response.StatusCode == HttpStatusCode.Conflict)
-                        {
-                            throw new Exception($"Error: {response.StatusCode.ToString()} - User already exists.");
-                        }
-                        else
-                        {
-                            // throw new Exception($"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}");
-                            TempData["Error"] = $"Error Create method: {response.ToString()} - {response.ReasonPhrase}";
-                            return View();
-                        }
-                    }
-                }
-                catch (HttpRequestException ex)
-                {
-                    TempData["Error"] = ex.Message.ToString();
-                    return View();
-                }
+                var OrderResult = await OrderService.Add(model, token);
+                return RedirectToAction("Index", new { OrderId = OrderResult.Id });
             }
-          //  TempData["Result"] = Order.ShippingAddress.Address.ToString() + Order.ShippingAddress.City.ToString() + Order.ShippingAddress.Country.ToString();
-            return RedirectToAction(nameof(Index));
-        }
-
-        // GET: OrderController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: OrderController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
+            catch(Exception ex)
             {
-                return RedirectToAction(nameof(Index));
+                TempData["Error"] = ex.Message.ToString();
             }
-            catch
-            {
-                return View();
-            }
+
+            return RedirectToAction(nameof(Create));
         }
 
-        // GET: OrderController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: OrderController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }

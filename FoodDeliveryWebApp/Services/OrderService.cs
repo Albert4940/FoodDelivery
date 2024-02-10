@@ -1,5 +1,6 @@
 ﻿using FoodDeliveryWebApp.Models;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace FoodDeliveryWebApp.Services
@@ -28,6 +29,28 @@ namespace FoodDeliveryWebApp.Services
             else
             {
                throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
+            }
+        }
+
+        public static async Task<Cart> Add(CartViewModel model, string token)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var jsonContent = new StringContent(
+                JsonSerializer.Serialize(model),
+                Encoding.UTF8,
+                "application/json");
+
+            using HttpResponseMessage response = await _httpClient.PostAsync("/order", jsonContent);
+
+            if (response.IsSuccessStatusCode) 
+            {
+                using var contentStream = await response.Content.ReadAsStreamAsync();
+                return await JsonSerializer.DeserializeAsync<Cart>(contentStream);
+            }
+            else
+            {
+                throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
             }
         }
     }

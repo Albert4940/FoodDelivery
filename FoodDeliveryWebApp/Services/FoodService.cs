@@ -1,22 +1,34 @@
 ﻿using FoodDeliveryWebApp.Models;
-using Newtonsoft.Json;
+
+using System.Text.Json;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace FoodDeliveryWebApp.Services
 {
     public static class FoodService
     {
-        static  Uri baseAdd = new Uri("https://localhost:7110/api");
-        private static  HttpClient _client;
-
-        public static void InitailizeHttp()
+        private static IHttpClientFactory _httpClientFactory;
+        private static HttpClient _httpClient;
+        public static void InitailizeHttp(IHttpClientFactory httpClientFactory)
         {
-            _client = new HttpClient();
-            _client.BaseAddress = baseAdd;
+            _httpClientFactory = httpClientFactory;
+            _httpClient = _httpClientFactory.CreateClient("FoodAPI");
         }
 
-        public static Food Get(long id)
+        public static async Task<Food> Get(long Id)
         {
-            Food food = null;
+            using HttpResponseMessage response = await _httpClient.GetAsync($"food/{Id.ToString()}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                using var contentStream = await response.Content.ReadAsStreamAsync();
+                return await JsonSerializer.DeserializeAsync<Food>(contentStream);               
+            }
+            else
+                throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
+
+            /*Food food = null;
             HttpClient client = new HttpClient();
             try
             {
@@ -47,7 +59,7 @@ namespace FoodDeliveryWebApp.Services
             }
 
             // HttpResponseMessage response = client.GetAsync(_client.BaseAddress + "/food").Result;
-            return food;
+            return food;*/
         }
     }
 }

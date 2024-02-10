@@ -15,10 +15,10 @@ namespace FoodDeliveryWebApp.Controllers
     public class CartController : Controller
     {
 
-        public CartController(FoodDeliveryWebAppDbContext context)
+        public CartController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
         {
            
-            FoodService.InitailizeHttp();
+            FoodService.InitailizeHttp(httpClientFactory);
             CartService.InintializeContextDb(context);
             OrderItemService.InintializeContextDb(context);
         }
@@ -115,7 +115,7 @@ namespace FoodDeliveryWebApp.Controllers
             try
             {
 
-                var food = FoodService.Get(FoodId);
+                var food = await FoodService.Get(FoodId);
 
                 var cart = CartService.Get();
 
@@ -263,76 +263,6 @@ namespace FoodDeliveryWebApp.Controllers
                 }
             }
             return Redirect("~/Cart/Index");
-        }
-
-        // GET: CartController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: CartController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: CartController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-
-        // GET: CartController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: CartController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: CartController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: CartController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
     }
 }
