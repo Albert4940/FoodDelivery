@@ -67,6 +67,10 @@ builder.Services.AddSession(options =>
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         .AddEnvironmentVariables();
 
+builder.Services.AddHttpClient("FoodAPI", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("https://localhost:7110/api/");
+});
 
 var app = builder.Build();
 

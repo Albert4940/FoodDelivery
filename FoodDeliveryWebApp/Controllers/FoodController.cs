@@ -23,7 +23,7 @@ namespace FoodDeliveryWebApp.Controllers
                 return View(food);
             }catch(Exception ex)
             {
-                TempData["error"] = ex.Message.ToString();
+                TempData["Error"] = ex.Message.ToString();
             }            
 
            return View();

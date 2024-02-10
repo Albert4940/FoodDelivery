@@ -5,9 +5,7 @@
     var Cart = Model?.cart;
     var Address = Model?.ShippingAddress;
     var OrderItems = Model?.OrderItems;
-}
-<h1>OrderScreen : @Cart.Id</h1>
-@{
+
     if (TempData["Result"] != null && TempData["Result"] != "")
     {
         <div class="alert alert-info" role="alert">
@@ -22,6 +20,7 @@
     }
     else
     {
+        <h1>OrderScreen : @Cart.Id</h1>
         <div class="row">
             <div class="col-8">
                 <ul class="list-group">
