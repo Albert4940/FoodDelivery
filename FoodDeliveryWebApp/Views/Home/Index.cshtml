@@ -29,21 +29,71 @@
     }
 }
 
-<div id="showcase" class="mb-5 d-flex">
-    <div id="showcase-text"class="text-md-start text-center w-50">
+<div id="showcase" class="mb-5 d-flex justify-content-center align-items-center">
+    <div id="showcase-text"class="text-md-start text-center w-50 ">
         <h1>
             The Fastest Food Delivery in <span>Quebec</span>
         </h1>
-        <p class="d-block">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus nam delectus sed, vel quaerat, libero nesciunt debitis, architecto repudiandae accusamus aut exercitationem nisi non doloribus! Temporibus officia architecto reiciendis blanditiis.
+        <p class="d-block fs-4">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus nam delectus sed, vel quaerat, libero nesciunt debitisdoloribus! Temporibus officia.
         </p>
-        <a id="btn-order" asp-action="Index" asp-controller="Menu" class="btn btn-primary d-xs-block">
+        <br/>
+        <a id="btn-order" asp-action="Index" asp-controller="Menu" class="btn btn-dark d-xs-block fs-5">
             Order Now
         </a>
     </div>
-    <div id="showcase-img" class="w-50">
-        <img src="~/img/c1.png" class="img-fluid" />
+    <div id="showcase-carousel" class="w-50" >
+        <div id="carouselExampleCaptions" class="carousel carousel-dark slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="~/img/c1.png" class="d-block w-75 img-fluid m-auto" alt="...">
+                    <br/>
+                    <br/>
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>First slide label</h5>
+                        <p>Some representative placeholder <br/><span>$25</span></p>
+                        
+                    </div>
+                </div>
+                <div class="carousel-item ">
+                    <img src="~/img/c1.png" class="d-block w-75 img-fluid m-auto" alt="...">
+                    <br />
+                    <br />
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5 >First slide label</h5>
+                        <p>Some representative placeholder <br /><span>$25</span></p>
+
+                    </div>
+                </div>
+                <div class="carousel-item ">
+                    <img src="~/img/c1.png" class="d-block w-75 img-fluid m-auto" alt="...">
+                    <br />
+                    <br />
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>First slide label</h5>
+                        <p>Some representative placeholder <br /><span>$25</span></p>
+
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
     </div>
+    <!--<div id="showcase-img" class="w-50">
+        <img src="~/img/c1.png" class="img-fluid" />
+    </div>-->
 </div>
 <partial name="_MenuPartial" />
 
