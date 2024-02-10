@@ -15,20 +15,35 @@ namespace FoodDeliveryWebApp.Controllers
     public class OrderController : Controller
     {
 
-        public OrderController(FoodDeliveryWebAppDbContext context)
+        public OrderController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
         {
             FoodService.InitailizeHttp();
             CartService.InintializeContextDb(context);
             OrderItemService.InintializeContextDb(context);
             ShippingAddressService.InintializeContextDb(context);
+            OrderService.InitailizeHttp(httpClientFactory);
         }
 
         // GET: OrderController
-        public ActionResult Index(long OrderId = 0)
+        public async Task<ActionResult> Index(long OrderId = 0)
         {
+            try
+            {
+                var token = HttpContext.Session.GetString("JWToken");
 
+                if (token is null || token == "")
+                    return Redirect("/User/Index?redirect=Order");
+
+                var Order = await OrderService.Get(OrderId, token);
+                Order.ShippingAddress = ShippingAddressService.Get();
+
+                return Order is null ? View() : View(Order);
+            }catch(Exception ex)
+            {
+                TempData["Error"] = $"Error INDEX: {ex.Message}";
+            }
             //TempData["Result"] = OrderId.ToString();
-            HttpClient client = new HttpClient();
+            /*HttpClient client = new HttpClient();
             var token = HttpContext.Session.GetString("JWToken");
             
 
@@ -68,7 +83,7 @@ namespace FoodDeliveryWebApp.Controllers
                 //Add throw Exception
                 //throw;
                 //Redirect("~Menu/Index");
-            }
+            }*/
             
 
             return View();
