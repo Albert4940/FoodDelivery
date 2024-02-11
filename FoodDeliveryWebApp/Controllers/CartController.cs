@@ -58,7 +58,7 @@ namespace FoodDeliveryWebApp.Controllers
             
             try
             {
-                AddToCart(FoodId, Qty);
+                await AddToCart(FoodId, Qty);
             }catch(Exception ex)
             {               
                 TempData["Error"] = $"Error : {ex}";

@@ -27,39 +27,6 @@ namespace FoodDeliveryWebApp.Services
             }
             else
                 throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
-
-            /*Food food = null;
-            HttpClient client = new HttpClient();
-            try
-            {
-                using (var response = client.GetAsync(_client.BaseAddress + "/food/" + id).Result)
-                {
-
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string data = response.Content.ReadAsStringAsync().Result;
-                        food = JsonConvert.DeserializeObject<Food>(data);
-                    }
-                    else
-                    {
-                        //Add throw Exception
-                        throw new Exception($"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}");
-                        //TempData["Error"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
-                    }
-                }
-
-            }
-            catch (HttpRequestException ex)
-            {
-                //TempData["error"] = $"Error: {ex.Message}";
-                //Add throw Exception
-                throw;
-                //Redirect("~Menu/Index");
-            }
-
-            // HttpResponseMessage response = client.GetAsync(_client.BaseAddress + "/food").Result;
-            return food;*/
         }
     }
 }
