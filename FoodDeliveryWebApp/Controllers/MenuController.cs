@@ -1,7 +1,9 @@
 ﻿using FoodDeliveryWebApp.Models;
+using FoodDeliveryWebApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http;
 
 
 namespace FoodDeliveryWebApp.Controllers
@@ -11,21 +13,25 @@ namespace FoodDeliveryWebApp.Controllers
         Uri baseAdd = new Uri("https://localhost:7110/api");
         private readonly HttpClient _client;
 
-        public MenuController()
+        public MenuController(IHttpClientFactory httpClientFactory)
         {
             _client = new HttpClient();
             _client.BaseAddress = baseAdd;
+
+            FoodService.InitailizeHttp(httpClientFactory);
+            CategoryService.InitailizeHttp(httpClientFactory);
         }
         // GET: MenuController
         public async Task<ActionResult> Index()
         {
 
-               
 
             try
             {
-                var foods = await GetAllFoods();
-                return foods is null ? View() : View(foods);
+                var Foods = await FoodService.Get();
+                var Categories = await CategoryService.Get();
+
+                return Foods is not null ? View(new MenuViewModel { Foods = Foods, Categories = Categories }) : View();
             }
             catch (Exception ex)
             {

@@ -1,8 +1,10 @@
 using FoodDeliveryWebApp.Models;
+using FoodDeliveryWebApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NuGet.Common;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Net.Http.Headers;
 
 namespace FoodDeliveryWebApp.Controllers
@@ -13,15 +15,18 @@ namespace FoodDeliveryWebApp.Controllers
         Uri baseAdd = new Uri("https://localhost:7110/api");
         private readonly HttpClient _client;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
             _client = new HttpClient();
             _client.BaseAddress = baseAdd;
+
+            FoodService.InitailizeHttp(httpClientFactory);
+            CategoryService.InitailizeHttp(httpClientFactory);
         }
 
-        public IActionResult Index()
-        {
+        public async Task<IActionResult> Index()
+        {           
             try
             {
                 /*User user = GetCurrentUser();
@@ -33,8 +38,15 @@ namespace FoodDeliveryWebApp.Controllers
                     HttpContext.Session.SetString("UserName", user.UserName);
                     return View(user);
                 }*/
-                var foods = GetAllFoods();
-                return foods is null ? View() : View(foods);                
+                // var Foods = GetAllFoods();
+                var Foods = await FoodService.Get();
+                // return foods is null ? View() : View(foods);
+                //var Categories = new List<Category> { new Category { Id = 1, Title = "Fruit" }, new Category { Id = 2, Title = "Poulet" } };
+                var Categories = await CategoryService.Get();
+
+                var ShowCaseFoods = Foods.GetRange(0, 2);
+
+                return Foods is not null ? View(new MenuViewModel { Foods = Foods, Categories= Categories, ShowCaseFoods = ShowCaseFoods }) : View();
             }
             catch (Exception ex)
             {
@@ -43,40 +55,6 @@ namespace FoodDeliveryWebApp.Controllers
                 TempData["error"] = $"Error: {ex.Message}";
                 return View();
             }
-        }
-
-        public  List<Food> GetAllFoods()
-        {
-            List<Food> foods = null;
-            HttpClient client = new HttpClient();
-            try
-            {
-                using (var response = client.GetAsync(_client.BaseAddress + "/food").Result)
-                {
-
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string data = response.Content.ReadAsStringAsync().Result;
-                        foods = JsonConvert.DeserializeObject<List<Food>>(data);
-                    }
-                    else
-                    {
-                        TempData["Error"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
-                    }
-                }
-
-            }
-            catch (HttpRequestException ex)
-            {
-                TempData["error"] = $"Error: {ex.Message}";
-                Redirect("~Menu/Index");
-            }
-
-            // HttpResponseMessage response = client.GetAsync(_client.BaseAddress + "/food").Result;
-
-
-            return foods;
         }
 
         public User GetCurrentUser()

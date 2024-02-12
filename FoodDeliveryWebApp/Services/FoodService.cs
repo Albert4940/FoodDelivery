@@ -10,6 +10,7 @@ namespace FoodDeliveryWebApp.Services
     {
         private static IHttpClientFactory _httpClientFactory;
         private static HttpClient _httpClient;
+        //rest api uri
         public static void InitailizeHttp(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
@@ -27,6 +28,19 @@ namespace FoodDeliveryWebApp.Services
             }
             else
                 throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
+        }
+
+        public static async Task<List<Food>> Get()
+        {
+            using HttpResponseMessage response = await _httpClient.GetAsync("food/");
+
+            if (response.IsSuccessStatusCode)
+            {
+                using var contentStream = await response.Content.ReadAsStreamAsync();
+                return await JsonSerializer.DeserializeAsync<List<Food>>(contentStream);
+            }else
+                throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
+
         }
     }
 }

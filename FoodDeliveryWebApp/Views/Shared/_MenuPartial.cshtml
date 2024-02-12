@@ -1,27 +1,47 @@
-﻿@model IEnumerable<FoodDeliveryWebApp.Models.Food>
-
-@if (Model != null && Model.Any())
-{
-    <div id="card-group">
-        @foreach (var item in Model)
+﻿@model FoodDeliveryWebApp.Models.MenuViewModel
+@{
+    if (TempData["Error"] != null && TempData["Error"] != "")
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+    else
+    {
+     if (Model.Categories is not null && Model.Categories.Any())
         {
-            <div class="card m-1">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <img src="@Url.Content("~" + item.ImageURL)" class="w-50" alt="@item.Title image" />
-                        <div>
-                            <a class="d-inline btn btn-primary btn-add" asp-controller="Food" asp-action="Index" asp-route-id="@item.Id" id=" @item.Id">+</a>
-                        </div>
-                    </div>
-
-                    <h5 class="card-title text-end">@Html.DisplayFor(modelItem => item.Title)</h5>
-                    <span class="d-block card-text text-end">@Html.DisplayFor(modelItem => item.Description)</span>
-
-                    <span class="d-block card-text text-end">$@Html.DisplayFor(modelItem => item.Price)</span>
-                </div>
+            <div id="Cat" class="d-flex justify-content-start flex-wrap mb-5">
+                <button id="0" class="me-3 btn btn-dark btn-category fs-5 px-4">All</button>
+                @foreach (var item in Model.Categories)
+                {
+                    <button id="@item.Id" class="btn btn-light me-3 btn-category fs-5">@item.Title</button>
+                }
             </div>
         }
-    </div>
+        
+        if (Model.Foods != null && Model.Foods.Any())
+        {
+            <div id="card-group">
+                @foreach (var item in Model.Foods)
+                {
+                    <div class="card m-1" id="@item.CategoryId">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <img src="@Url.Content("~" + item.ImageURL)" class="w-50" alt="@item.Title image" />
+                                <div>
+                                    <a class="d-inline btn btn-primary btn-add" asp-controller="Food" asp-action="Index" asp-route-id="@item.Id" id=" @item.Id">+</a>
+                                </div>
+                            </div>
+
+                            <h5 class="card-title text-end">@Html.DisplayFor(modelItem => item.Title)</h5>
+                            <span class="d-block card-text text-end">@Html.DisplayFor(modelItem => item.Description)</span>
+
+                            <span class="d-block card-text text-end">$@Html.DisplayFor(modelItem => item.Price)</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+
 }
-
-
