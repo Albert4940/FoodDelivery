@@ -1,4 +1,34 @@
 ﻿@model FoodDeliveryWebApp.Models.MenuViewModel
+<style>
+    #card-group {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .card {
+        width: 25% !important;
+        max-width: 300px !important;
+        min-width: 300px !important;
+    }
+
+    .hide-card-food {
+        display: none;
+    }
+
+    .btn-add {
+        transition: transform .2s;
+    }
+
+    .btn-add:hover {
+        transform: scale(1.2);
+    }
+
+    .btn-category:hover{
+        color:white;
+        background-color: #212529;
+    }
+</style>
 @{
     if (TempData["Error"] != null && TempData["Error"] != "")
     {
@@ -28,14 +58,14 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <img src="@Url.Content("~" + item.ImageURL)" class="w-50" alt="@item.Title image" />
-                                <div>
-                                    <a class="d-inline btn btn-dark btn-add" asp-controller="Food" asp-action="Index" asp-route-id="@item.Id" id=" @item.Id">
+                                
+                                    <a class="d-block btn btn-dark btn-add" asp-controller="Food" asp-action="Index" asp-route-id="@item.Id" id=" @item.Id">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16">
                                             <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z" />
                                             <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
                                         </svg>
                                     </a>
-                                </div>
+                                
                             </div>
 
                             <h5 class="card-title text-end">@Html.DisplayFor(modelItem => item.Title)</h5>
