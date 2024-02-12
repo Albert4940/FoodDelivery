@@ -29,42 +29,6 @@ namespace FoodDeliveryWebApp.Controllers
            return View();
         }
 
-       /* public Food GetFood(long id)
-        {
-            Food food = null;
-            HttpClient client = new HttpClient();
-
-            try
-            {
-                using (var response = client.GetAsync(_client.BaseAddress + "/food/" + id).Result)
-                {
-
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string data = response.Content.ReadAsStringAsync().Result;
-                        food = JsonConvert.DeserializeObject<Food>(data);
-                    }
-                    else
-                    {
-                        TempData["Error"] = $"Error: {response.StatusCode.ToString()} - {response.ReasonPhrase}";
-                    }
-                }
-
-            }
-            catch (HttpRequestException ex)
-            {
-                TempData["error"] = $"Error: {ex.Message}";
-                //Add throw Exception
-               // Redirect("~Menu/Index");
-            }
-
-            // HttpResponseMessage response = client.GetAsync(_client.BaseAddress + "/food").Result;
-
-
-            return food;
-        }*/
-        
 
         // GET: FoodController/Details/5
         public ActionResult Details(int id)

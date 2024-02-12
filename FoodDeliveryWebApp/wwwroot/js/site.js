@@ -4,7 +4,6 @@
 // Write your JavaScript code.
 jQuery(document).ready(function () {
 
-
     /*let cart = localStorage.getItem('cart')
         ? JSON.parse(localStorage.getItem('cart'))
         : { cartItems: [], shippingAddress: "", paymentMethod: "PayPal" };*/

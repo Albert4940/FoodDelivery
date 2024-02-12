@@ -22,6 +22,7 @@ namespace FoodDeliveryAPI.Controllers
         }
         // GET: api/<ValuesController>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<Category>>> Get()
         {
             return Ok(await CategoryService.GetAll());
