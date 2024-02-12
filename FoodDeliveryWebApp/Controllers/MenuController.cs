@@ -20,7 +20,6 @@ namespace FoodDeliveryWebApp.Controllers
         public async Task<ActionResult> Index()
         {
 
-               
 
             try
             {

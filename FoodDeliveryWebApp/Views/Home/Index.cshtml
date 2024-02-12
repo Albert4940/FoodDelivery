@@ -15,17 +15,28 @@
             display:none;
         }
     }
+    
+    .hide-card-food{
+        display: none;
+    }
 </style>
 @{
     ViewData["Title"] = "Home Page";
     // Access the session variable   
 }
 @{
+    if (TempData["Result"] != null && TempData["Result"] != "")
+    {
+                    <div class="alert alert-info" role="alert">
+                        @TempData["Result"]
+                    </div>
+    }
+
     if (TempData["Error"] != null && TempData["Error"] != "")
     {
-        <div class="alert alert-danger" role="alert">
-            @TempData["Error"]
-        </div>
+                    <div class="alert alert-danger" role="alert">
+                        @TempData["Error"]
+                    </div>
     }
 }
 
@@ -97,3 +108,41 @@
 </div>
 <partial name="_MenuPartial" />
 
+@section Scripts {
+    <script>
+        jQuery(document).ready(function () {
+
+            $("#card-group .card").each(function () {
+
+                $(this).removeClass("hide-card-food")
+
+            })
+
+            function filterFood(categoryId) {
+
+                $("#card-group .card").each(function () {
+
+                    let categoryIdCard = $(this).attr("id");
+
+                    if (categoryId === categoryIdCard)
+                        $(this).addClass("hide-card-food")
+                    else
+                        $(this).removeClass("hide-card-food")
+                })
+            }
+
+            $(".btn-category").click(function (e) {
+                e.preventDefault();
+
+                $(".btn-category").removeClass("btn-dark")
+                $(this).addClass("btn-dark")
+
+                let btn = $(this);
+
+                let categoryId = btn.attr("id");
+
+                filterFood(categoryId);
+            })
+        })
+    </script>
+}

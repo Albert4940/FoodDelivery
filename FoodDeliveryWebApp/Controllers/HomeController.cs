@@ -21,7 +21,7 @@ namespace FoodDeliveryWebApp.Controllers
         }
 
         public IActionResult Index()
-        {
+        {           
             try
             {
                 /*User user = GetCurrentUser();
@@ -33,8 +33,10 @@ namespace FoodDeliveryWebApp.Controllers
                     HttpContext.Session.SetString("UserName", user.UserName);
                     return View(user);
                 }*/
-                var foods = GetAllFoods();
-                return foods is null ? View() : View(foods);                
+                var Foods = GetAllFoods();
+                // return foods is null ? View() : View(foods);
+                var Categories = new List<Category> { new Category { Id = 1, Title = "Fruit" }, new Category { Id = 2, Title = "Poulet" } };
+                return Foods is not null ? View(new MenuViewModel { Foods = Foods, Categories= Categories }) : View();
             }
             catch (Exception ex)
             {

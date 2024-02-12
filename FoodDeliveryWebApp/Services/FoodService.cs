@@ -28,5 +28,7 @@ namespace FoodDeliveryWebApp.Services
             else
                 throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
         }
+
+        
     }
 }
