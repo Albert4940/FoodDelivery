@@ -44,7 +44,7 @@ namespace FoodDeliveryWebApp.Controllers
                 //var Categories = new List<Category> { new Category { Id = 1, Title = "Fruit" }, new Category { Id = 2, Title = "Poulet" } };
                 var Categories = await CategoryService.Get();
 
-                var ShowCaseFoods = Foods.GetRange(0, 2);
+                var ShowCaseFoods = Foods.GetRange(0, 3);
 
                 return Foods is not null ? View(new MenuViewModel { Foods = Foods, Categories= Categories, ShowCaseFoods = ShowCaseFoods }) : View();
             }
