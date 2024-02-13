@@ -1,6 +1,6 @@
 ﻿namespace FoodDeliveryAPI.Models
 {
-    public class OrderItem
+    public class OrderItem : BaseEntity
     {
         public long Id { get; set; }
         public string Title { get; set; }

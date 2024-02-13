@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FoodDeliveryAPI.Models
 {
-    public class Food
+    public class Food : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
