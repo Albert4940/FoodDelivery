@@ -41,7 +41,7 @@
      if (Model.Categories is not null && Model.Categories.Any())
         {
             <div id="Cat" class="d-flex justify-content-start flex-wrap mb-5">
-                <button id="0" class="me-3 btn btn-dark btn-category fs-5 px-4">All</button>
+                <button id="0" class="me-3 btn btn-light btn-dark btn-category fs-5 px-4">All</button>
                 @foreach (var item in Model.Categories)
                 {
                     <button id="@item.Id" class="btn btn-light me-3 btn-category fs-5">@item.Title</button>
@@ -57,7 +57,7 @@
                     <div class="card m-1" id="@item.CategoryId">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
-                                <img src="@Url.Content("~" + item.ImageURL)" class="w-50" alt="@item.Title image" />
+                                <img src="@Url.Content("~/img/" + item.ImageURL)" class="w-50" alt="@item.Title image" />
                                 
                                     <a class="d-block btn btn-dark btn-add" asp-controller="Food" asp-action="Index" asp-route-id="@item.Id" id=" @item.Id">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16">

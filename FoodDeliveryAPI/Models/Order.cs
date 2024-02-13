@@ -1,6 +1,8 @@
-﻿namespace FoodDeliveryWebApp.Models
+﻿using FoodDeliveryAPI.Models;
+
+namespace FoodDeliveryWebApp.Models
 {
-    public class Order
+    public class Order : BaseEntity
     {
         public long Id { get; set; }
         public string UserId { get; set; } = "string";

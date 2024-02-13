@@ -1,6 +1,6 @@
 ﻿namespace FoodDeliveryAPI.Models
 {
-    public class ShippingAddress
+    public class ShippingAddress : BaseEntity
     {
         public long Id { get; set; }
         public string UserId { get; set; }

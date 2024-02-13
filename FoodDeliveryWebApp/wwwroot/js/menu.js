@@ -1,5 +1,5 @@
 ﻿jQuery(document).ready(function () {
-    $("#card-group .card").each(function () {
+     $("#card-group .card").each(function () {
 
         $(this).removeClass("hide-card-food")
 
@@ -9,9 +9,9 @@
 
         $("#card-group .card").each(function () {
 
-            let categoryIdCard = $(this).attr("id");
+            let categoryIdCard = $(this).attr("id");           
 
-            if (categoryId === categoryIdCard)
+            if (categoryId !== categoryIdCard)
                 $(this).addClass("hide-card-food")
             else
                 $(this).removeClass("hide-card-food")
