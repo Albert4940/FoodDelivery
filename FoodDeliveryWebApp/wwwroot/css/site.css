@@ -20,4 +20,7 @@ html {
 body {
   margin-bottom: 60px;
 }
-
+.working-hour-img {
+    background: url(/img/open-hour-img.jpg);
+    background-size: cover;
+}
