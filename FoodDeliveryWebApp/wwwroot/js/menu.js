@@ -1,21 +1,30 @@
 ﻿jQuery(document).ready(function () {
-     $("#card-group .card").each(function () {
-
-        $(this).removeClass("hide-card-food")
-
-    })
-
-    function filterFood(categoryId) {
-
+   
+    function showFoods() {
         $("#card-group .card").each(function () {
 
-            let categoryIdCard = $(this).attr("id");           
+            $(this).removeClass("hide-card-food")
 
-            if (categoryId !== categoryIdCard)
-                $(this).addClass("hide-card-food")
-            else
-                $(this).removeClass("hide-card-food")
         })
+    }
+    showFoods();
+    function filterFood(categoryId) {
+        
+        if (categoryId == 0) {
+            showFoods();
+        }
+        else {
+            $("#card-group .card").each(function () {
+
+                let categoryIdCard = $(this).attr("id");
+
+                if (categoryId != categoryIdCard)
+                    $(this).addClass("hide-card-food")
+                else
+                    $(this).removeClass("hide-card-food")
+            })
+        }
+
     }
 
     $(".btn-category").click(function (e) {

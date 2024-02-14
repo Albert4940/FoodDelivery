@@ -66,12 +66,13 @@
                                         </svg>
                                     </a>
                                 
-                            </div>
-
+                            </div>                           
+                        </div>
+                        <div class="card-footer bg-transparent border-0">
                             <h5 class="card-title text-end">@Html.DisplayFor(modelItem => item.Title)</h5>
                             <span class="d-block card-text text-end">@Html.DisplayFor(modelItem => item.Description)</span>
 
-                            <span class="d-block card-text text-end">$@Html.DisplayFor(modelItem => item.Price)</span>
+                            <strong class="d-block card-text text-end">$@Html.DisplayFor(modelItem => item.Price)</strong>
                         </div>
                     </div>
                 }
