@@ -8,6 +8,20 @@
         transform: scale(1.05);
     }
 
+    .working-hour-container{
+        height: 550px;
+    }
+
+
+
+    /*.working-hour-img{
+        object-fit: contain;
+        width: 100%;
+        height:550px;
+        min-width: 100%;
+        min-height: 550px;
+    
+    }*/
 
     @@media (max-width: 767px){
         /*#showcase{
@@ -18,8 +32,8 @@
         #showcase-carousel{
             width:100%;
         }
-        #showcase-text
-        {
+
+        #showcase-text, .working-hour-text {
             width:100% !important;
         }
 
@@ -27,8 +41,21 @@
         {
             display:block;
         }
-        #showcase-img{
+
+        #showcase-img, .working-hour-img {
             display:none;
+        }
+
+        .working-hour-ul{
+            width: 93% !important;
+        }
+        .working-hour-ul li{
+            width: 90% !important;
+            margin: 5px !important;
+        }
+
+        .working-hour-container {
+            height: 350px;
         }
     }    
 
@@ -37,7 +64,18 @@
     ViewData["Title"] = "Home Page";
 
    var ShowCaseFoods = Model.ShowCaseFoods;
- 
+
+   string[,] hoursArray = new string[7, 2]
+        {
+           {"Saturday","09am to 11pm"},
+           {"Sunday","Closed"},
+           {"Monday","09 to 11pm"},
+           {"Tuesday","09 to 11pm"},
+           {"Wednesday","09 to 11pm"},
+           {"Thursday","09 to 10pm"},
+           {"Friday","Closed"}
+        };
+
     if (TempData["Error"] != null && TempData["Error"] != "")
     {
         <div class="alert alert-danger" role="alert">
@@ -109,5 +147,30 @@
             }
         </div>
         <partial name="_MenuPartial" />
+        <!-- Open Hours section-->
+        <section class="mt-4">
+        <h2>Our Working Hour</h2>
+        <br/>
+            <div class="working-hour-container d-flex">
+                <div class="working-hour-text w-50 text-white bg-dark">
+                    <h3 class="text-center my-3 mb-3">Opening Hour</h3>
+                    <br/>
+                    <ul class="working-hour-ul mx-auto w-75 border border-white d-flex p-0 flex-column align-items-center justify-content-center">
+                        @for (var item = 0; item < hoursArray.GetLength(0); item++)
+                        {
+                            var day = hoursArray[item, 0];
+                            var hours = "  " + hoursArray[item, 1];
+                            hours = hours.PadLeft(hours.Length + 30, '.');
+
+                            <li class="d-flex w-75 my-3 fs-6">
+                                <span class="d-block w-25 me-3">@day</span><span class="d-block">@hours</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="w-50 working-hour-img"><div/>
+            </div>
+        </section>
     }
 }
