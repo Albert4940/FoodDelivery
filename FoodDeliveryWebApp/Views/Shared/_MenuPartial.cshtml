@@ -16,12 +16,18 @@
         display: none;
     }
 
-    .btn-add {
+    .img-food{
+        object-fit: contain;
+        min-width: 10.7rem;
+        min-height: 10.7rem;
+    }
+
+    .btn-add, .img-food {
         transition: transform .2s;
     }
 
-    .btn-add:hover {
-        transform: scale(1.2);
+    .btn-add:hover, .img-food:hover {
+       transform: scale(1.2);
     }
 
     .btn-category:hover{
@@ -57,7 +63,7 @@
                     <div class="card m-1" id="@item.CategoryId">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
-                                <img src="@Url.Content("~/img/" + item.ImageURL)" class="w-50" alt="@item.Title image" />
+                                <img src="@Url.Content("~/img/" + item.ImageURL)" class="w-50 h-50 img-food" alt="@item.Title image" />
                                 
                                     <a class="d-block btn btn-dark btn-add" asp-controller="Food" asp-action="Index" asp-route-id="@item.Id" id=" @item.Id">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16">
