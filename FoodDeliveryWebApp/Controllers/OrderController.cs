@@ -14,13 +14,16 @@ namespace FoodDeliveryWebApp.Controllers
 {
     public class OrderController : Controller
     {
-
+        private OrderAPIService _orderAPIService;
         public OrderController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
         {
             FoodService.InitailizeHttp(httpClientFactory);
             CartService.InintializeContextDb(context);
             OrderItemService.InintializeContextDb(context);
             ShippingAddressService.InintializeContextDb(context);
+            _orderAPIService = new OrderAPIService(httpClientFactory);
+
+            //BaseAPIService.InitailizeHttp(httpClientFactory);
             OrderService.InitailizeHttp(httpClientFactory);
         }
 
@@ -35,6 +38,7 @@ namespace FoodDeliveryWebApp.Controllers
                     return Redirect("/User/Index?redirect=Order");
 
                 var Order = await OrderService.Get(OrderId, token);
+               // var Order = await _orderAPIService.Get<CartViewModel>(OrderId, token);
                 Order.ShippingAddress = ShippingAddressService.Get();
 
                 return Order is null ? View() : View(Order);
@@ -165,7 +169,9 @@ namespace FoodDeliveryWebApp.Controllers
                     cart = CartOrder
                 };
 
-                var OrderResult = await OrderService.Add(model, token);
+                 //var OrderResult = await OrderService.Add(model, token);
+                var OrderResult = await _orderAPIService.Add(model,token);
+                //TempData["Result"] = $"{OrderResult.Id.ToString()}-{OrderResult.UserId.ToString()}-{OrderResult.TotalPrice.ToString()}-{OrderResult.ItemsPrice.ToString()}";
                 return RedirectToAction("Index", new { OrderId = OrderResult.Id });
             }
             catch(Exception ex)

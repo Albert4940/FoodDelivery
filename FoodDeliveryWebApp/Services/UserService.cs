@@ -27,7 +27,7 @@ namespace FoodDeliveryWebApp.Services
                     user.Id = "01";
 
                     StringContent stringContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
-
+                    
                     try
                     {
                         using (var response = await httpClient.PostAsync("https://localhost:7110/api/user/", stringContent))

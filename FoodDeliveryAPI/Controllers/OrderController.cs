@@ -5,6 +5,7 @@ using FoodDeliveryWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Net;
 using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -71,8 +72,9 @@ namespace FoodDeliveryAPI.Controllers
 
                     //check is null
                     if (OrderItems is null || OrderItems.Count == 0)
-                        return BadRequest();
+                        return BadRequest("OrderItems empty");
 
+                   // return Ok(Order);
                     try
                     {
                         Order.UserId = CurrentUser.Id;
@@ -80,9 +82,11 @@ namespace FoodDeliveryAPI.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return BadRequest(ex.Message);
+                        // return BadRequest(ex.Message);
+                        return BadRequest(new { ErrorMessage = ex.Message });
                     }
 
+                    //return Ok(Order);
                     try
                     {
                         OrderCreated = await OrderService.Add(Order);
@@ -112,15 +116,17 @@ namespace FoodDeliveryAPI.Controllers
         }
 
         [HttpPost("AddRange")]
-        public async Task<ActionResult> AddRange(List<OrderItem> orders)
+        public async Task<ActionResult> AddRange()
         {
-          
 
+            return Ok("OK");
                     //try
                     //{
                         //OrderCreated = await OrderService.Add(Order);
-                        await OrderItemService.AddRange(orders, 40);
-                        return Ok(orders);
+
+                        //await OrderItemService.AddRange(orders, 40);
+                        //return Ok(orders);
+
                         //Sawait FoodService.UpdateCountInStock(OrderItems);
 
                         /* Address.UserId = CurrentUser.Id;

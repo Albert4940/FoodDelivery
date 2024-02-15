@@ -15,6 +15,8 @@ namespace FoodDeliveryWebApp.Controllers
         Uri baseAdd = new Uri("https://localhost:7110/api");
         private readonly HttpClient _client;
 
+        private readonly BaseAPIService _baseAPIService;
+        private readonly CategoryServiceAPI _cateAPIService;
         public HomeController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
@@ -23,6 +25,11 @@ namespace FoodDeliveryWebApp.Controllers
 
             FoodService.InitailizeHttp(httpClientFactory);
             CategoryService.InitailizeHttp(httpClientFactory);
+            //BaseAPIService.InitailizeHttp(httpClientFactory);
+
+            _baseAPIService = new BaseAPIService(httpClientFactory);
+
+            _cateAPIService = new CategoryServiceAPI(httpClientFactory);
         }
 
         public async Task<IActionResult> Index()
@@ -39,10 +46,13 @@ namespace FoodDeliveryWebApp.Controllers
                     return View(user);
                 }*/
                 // var Foods = GetAllFoods();
-                var Foods = await FoodService.Get();
+                //var Foods = await FoodService.Get();
+                var Foods = await _baseAPIService.Get<Food>();
                 // return foods is null ? View() : View(foods);
                 //var Categories = new List<Category> { new Category { Id = 1, Title = "Fruit" }, new Category { Id = 2, Title = "Poulet" } };
-                var Categories = await CategoryService.Get();
+                //var Categories = await CategoryService.Get();
+
+                var Categories = await _cateAPIService.Get<Category>();
 
                 var ShowCaseFoods = Foods.GetRange(0, 3);
 

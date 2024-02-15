@@ -167,7 +167,9 @@
                         @for (var item = 0; item < hoursArray.GetLength(0); item++)
                         {
                             var day = hoursArray[item, 0];
-                            var hours = "  " + hoursArray[item, 1];
+                            var hours = hoursArray[item, 1];
+                            //add space before
+                            hours = hours.PadLeft(hours.Length + 2, ' ');
                             hours = hours.PadLeft(hours.Length + 30, '.');
 
                             <li class="d-flex w-75 my-3 fs-6">
