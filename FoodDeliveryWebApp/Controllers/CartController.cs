@@ -21,6 +21,7 @@ namespace FoodDeliveryWebApp.Controllers
             FoodService.InitailizeHttp(httpClientFactory);
             CartService.InintializeContextDb(context);
             OrderItemService.InintializeContextDb(context);
+            BaseService.InintializeContextDb(context);
         }
         //Get
         [HttpGet]
@@ -28,7 +29,8 @@ namespace FoodDeliveryWebApp.Controllers
         {
             try
             {
-                var cart = CartService.Get();
+                //var cart = CartService.Get();
+                var cart = BaseService.Get<Cart>();
                 var orderItems = await OrderItemService.GetAll();
 
                 if (cart != null)

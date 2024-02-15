@@ -41,7 +41,7 @@ namespace FoodDeliveryWebApp.Services
                 Encoding.UTF8,
                 "application/json");
 
-            using HttpResponseMessage response = await _httpClient.PostAsync("/order", jsonContent);
+            using HttpResponseMessage response = await _httpClient.PostAsync("order/", jsonContent);
 
             if (response.IsSuccessStatusCode) 
             {
