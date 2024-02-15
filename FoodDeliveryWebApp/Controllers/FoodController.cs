@@ -12,6 +12,7 @@ namespace FoodDeliveryWebApp.Controllers
         public FoodController(IHttpClientFactory httpClientFactory)
         {
             FoodService.InitailizeHttp(httpClientFactory);
+            BaseAPIService.InitailizeHttp(httpClientFactory);
         }
 
         // GET: FoodController
@@ -19,7 +20,8 @@ namespace FoodDeliveryWebApp.Controllers
         {
             try
             {
-                var food = await FoodService.Get(id);
+                //var food = await FoodService.Get(id);
+                var food = await BaseAPIService.Get<Food>(id);
                 return View(food);
             }catch(Exception ex)
             {

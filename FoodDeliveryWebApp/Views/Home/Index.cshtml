@@ -12,7 +12,9 @@
         height: 550px;
     }
 
-
+    .working-hour-ul{
+        width: 90%;
+    }
 
     /*.working-hour-img{
         object-fit: contain;
@@ -22,7 +24,13 @@
         min-height: 550px;
     
     }*/
+    @@media (max-width: 991.98px){
+        .working-hour-text{
+            width:100% !important;
+        }
 
+        
+    }
     @@media (max-width: 767px){
         /*#showcase{
             display: flex;
@@ -155,7 +163,7 @@
                 <div class="working-hour-text w-50 text-white bg-dark">
                     <h3 class="text-center my-3 mb-3">Opening Hour</h3>
                     <br/>
-                    <ul class="working-hour-ul mx-auto w-75 border border-white d-flex p-0 flex-column align-items-center justify-content-center">
+                    <ul class="working-hour-ul mx-auto  border border-white d-flex p-0 flex-column align-items-center justify-content-center">
                         @for (var item = 0; item < hoursArray.GetLength(0); item++)
                         {
                             var day = hoursArray[item, 0];
@@ -169,7 +177,7 @@
                     </ul>
                 </div>
 
-                <div class="w-50 working-hour-img"><div/>
+                <div class="w-50 working-hour-img d-none d-lg-block"><div/>
             </div>
         </section>
     }
