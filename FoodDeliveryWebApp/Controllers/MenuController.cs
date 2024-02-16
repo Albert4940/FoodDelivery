@@ -18,6 +18,7 @@ namespace FoodDeliveryWebApp.Controllers
             _client = new HttpClient();
             _client.BaseAddress = baseAdd;
 
+           // BaseAPIService.InitailizeHttp(httpClientFactory);
             FoodService.InitailizeHttp(httpClientFactory);
             CategoryService.InitailizeHttp(httpClientFactory);
         }
@@ -29,7 +30,10 @@ namespace FoodDeliveryWebApp.Controllers
             try
             {
                 var Foods = await FoodService.Get();
-                var Categories = await CategoryService.Get();
+                 var Categories = await CategoryService.Get();
+
+               // var Foods = await BaseAPIService.Get<Food>();
+                //var Categories = await BaseAPIService.Get<Category>();
 
                 return Foods is not null ? View(new MenuViewModel { Foods = Foods, Categories = Categories }) : View();
             }

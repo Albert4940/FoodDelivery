@@ -13,6 +13,13 @@ namespace FoodDeliveryWebApp.Controllers
 
     public class UserController : Controller
     {
+        private readonly UserAPIService _userAPIService;
+
+        public UserController(IHttpClientFactory httpClientFactory)
+        {
+            _userAPIService = new UserAPIService(httpClientFactory);
+        }
+
         public IActionResult Index(string UserName = null, string Password = null)
         {
             if (string.IsNullOrEmpty(UserName) || string.IsNullOrEmpty(Password))
@@ -31,7 +38,8 @@ namespace FoodDeliveryWebApp.Controllers
         {
             try
             {
-                var token = await UserService.Auth(user);
+                //var token = await UserService.Auth(user);
+                var token = await _userAPIService.Auth(user);
                 HttpContext.Session.SetString("JWToken", token);
                 HttpContext.Session.SetString("UserName", user.UserName);
                 return Redirect("~/Home/Index");
@@ -60,7 +68,11 @@ namespace FoodDeliveryWebApp.Controllers
         {
             try
             {
-                var data = await UserService.Register(user);
+                //var data = await UserService.Register(user);
+                //Check Bind 
+                user.Id = "01";
+
+                var data = await _userAPIService.Add<User>(user);
                 TempData["Result"] = "User Register successfully!";
                 return Redirect("/User/Index");
             }

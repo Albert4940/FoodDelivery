@@ -26,7 +26,8 @@ namespace FoodDeliveryAPI.Controllers
         {
             return Ok(await UserService.GetAll());
         }
-        [AllowAnonymous]
+
+        /*[AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register(User userRegister)
         {
@@ -54,7 +55,37 @@ namespace FoodDeliveryAPI.Controllers
             }
 
             return BadRequest();
+        }*/
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Post(User userRegister)
+        {
+
+
+            // var user = await UserService.Authenticate(userLogin, _context);
+            var user = userRegister;
+            if ((user.UserName != null) && user.Password != null)
+            {
+                //check if empty
+                //var token = TokenService.Generate(user, _configuration);
+                bool userExists = await UserService.CheckIfUserExists(userRegister);
+
+                if (userExists)
+                    return Conflict("User Already exist !");
+
+                user.Password = BC.HashPassword(user.Password, 12);
+
+                await UserService.Add(userRegister);
+                return Ok("User Created");
+            }
+            else
+            {
+                return BadRequest();
+            }
+
+            return BadRequest();
         }
+
         [AllowAnonymous]
         [HttpPost("auth")]
         public async Task<IActionResult> Auth(User userLogin)

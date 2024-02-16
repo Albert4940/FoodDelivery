@@ -1,41 +1,39 @@
 ﻿using FoodDeliveryWebApp.Models;
+using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
 namespace FoodDeliveryWebApp.Services
 {
-    public static class OrderService
+    public class OrderAPIService : BaseAPIService
     {
-        private static  IHttpClientFactory _httpClientFactory;
-        private static HttpClient _httpClient;
-        public static void InitailizeHttp(IHttpClientFactory httpClientFactory)
-        {
-            _httpClientFactory = httpClientFactory;
-            _httpClient = _httpClientFactory.CreateClient("FoodAPI");
-        }
+        private string endPoint = "order";
 
-        public static async Task<CartViewModel> Get(long Id, string token)
+        public OrderAPIService(IHttpClientFactory httpClientFactory) : base(httpClientFactory) { }
+
+        public async Task<T> Get<T>(long Id, string token = null) where T : class
         {
+            if(string.IsNullOrWhiteSpace(token) || token == "")
+                throw new ArgumentOutOfRangeException(nameof(token), "The token cannot be null or empty.");
+
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            using HttpResponseMessage response = await _httpClient.GetAsync($"order/{Id.ToString()}");
-           
+            //string endPoint = typeof(T).Name.ToLower();
+
+            using HttpResponseMessage response = await _httpClient.GetAsync($"{endPoint}/{Id.ToString()}");
+
             if (response.IsSuccessStatusCode)
             {
                 using var contentStream = await response.Content.ReadAsStreamAsync();
-                return await JsonSerializer.DeserializeAsync<CartViewModel>(contentStream);
+                return await JsonSerializer.DeserializeAsync<T>(contentStream);
             }
             else
-            {
-               throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
-            }
+                throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
         }
 
-        public static async Task<Cart> Add(CartViewModel model, string token)
+        public async Task<Cart> Add(CartViewModel model, string token)
         {
-           
-
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var jsonContent = new StringContent(
@@ -48,14 +46,12 @@ namespace FoodDeliveryWebApp.Services
                 Encoding.UTF8,
                 "application/json");
 
-            using HttpResponseMessage response = await _httpClient.PostAsync("order/", jsonContent);
-           
-            //return response.ToString();
-            if (response.IsSuccessStatusCode) 
+            using HttpResponseMessage response = await _httpClient.PostAsync($"{endPoint}/", jsonContent);
+
+            if (response.IsSuccessStatusCode)
             {
                 using var contentStream = await response.Content.ReadAsStreamAsync();
                 return await JsonSerializer.DeserializeAsync<Cart>(contentStream);
-                //return await JsonSerializer.DeserializeAsync<string>(contentStream);
             }
             else
             {

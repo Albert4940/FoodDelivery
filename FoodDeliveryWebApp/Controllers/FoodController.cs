@@ -9,10 +9,11 @@ namespace FoodDeliveryWebApp.Controllers
     public class FoodController : Controller
     {
 
+        private readonly BaseAPIService _baseAPIService;
         public FoodController(IHttpClientFactory httpClientFactory)
         {
             FoodService.InitailizeHttp(httpClientFactory);
-            BaseAPIService.InitailizeHttp(httpClientFactory);
+            _baseAPIService = new BaseAPIService(httpClientFactory);
         }
 
         // GET: FoodController
@@ -21,7 +22,7 @@ namespace FoodDeliveryWebApp.Controllers
             try
             {
                 //var food = await FoodService.Get(id);
-                var food = await BaseAPIService.Get<Food>(id);
+                var food = await _baseAPIService.Get<Food>(id);
                 return View(food);
             }catch(Exception ex)
             {
