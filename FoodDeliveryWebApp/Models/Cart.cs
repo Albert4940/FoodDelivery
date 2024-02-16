@@ -1,6 +1,6 @@
 ﻿namespace FoodDeliveryWebApp.Models
 {
-    public class Cart
+    public class Cart : IEntity
     {
         //public List<OrderItem> OrderItems { get; set; }
        // public ShippingAddress ShippingAddress { get; set; }

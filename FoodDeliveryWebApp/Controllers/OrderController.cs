@@ -21,6 +21,7 @@ namespace FoodDeliveryWebApp.Controllers
             CartService.InintializeContextDb(context);
             OrderItemService.InintializeContextDb(context);
             ShippingAddressService.InintializeContextDb(context);
+
             _orderAPIService = new OrderAPIService(httpClientFactory);
 
             //BaseAPIService.InitailizeHttp(httpClientFactory);
@@ -37,8 +38,10 @@ namespace FoodDeliveryWebApp.Controllers
                 if (token is null || token == "")
                     return Redirect("/User/Index?redirect=Order");
 
-                var Order = await OrderService.Get(OrderId, token);
-               // var Order = await _orderAPIService.Get<CartViewModel>(OrderId, token);
+                //var Order = await OrderService.Get(OrderId, token);
+
+                var Order = await _orderAPIService.Get<CartViewModel>(OrderId, token);
+                
                 Order.ShippingAddress = ShippingAddressService.Get();
 
                 return Order is null ? View() : View(Order);
@@ -174,10 +177,14 @@ namespace FoodDeliveryWebApp.Controllers
                 //TempData["Result"] = $"{OrderResult.Id.ToString()}-{OrderResult.UserId.ToString()}-{OrderResult.TotalPrice.ToString()}-{OrderResult.ItemsPrice.ToString()}";
                 return RedirectToAction("Index", new { OrderId = OrderResult.Id });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 TempData["Error"] = ex.Message.ToString();
             }
+            /*catch(Exception ex)
+            {
+                TempData["Error"] = ex.Message.ToString();
+            }*/
 
             return RedirectToAction(nameof(Create));
         }

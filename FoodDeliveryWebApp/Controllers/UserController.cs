@@ -40,8 +40,10 @@ namespace FoodDeliveryWebApp.Controllers
             {
                 //var token = await UserService.Auth(user);
                 var token = await _userAPIService.Auth(user);
+
                 HttpContext.Session.SetString("JWToken", token);
                 HttpContext.Session.SetString("UserName", user.UserName);
+
                 return Redirect("~/Home/Index");
             }catch(Exception ex)
             {
@@ -73,7 +75,9 @@ namespace FoodDeliveryWebApp.Controllers
                 user.Id = "01";
 
                 var data = await _userAPIService.Add<User>(user);
+
                 TempData["Result"] = "User Register successfully!";
+
                 return Redirect("/User/Index");
             }
             catch(Exception ex)

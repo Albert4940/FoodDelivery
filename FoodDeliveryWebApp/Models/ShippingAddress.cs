@@ -1,6 +1,6 @@
 ﻿namespace FoodDeliveryWebApp.Models
 {
-    public class ShippingAddress
+    public class ShippingAddress : IEntity
     {
         public long Id { get; set; }   
         public string UserId { get; set; }

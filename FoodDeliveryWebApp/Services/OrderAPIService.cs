@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using static FoodDeliveryWebApp.Services.OrderAPIService;
 
 namespace FoodDeliveryWebApp.Services
 {
@@ -53,10 +54,24 @@ namespace FoodDeliveryWebApp.Services
                 using var contentStream = await response.Content.ReadAsStreamAsync();
                 return await JsonSerializer.DeserializeAsync<Cart>(contentStream);
             }
+            else if(response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception(errorContent.ToString());
+                /*var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(errorContent);
+                throw new Exception(errorResponse.ErrorMessage);*/
+            }
             else
             {
-                throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
+                //throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
+                string errorMessage = $"{response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                throw new HttpRequestException(errorMessage);
             }
+        }
+
+        public class ErrorResponse
+        {
+            public string ErrorMessage { get; set; }
         }
     }
 }

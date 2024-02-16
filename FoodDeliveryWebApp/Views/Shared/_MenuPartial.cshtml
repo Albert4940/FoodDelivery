@@ -44,46 +44,50 @@
     }
     else
     {
-     if (Model.Categories is not null && Model.Categories.Any())
-        {
-            <div id="Cat" class="d-flex justify-content-start flex-wrap mb-5">
-                <button id="0" class="me-3 btn btn-light btn-dark btn-category fs-5 px-4">All</button>
-                @foreach (var item in Model.Categories)
+        <div class="my-5">
+            @{
+                if (Model.Categories is not null && Model.Categories.Any())
                 {
-                    <button id="@item.Id" class="btn btn-light me-3 btn-category fs-5">@item.Title</button>
-                }
-            </div>
-        }
-        
-        if (Model.Foods != null && Model.Foods.Any())
-        {
-            <div id="card-group">
-                @foreach (var item in Model.Foods)
-                {
-                    <div class="card m-1" id="@item.CategoryId">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <img src="@Url.Content("~/img/" + item.ImageURL)" class="w-50 h-50 img-food" alt="@item.Title image" />
-                                
-                                    <a class="d-block btn btn-dark btn-add" asp-controller="Food" asp-action="Index" asp-route-id="@item.Id" id=" @item.Id">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16">
-                                            <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z" />
-                                            <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
-                                        </svg>
-                                    </a>
-                                
-                            </div>                           
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <h5 class="card-title text-end">@Html.DisplayFor(modelItem => item.Title)</h5>
-                            <span class="d-block card-text text-end">@Html.DisplayFor(modelItem => item.Description)</span>
-
-                            <strong class="d-block card-text text-end">$@Html.DisplayFor(modelItem => item.Price)</strong>
-                        </div>
+                    <div id="Cat" class="d-flex justify-content-start flex-wrap mb-5">
+                        <button id="0" class="me-3 btn btn-light btn-dark btn-category fs-5 px-4">All</button>
+                        @foreach (var item in Model.Categories)
+                        {
+                            <button id="@item.Id" class="btn btn-light me-3 btn-category fs-5">@item.Title</button>
+                        }
                     </div>
                 }
-            </div>
-        }
+
+                if (Model.Foods != null && Model.Foods.Any())
+                {
+                    <div id="card-group">
+                        @foreach (var item in Model.Foods)
+                        {
+                            <div class="card m-1" id="@item.CategoryId">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <img src="@Url.Content("~/img/" + item.ImageURL)" class="w-50 h-50 img-food" alt="@item.Title image" />
+
+                                        <a class="d-block btn btn-dark btn-add" asp-controller="Food" asp-action="Index" asp-route-id="@item.Id" id=" @item.Id">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16">
+                                                <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z" />
+                                                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                                            </svg>
+                                        </a>
+
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-0">
+                                    <h5 class="card-title text-end">@Html.DisplayFor(modelItem => item.Title)</h5>
+                                    <span class="d-block card-text text-end">@Html.DisplayFor(modelItem => item.Description)</span>
+
+                                    <strong class="d-block card-text text-end">$@Html.DisplayFor(modelItem => item.Price)</strong>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            }
+        </div>
     }
 
 }
