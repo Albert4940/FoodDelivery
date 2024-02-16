@@ -52,7 +52,8 @@ namespace FoodDeliveryWebApp.Controllers
                 //var Categories = new List<Category> { new Category { Id = 1, Title = "Fruit" }, new Category { Id = 2, Title = "Poulet" } };
                 //var Categories = await CategoryService.Get();
 
-                var Categories = await _cateAPIService.Get<Category>();
+                //var Categories = await _cateAPIService.Get<Category>();
+                var Categories = await _baseAPIService.Get<Category>();
 
                 var ShowCaseFoods = Foods.GetRange(0, 3);
 

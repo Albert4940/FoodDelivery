@@ -1,6 +1,6 @@
 ﻿namespace FoodDeliveryWebApp.Models
 {
-    public class OrderItem
+    public class OrderItem : IEntity
     {
         public long Id { get; set; }
         public string Title { get; set; }

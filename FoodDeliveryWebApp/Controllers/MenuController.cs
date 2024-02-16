@@ -12,11 +12,13 @@ namespace FoodDeliveryWebApp.Controllers
     {
         Uri baseAdd = new Uri("https://localhost:7110/api");
         private readonly HttpClient _client;
-
+        private readonly BaseAPIService _baseAPIService;
         public MenuController(IHttpClientFactory httpClientFactory)
         {
             _client = new HttpClient();
             _client.BaseAddress = baseAdd;
+
+            _baseAPIService = new BaseAPIService(httpClientFactory);
 
            // BaseAPIService.InitailizeHttp(httpClientFactory);
             FoodService.InitailizeHttp(httpClientFactory);
@@ -29,8 +31,11 @@ namespace FoodDeliveryWebApp.Controllers
 
             try
             {
-                var Foods = await FoodService.Get();
-                 var Categories = await CategoryService.Get();
+                //var Foods = await FoodService.Get();
+                // var Categories = await CategoryService.Get();
+
+                var Foods = await _baseAPIService.Get<Food>();
+                var Categories = await _baseAPIService.Get<Category>();
 
                // var Foods = await BaseAPIService.Get<Food>();
                 //var Categories = await BaseAPIService.Get<Category>();

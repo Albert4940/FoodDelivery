@@ -74,7 +74,7 @@ namespace FoodDeliveryAPI.Services
                 {
                     return true;
                 }
-                else throw new Exception($"Insufficient Stock {food.Title} - {food.CountInStock}");
+                else throw new Exception($"Insufficient Stock : {food.Title} - Count In Stock = {food.CountInStock}");
             }
             else throw new Exception($"Food Order Not Found ");
             
