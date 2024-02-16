@@ -1,6 +1,7 @@
 ﻿using FoodDeliveryWebApp.Data;
 using FoodDeliveryWebApp.Models;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace FoodDeliveryWebApp.Services
@@ -46,6 +47,25 @@ namespace FoodDeliveryWebApp.Services
             {
                 using var contentStream = await response.Content.ReadAsStreamAsync();
                 return await JsonSerializer.DeserializeAsync<List<T>>(contentStream);
+            }
+            else
+                throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
+        }
+
+        public async Task<T> Add<T>(T item) where T : class
+        {
+            var jsonContent = new StringContent(
+                 JsonSerializer.Serialize(item),
+                 Encoding.UTF8,
+                 "application/json");
+
+            using HttpResponseMessage response = await _httpClient.PostAsync($"{typeof(T).Name.ToLower()}/", jsonContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                using var contentStream = await response.Content.ReadAsStreamAsync();
+                //return await JsonSerializer.DeserializeAsync<T>(contentStream);
+                return item;
             }
             else
                 throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
