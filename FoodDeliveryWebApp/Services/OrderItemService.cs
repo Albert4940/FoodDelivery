@@ -6,9 +6,9 @@ using System.Data;
 
 namespace FoodDeliveryWebApp.Services
 {
-    public static class OrderItemService
+    public class OrderItemService : BaseService
     {
-        private static FoodDeliveryWebAppDbContext _context;
+        /*private static FoodDeliveryWebAppDbContext _context;
         public static void InintializeContextDb(FoodDeliveryWebAppDbContext context)
         {
             _context = context;
@@ -34,16 +34,20 @@ namespace FoodDeliveryWebApp.Services
         {
             _context.OrderItems.Remove(orderItem);
             await _context.SaveChangesAsync();
-        }
-        public static async Task AddOrderItem(Food food, long cartId, int qty)
+        }*/
+
+        public OrderItemService(FoodDeliveryWebAppDbContext context) : base(context) { }
+        public async Task AddOrderItem(Food food, long cartId, int qty)
         {
-           
-            var OrderItem = _context.OrderItems.FirstOrDefault(o => o.ProductId == food.Id && o.CartId == cartId);
+
+            //var OrderItem = _context.OrderItems.FirstOrDefault(o => o.ProductId == food.Id && o.CartId == cartId);
+            var OrderItem = _context.OrderItems.AsNoTracking().FirstOrDefault(o => o.ProductId == food.Id && o.CartId == cartId);
+
             try
             {
                 if (OrderItem is null)
                 {
-                    await Add(new OrderItem()
+                    await base.Add<OrderItem>(new OrderItem()
                     {
                         Title = food.Title,
                         CartId = cartId,
@@ -58,7 +62,7 @@ namespace FoodDeliveryWebApp.Services
                 {
                     OrderItem.Qty = qty;
                     OrderItem.CountInStock = food.CountInStock;
-                    await Update(OrderItem);
+                    await base.Update<OrderItem>(OrderItem);
                 }
             }
             catch (Exception ex)

@@ -14,11 +14,18 @@ namespace FoodDeliveryWebApp.Services
 
         }
 
-        public async Task<T> Get<T>(long Id = 0) where T : IEntity => Id == 0 
-            ? _context.Set<T>().AsNoTracking().FirstOrDefault() 
-            : _context.Set<T>().AsNoTracking().FirstOrDefault(t => t.Id == Id);
+        public async Task<T> Get<T>(long Id = 0) where T : IEntity
+        {
+            var entity = Id == 0
+                ? await _context.Set<T>().AsNoTracking().FirstOrDefaultAsync()
+                : await _context.Set<T>().AsNoTracking().FirstOrDefaultAsync(t => t.Id == Id);
 
-        public async Task<List<T>> Get<T>() where T : class => await _context.Set<T>().ToListAsync();
+            DetachContext();
+
+            return entity;
+        }
+
+        public async Task<List<T>> Get<T>() where T : class => await _context.Set<T>().AsNoTracking().ToListAsync();
 
         public async Task Add<T>(T item) where T : class
         {
@@ -28,7 +35,7 @@ namespace FoodDeliveryWebApp.Services
 
         public async Task Update<T>(T item) where T : class
         {
-            _context.Entry(item).State = EntityState.Modified;
+            //_context.Entry(item).State = EntityState.Modified;
             _context.Update(item);
             await _context.SaveChangesAsync();
         }
@@ -39,5 +46,18 @@ namespace FoodDeliveryWebApp.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task Remove<T>() where T : class
+        {
+            var items = await Get<T>();
+
+            _context.Set<T>().RemoveRange(items);
+            await _context.SaveChangesAsync();
+            DetachContext();
+        }
+
+        private void DetachContext()
+        {
+            _context.ChangeTracker.Clear();
+        }
     }
 }
