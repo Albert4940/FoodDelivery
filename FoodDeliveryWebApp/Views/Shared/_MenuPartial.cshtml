@@ -6,6 +6,9 @@
         flex-wrap: wrap;
     }
 
+    .alert-no-food{
+        display:none;
+    }
     .card {
         width: 25% !important;
         max-width: 300px !important;
@@ -60,6 +63,10 @@
                 if (Model.Foods != null && Model.Foods.Any())
                 {
                     <div id="card-group">
+
+                        <div class="alert alert-info alert-no-food my-5" role="alert">
+                            No Food Items Available
+                        </div>
                         @foreach (var item in Model.Foods)
                         {
                             <div class="card m-1" id="@item.CategoryId">

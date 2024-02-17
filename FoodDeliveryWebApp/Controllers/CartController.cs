@@ -14,17 +14,20 @@ namespace FoodDeliveryWebApp.Controllers
 {
     public class CartController : Controller
     {
+        private readonly BaseAPIService _baseAPIService;
         private readonly BaseService _baseService;
-
+        private readonly OrderItemService _orderItemService;
         public CartController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
         {
            
             FoodService.InitailizeHttp(httpClientFactory);
             CartService.InintializeContextDb(context);
-            OrderItemService.InintializeContextDb(context);
+            //OrderItemService.InintializeContextDb(context);
+
+            _baseAPIService = new BaseAPIService(httpClientFactory);
 
             _baseService = new BaseService(context);
-
+            _orderItemService = new OrderItemService(context);
         }
         //Get
         [HttpGet]
@@ -67,6 +70,7 @@ namespace FoodDeliveryWebApp.Controllers
             try
             {
                 await AddToCart(FoodId, Qty);
+                await UpdateCart();
             }catch(Exception ex)
             {               
                 TempData["Error"] = $"Error : {ex}";
@@ -110,9 +114,30 @@ namespace FoodDeliveryWebApp.Controllers
             var OrderItems = await _baseService.Get<OrderItem>();
             return OrderItems.Sum(o => o.Qty);
         }
- 
 
         public async Task AddToCart(long FoodId, int Qty)
+        {
+            try
+            {
+                var food = await _baseAPIService.Get<Food>(FoodId);
+                var cart = await _baseService.Get<Cart>(0);
+
+                if (cart is null)
+                {
+                    await _baseService.Add<Cart>(new Cart() { ItemsPrice = 0, TaxPrice = 0, ShippingPrice = 0, TotalPrice = 0 });
+                    cart = await _baseService.Get<Cart>(0);
+                }
+
+                await _orderItemService.AddOrderItem(food, cart.Id, Qty);
+
+                // No need to call UpdateCart here
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+       /* public async Task AddToCart(long FoodId, int Qty)
         {
             /* if (HttpContext.Session.GetString("JWToken") is null || HttpContext.Session.GetString("JWToken") == "")
              {
@@ -123,10 +148,11 @@ namespace FoodDeliveryWebApp.Controllers
 
             
             //var cart = _context.Carts.FirstOrDefault();
-            try
+            /*try
             {
 
-                var food = await FoodService.Get(FoodId);
+                //var food = await FoodService.Get(FoodId);
+                var food = await _baseAPIService.Get<Food>(FoodId);
 
                 //var cart = CartService.Get();
                 var cart = await _baseService.Get<Cart>(0);
@@ -140,14 +166,16 @@ namespace FoodDeliveryWebApp.Controllers
                     //var cartResult = CartService.Get() ?? new Cart();
                     var cartResult = await _baseService.Get<Cart>(0) ?? new Cart();
 
-                    await OrderItemService.AddOrderItem(food, cartResult.Id, Qty);
+                    //await OrderItemService.AddOrderItem(food, cartResult.Id, Qty);
+                    await _orderItemService.AddOrderItem(food, cartResult.Id, Qty);
                 }
                 else
                 {
-                    await OrderItemService.AddOrderItem(food, cart.Id, Qty);
+                    //await OrderItemService.AddOrderItem(food, cart.Id, Qty);
+                    await _orderItemService.AddOrderItem(food, cart.Id, Qty);
                 }
 
-                await UpdateCart();
+                //await UpdateCart();
             }
             catch(Exception ex)
             {
@@ -156,14 +184,14 @@ namespace FoodDeliveryWebApp.Controllers
             }            
 
             
-        }
+        }*/
 
         public async Task<Cart> UpdateCart()
         {
             // var cart = await _context.Carts.FirstOrDefaultAsync();
             try
             {
-                //var cart = CartService.Get();
+               // var cart = CartService.Get();
                 var cart = await _baseService.Get<Cart>(0);
 
                 //var OrderItems = await OrderItemService.GetAll();
@@ -202,10 +230,12 @@ namespace FoodDeliveryWebApp.Controllers
         {
             try
             {
-                var OrderItem = OrderItemService.GetByID(Id);
+                // var OrderItem = OrderItemService.GetByID(Id);
+                var OrderItem = await _baseService.Get<OrderItem>(Id);
                 OrderItem.Qty = Qty;
 
-                await OrderItemService.Update(OrderItem);
+                //await OrderItemService.Update(OrderItem);
+                await _baseService.Update<OrderItem>(OrderItem);
                 var cart = await UpdateCart();
 
                 var countItems = await CountOrderItems();
@@ -243,7 +273,7 @@ namespace FoodDeliveryWebApp.Controllers
 
         }
 
-        public async Task<IActionResult> Checkout()
+        /*public async Task<IActionResult> Checkout()
         {
             using (var httpClient = new HttpClient())
             {
@@ -284,6 +314,6 @@ namespace FoodDeliveryWebApp.Controllers
                 }
             }
             return Redirect("~/Cart/Index");
-        }
+        }*/
     }
 }

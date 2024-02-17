@@ -15,15 +15,17 @@ namespace FoodDeliveryWebApp.Controllers
     public class OrderController : Controller
     {
         private OrderAPIService _orderAPIService;
+        private readonly BaseService _baseService;
+
         public OrderController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
         {
             FoodService.InitailizeHttp(httpClientFactory);
             CartService.InintializeContextDb(context);
-            OrderItemService.InintializeContextDb(context);
+            //OrderItemService.InintializeContextDb(context);
             ShippingAddressService.InintializeContextDb(context);
 
             _orderAPIService = new OrderAPIService(httpClientFactory);
-
+            _baseService = new BaseService(context);
             //BaseAPIService.InitailizeHttp(httpClientFactory);
             OrderService.InitailizeHttp(httpClientFactory);
         }
@@ -41,9 +43,9 @@ namespace FoodDeliveryWebApp.Controllers
                 //var Order = await OrderService.Get(OrderId, token);
 
                 var Order = await _orderAPIService.Get<CartViewModel>(OrderId, token);
-                
-                Order.ShippingAddress = ShippingAddressService.Get();
 
+                // Order.ShippingAddress = ShippingAddressService.Get();
+                Order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
                 return Order is null ? View() : View(Order);
             }catch(Exception ex)
             {
@@ -76,7 +78,7 @@ namespace FoodDeliveryWebApp.Controllers
             return RedirectToAction("Address");
         }
 
-        public IActionResult Address()
+        public async Task<IActionResult> Address()
         {
             //var model = TempData["PaymentMethod"] as Payment;
             if (TempData["PaymentMethod"] is null || TempData["PaymentMethod"] == "")
@@ -86,7 +88,8 @@ namespace FoodDeliveryWebApp.Controllers
 
             try
             {
-                var ShippingAddress = ShippingAddressService.Get();
+                //var ShippingAddress = ShippingAddressService.Get();
+                var ShippingAddress = await _baseService.Get<ShippingAddress>(0);
                 return View(ShippingAddress);
             }catch(Exception ex)
             {
@@ -104,17 +107,22 @@ namespace FoodDeliveryWebApp.Controllers
                 return View(model);
             }*/
 
-            var Address = ShippingAddressService.Get();
+            // var Address = ShippingAddressService.Get();
+            var Address = await _baseService.Get<ShippingAddress>(0);
 
             try
             {
                 if(Address.Id == model.Id)
                 {
-                    await ShippingAddressService.Update(model);
+                    //await ShippingAddressService.Update(model);
+                    model.UserId = "string";
+                    await _baseService.Update<ShippingAddress>(model);
                 }
                 else
                 {
-                    await ShippingAddressService.Add(model);
+                    //await ShippingAddressService.Add(model);
+                    model.UserId = "string";
+                    await _baseService.Add<ShippingAddress>(model);
                 }
                 return RedirectToAction("Create");
             }
@@ -133,15 +141,21 @@ namespace FoodDeliveryWebApp.Controllers
                 if (token is null || token == "")
                     return Redirect("/User/Index?redirect=Order");
 
-                var Address = ShippingAddressService.Get();
-
-                return View(new CartViewModel { 
-                    OrderItems = await OrderItemService.GetAll(), 
-                    ShippingAddress = Address, 
-                    cart = CartService.Get()
+                //var Address = ShippingAddressService.Get();
+                var Address = await _baseService.Get<ShippingAddress>(0);
+                /* return View(new CartViewModel { 
+                     OrderItems = await OrderItemService.GetAll(), 
+                     ShippingAddress = Address, 
+                     cart = CartService.Get()
+                 });*/
+                return View(new CartViewModel
+                {
+                    OrderItems = await _baseService.Get<OrderItem>(),
+                    ShippingAddress = Address,
+                    cart = await _baseService.Get<Cart>(0)
                 });
-
-            }catch(Exception ex)
+            }
+            catch(Exception ex)
             {
                 TempData["Error"] = ex.Message.ToString();
             }
@@ -157,24 +171,39 @@ namespace FoodDeliveryWebApp.Controllers
             try
             {
                 var token = HttpContext.Session.GetString("JWToken");
-                
-                var CartOrder = CartService.Get();
-                var ShippingAddress = ShippingAddressService.Get();
-                
+
+                //var CartOrder = CartService.Get();
+                //var ShippingAddress = ShippingAddressService.Get();
+
+                var ShippingAddress = await _baseService.Get<ShippingAddress>(0);
+                var CartOrder = await _baseService.Get<Cart>(0);
+
                 CartOrder.UserId = "string";
                 ShippingAddress.Id = 0;
                 ShippingAddress.UserId = "string";
 
-                var model = new CartViewModel
+                /*var model = new CartViewModel
                 {
                     OrderItems = await OrderItemService.GetAll(),
                     ShippingAddress = ShippingAddress,
                     cart = CartOrder
+                };*/
+                var model = new CartViewModel
+                {
+                    OrderItems = await _baseService.Get<OrderItem>(),
+                    ShippingAddress = ShippingAddress,
+                    cart = CartOrder
                 };
 
-                 //var OrderResult = await OrderService.Add(model, token);
+                //var OrderResult = await OrderService.Add(model, token);
                 var OrderResult = await _orderAPIService.Add(model,token);
                 //TempData["Result"] = $"{OrderResult.Id.ToString()}-{OrderResult.UserId.ToString()}-{OrderResult.TotalPrice.ToString()}-{OrderResult.ItemsPrice.ToString()}";
+
+                //remove cart
+                await _baseService.Remove<OrderItem>();
+                await _baseService.Remove<Cart>();
+                
+
                 return RedirectToAction("Index", new { OrderId = OrderResult.Id });
             }
             catch (Exception ex)

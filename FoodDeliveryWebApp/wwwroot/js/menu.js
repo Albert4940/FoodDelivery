@@ -8,6 +8,17 @@
         })
     }
     showFoods();
+
+    function showNoFoodMesage() {
+        // alert - no - food
+        $(".alert-no-food").hide();
+
+        let CountCard = $("#card-group .card").length;
+        let CountCardHide = $("#card-group .card.hide-card-food").length;
+
+        if (CountCard == CountCardHide)
+            $(".alert-no-food").show();
+    }
     function filterFood(categoryId) {
         
         if (categoryId == 0) {
@@ -25,11 +36,14 @@
             })
         }
 
+        showNoFoodMesage();
+
     }
 
     $(".btn-category").click(function (e) {
         e.preventDefault();
 
+        
         $(".btn-category").removeClass("btn-dark")
         $(this).addClass("btn-dark")
 
@@ -38,5 +52,6 @@
         let categoryId = btn.attr("id");
 
         filterFood(categoryId);
+
     })
 })
