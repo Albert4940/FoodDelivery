@@ -20,6 +20,11 @@ namespace FoodDeliveryWebApp.Data
              .HasForeignKey(o => o.CartId)
              .OnDelete(DeleteBehavior.Restrict);
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
+
 
     }
 }
