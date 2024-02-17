@@ -84,7 +84,7 @@
                             <span id="total-price">@(Cart is null ? "0.00" : $"{Cart.TotalPrice:N2}")</span>
                         </li>
                         <li class="list-group-item">
-                            <a class="btn btn-primary btn-block" asp-controller="Order" asp-action="PaymentMethod" >
+                            <a class="btn btn-primary btn-block @(OrderItems.Count == 0 ? "disabled" : "")" asp-controller="Order" asp-action="PaymentMethod">
                                 Proceed To Checkout
                             </a>
                         </li>
