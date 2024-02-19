@@ -31,14 +31,15 @@ namespace FoodDeliveryWebApp.Controllers
         }
 
         // GET: OrderController
+        [SessionExpire]
         public async Task<ActionResult> Index(long OrderId = 0)
         {
             try
             {
                 var token = HttpContext.Session.GetString("JWToken");
 
-                if (token is null || token == "")
-                    return Redirect("/User/Index?redirect=Order");
+                /*if (token is null || token == "")
+                    return Redirect("/User/Index?redirect=Order");*/
 
                 //var Order = await OrderService.Get(OrderId, token);
 
