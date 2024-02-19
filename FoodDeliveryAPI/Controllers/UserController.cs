@@ -4,6 +4,7 @@ using FoodDeliveryAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using BC = BCrypt.Net.BCrypt;
 
@@ -119,6 +120,25 @@ namespace FoodDeliveryAPI.Controllers
             var res = $"Hi {currentUser.UserName}";
             // return new User { UserName = currentUser.UserName};
             return Ok(currentUser);
+        }
+
+        [HttpPost("verify_token")]
+        [AllowAnonymous]
+        public IActionResult IsTokenExpired(string token)
+        {            
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(token);
+                var expired = DateTime.UtcNow >= jwtSecurityToken.ValidTo;
+
+                return Ok(expired);
+            }
+            catch
+            {
+                // Token is invalid or unreadable
+                throw;
+            }
         }
 
     }
