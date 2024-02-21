@@ -71,7 +71,7 @@
 @{
     ViewData["Title"] = "Home Page";
 
-   var ShowCaseFoods = Model.ShowCaseFoods;
+   var ShowCaseFoods = Model?.ShowCaseFoods;
 
    string[,] hoursArray = new string[7, 2]
         {
@@ -90,7 +90,7 @@
             @TempData["Error"]
         </div>
     }
-    else
+    else if(ShowCaseFoods is not null && ShowCaseFoods.Any())
     {
         <div id="showcase" class="mb-5 d-flex justify-content-center align-items-center">
             <div id="showcase-text" class="text-md-start text-center w-50 ">
@@ -182,5 +182,11 @@
                 <div class="w-50 working-hour-img d-none d-lg-block"><div/>
             </div>
         </section>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+           <p>Something wrong!</p>
+        </div>
     }
 }

@@ -52,10 +52,10 @@
                 if (Model.Categories is not null && Model.Categories.Any())
                 {
                     <div id="Cat" class="d-flex justify-content-start flex-wrap mb-5">
-                        <button id="0" class="me-3 btn btn-light btn-dark btn-category fs-5 px-4">All</button>
+                        <button id="0" class="mb-2 me-3 btn btn-light btn-dark btn-category fs-5 px-4">All</button>
                         @foreach (var item in Model.Categories)
                         {
-                            <button id="@item.Id" class="btn btn-light me-3 btn-category fs-5">@item.Title</button>
+                            <button id="@item.Id" class="btn btn-light mb-2 me-3 btn-category fs-5">@item.Title</button>
                         }
                     </div>
                 }

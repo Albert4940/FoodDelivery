@@ -24,3 +24,10 @@ body {
     background: url(/img/open-hour-img.jpg);
     background-size: cover;
 }
+.nav-link {
+    transition: transform .2s;
+}
+
+.nav-link:hover {
+    transform: scale(1.2);
+}
