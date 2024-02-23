@@ -86,5 +86,11 @@ namespace FoodDeliveryWebApp.Controllers
             }           
             return View(user);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            return View();
+        }
     }
 }

@@ -1,0 +1,94 @@
+﻿@model FoodDeliveryWebApp.Models.User
+@{
+    ViewData["Title"] = "Profile Page";
+
+    if (TempData["Result"] != null && TempData["Result"] != "")
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["Result"]
+        </div>
+    }
+
+    if (TempData["Error"] != null && TempData["Error"] != "")
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+}
+
+<div class="row ">
+    <div class="col-md-3">
+        <ul class="nav nav-pills flex-column ">
+            <li class="nav-item">
+                <a class="nav-link active" id="profile" aria-current="page" href="#">Active</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="password" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-9">
+        <form asp-action="LoginUser" asp-controller="User" method="post">
+
+            <!--Profile-->
+            
+            <div class="profile-form form-inner">
+                <h2>Profile</h2>
+                <div class="mb-3">
+                    <label for="UserName" class="form-label">User Name</label>
+                    <input asp-for="UserName" class="form-control" disabled />
+                    <div id="UserName" class="form-text">We'll never share your user name with anyone else.</div>
+                </div>
+               <!-- <div class="mb-3 input-group-lg">
+                    <label for="UserName" class="form-label">User Name</label>
+                    <input asp-for="UserName" class="form-control" disabled />
+                    <div id="UserName" class="form-text">We'll never share your user name with anyone else.</div>
+                 </div>-->
+            </div>
+            <div class="password-form form-inner">
+                <h2>Change password</h2>
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <input type="password" class="form-control" asp-for="Password" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" />
+                </div>
+            </div>
+
+            <div class=" mb-3">
+                <input type="submit" class="btn btn-dark  input-group-lg" value="Update" />
+            </div>
+        </form>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        jQuery(document).ready(function () {
+            $(".nav-pills .nav-link").click(function(e){
+                e.preventDefault();
+                
+                $(".nav-pills .nav-link").each(function(){
+                    $(this).removeClass("active");
+                })
+
+                $("form div.form-inner").hide();
+
+                let formId = $(this).attr("id");
+                $("form ." + formId + "-form").show(); 
+
+                $(this).addClass("active");
+            });
+        })
+    </script>
+}

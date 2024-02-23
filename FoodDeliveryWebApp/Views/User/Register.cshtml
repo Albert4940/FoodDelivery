@@ -1,9 +1,7 @@
 ﻿@model FoodDeliveryWebApp.Models.User
 @{
     ViewData["Title"] = "Register Page";
-}
-<h1>Register Page</h1>
-@{
+
     if (TempData["Result"] != null && TempData["Result"] != "")
     {
         <div class="alert alert-success" role="alert">
@@ -19,13 +17,24 @@
     }
 }
 
-<form asp-action="Register" asp-controller="User">
-    <div asp-validation-summary="ModelOnly"></div>
-    <label asp-for="UserName">User Name</label>
-    <input asp-for="UserName" />
-    <label>Password</label>
-    <input asp-for="Password" />
-    <input type="submit" value="Register" />
+<div class="row fs-5">
 
-    <a class="" asp-controller="User" asp-action="Index">Login</a>
-</form>
+    <form class="col-xs-12 col-md-6 mx-auto" asp-action="Register" asp-controller="User" method="post">
+
+        <h1 class="mb-3">Register Page</h1>
+
+        <div class="mb-3 input-group-lg">
+            <label for="UserName" class="form-label">User Name</label>
+            <input asp-for="UserName" class="form-control" />
+        </div>
+        <div class="mb-5 input-group-lg">
+            <label asp-for="Password" class="form-label">Password</label>
+            <input type="password" class="form-control" asp-for="Password" />
+        </div>
+        <div class="input-group-lg mb-3">
+            <input type="submit" class="btn btn-dark btn-block w-100  input-group-lg" value="Register" />
+        </div>
+
+        <a class="d-block text-dark" asp-controller="User" asp-action="Index">Login</a>
+    </form>
+</div>
