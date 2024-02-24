@@ -21,21 +21,15 @@
     <div class="col-md-3">
         <ul class="nav nav-pills flex-column ">
             <li class="nav-item">
-                <a class="nav-link active" id="profile" aria-current="page" href="#">Active</a>
+                <a class="nav-link active" id="profile" aria-current="page" href="#">Profile</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="password" href="#">Link</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                <a class="nav-link" id="password" href="#">Password</a>
             </li>
         </ul>
     </div>
     <div class="col-md-9">
-        <form asp-action="LoginUser" asp-controller="User" method="post">
+        <form asp-action="Profile" asp-controller="User" method="post">
 
             <!--Profile-->
             
@@ -59,8 +53,8 @@
                     <input type="password" class="form-control" asp-for="Password" />
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" />
+                    <label class="form-label" for="confirmPassword">Confirm Password</label>
+                    <input type="password" class="form-control" name="confirmPassword"/>
                 </div>
             </div>
 
@@ -75,6 +69,10 @@
 @section Scripts {
     <script>
         jQuery(document).ready(function () {
+
+            $("form div.form-inner").hide();
+            $("form  div.form-inner:first-child").show();
+
             $(".nav-pills .nav-link").click(function(e){
                 e.preventDefault();
                 
