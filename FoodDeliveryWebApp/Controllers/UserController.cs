@@ -92,5 +92,17 @@ namespace FoodDeliveryWebApp.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Profile(User user, string confirmPassword)
+        {
+            if(user.Password != confirmPassword)
+            {
+                TempData["Error"] = "The two passwords must match!";
+                return View();
+            }
+
+            return View();
+        }
     }
 }
