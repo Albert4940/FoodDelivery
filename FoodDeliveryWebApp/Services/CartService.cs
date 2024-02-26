@@ -14,15 +14,15 @@ namespace FoodDeliveryWebApp.Services
 
         }
 
-        public static Cart Get() => _context.Carts.FirstOrDefault();
+        public static Order Get() => _context.Orders.FirstOrDefault();
 
-        public static async Task Add(Cart cart)
+        public static async Task Add(Order cart)
         {
             _context.Add(cart);
             await _context.SaveChangesAsync();
         }
 
-        public static async Task Update(Cart cart)
+        public static async Task Update(Order cart)
         {
             _context.Entry(cart).State = EntityState.Modified;
             _context.Update(cart);

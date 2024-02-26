@@ -15,7 +15,7 @@ namespace FoodDeliveryWebApp.Services
             _httpClient = _httpClientFactory.CreateClient("FoodAPI");
         }
 
-        public static async Task<CartViewModel> Get(long Id, string token)
+        public static async Task<OrderViewModel> Get(long Id, string token)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -24,7 +24,7 @@ namespace FoodDeliveryWebApp.Services
             if (response.IsSuccessStatusCode)
             {
                 using var contentStream = await response.Content.ReadAsStreamAsync();
-                return await JsonSerializer.DeserializeAsync<CartViewModel>(contentStream);
+                return await JsonSerializer.DeserializeAsync<OrderViewModel>(contentStream);
             }
             else
             {
@@ -32,7 +32,7 @@ namespace FoodDeliveryWebApp.Services
             }
         }
 
-        public static async Task<Cart> Add(CartViewModel model, string token)
+        public static async Task<Order> Add(OrderViewModel model, string token)
         {
            
 
@@ -54,7 +54,7 @@ namespace FoodDeliveryWebApp.Services
             if (response.IsSuccessStatusCode) 
             {
                 using var contentStream = await response.Content.ReadAsStreamAsync();
-                return await JsonSerializer.DeserializeAsync<Cart>(contentStream);
+                return await JsonSerializer.DeserializeAsync<Order>(contentStream);
                 //return await JsonSerializer.DeserializeAsync<string>(contentStream);
             }
             else

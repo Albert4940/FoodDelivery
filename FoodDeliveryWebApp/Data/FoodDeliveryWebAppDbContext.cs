@@ -9,13 +9,13 @@ namespace FoodDeliveryWebApp.Data
         : base(options)
         {
         }
-        public DbSet<Cart> Carts { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<ShippingAddress> ShippingAddresses { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<OrderItem>()
-             .HasOne<Cart>()
+             .HasOne<Order>()
              .WithMany()
              .HasForeignKey(o => o.CartId)
              .OnDelete(DeleteBehavior.Restrict);

@@ -33,7 +33,7 @@ namespace FoodDeliveryWebApp.Services
                 throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
         }
 
-        public async Task<Cart> Add(CartViewModel model, string token)
+        public async Task<Order> Add(OrderViewModel model, string token)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -52,7 +52,7 @@ namespace FoodDeliveryWebApp.Services
             if (response.IsSuccessStatusCode)
             {
                 using var contentStream = await response.Content.ReadAsStreamAsync();
-                return await JsonSerializer.DeserializeAsync<Cart>(contentStream);
+                return await JsonSerializer.DeserializeAsync<Order>(contentStream);
             }
             else if(response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {

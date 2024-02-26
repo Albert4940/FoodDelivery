@@ -30,9 +30,20 @@ namespace FoodDeliveryWebApp.Controllers
             OrderService.InitailizeHttp(httpClientFactory);
         }
 
+        /*public async Task<ActionResult> Index()
+        {
+            try
+            {
+                await _baseService.Get<>
+            }catch(Exception ex)
+            {
+                TempData["Error"] = ex;
+            }
+        }*/
+
         // GET: OrderController
         [SessionExpire]
-        public async Task<ActionResult> Index(long OrderId = 0)
+        public async Task<ActionResult> Details(long OrderId = 0)
         {
             try
             {
@@ -43,7 +54,7 @@ namespace FoodDeliveryWebApp.Controllers
 
                 //var Order = await OrderService.Get(OrderId, token);
 
-                var Order = await _orderAPIService.Get<CartViewModel>(OrderId, token);
+                var Order = await _orderAPIService.Get<OrderViewModel>(OrderId, token);
 
                 // Order.ShippingAddress = ShippingAddressService.Get();
                 Order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
@@ -149,11 +160,11 @@ namespace FoodDeliveryWebApp.Controllers
                      ShippingAddress = Address, 
                      cart = CartService.Get()
                  });*/
-                return View(new CartViewModel
+                return View(new OrderViewModel
                 {
                     OrderItems = await _baseService.Get<OrderItem>(),
                     ShippingAddress = Address,
-                    cart = await _baseService.Get<Cart>(0)
+                    cart = await _baseService.Get<Order>(0)
                 });
             }
             catch(Exception ex)
@@ -167,7 +178,7 @@ namespace FoodDeliveryWebApp.Controllers
         // POST: OrderController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(CartViewModel Order)
+        public async Task<ActionResult> Create(OrderViewModel Order)
         {
             try
             {
@@ -177,7 +188,7 @@ namespace FoodDeliveryWebApp.Controllers
                 //var ShippingAddress = ShippingAddressService.Get();
 
                 var ShippingAddress = await _baseService.Get<ShippingAddress>(0);
-                var CartOrder = await _baseService.Get<Cart>(0);
+                var CartOrder = await _baseService.Get<Order>(0);
 
                 CartOrder.UserId = "string";
                 ShippingAddress.Id = 0;
@@ -189,7 +200,7 @@ namespace FoodDeliveryWebApp.Controllers
                     ShippingAddress = ShippingAddress,
                     cart = CartOrder
                 };*/
-                var model = new CartViewModel
+                var model = new OrderViewModel
                 {
                     OrderItems = await _baseService.Get<OrderItem>(),
                     ShippingAddress = ShippingAddress,
@@ -202,10 +213,10 @@ namespace FoodDeliveryWebApp.Controllers
 
                 //remove cart
                 await _baseService.Remove<OrderItem>();
-                await _baseService.Remove<Cart>();
+                await _baseService.Remove<Order>();
                 
 
-                return RedirectToAction("Index", new { OrderId = OrderResult.Id });
+                return RedirectToAction("Details", new { OrderId = OrderResult.Id });
             }
             catch (Exception ex)
             {
