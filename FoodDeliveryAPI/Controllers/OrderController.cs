@@ -34,10 +34,7 @@ namespace FoodDeliveryAPI.Controllers
             var Orders = await OrderService.GetAll();
             var OrdersUser = Orders.FindAll(o => o.UserId == CurrentUser.Id);
 
-            return Ok(new {
-                Order = OrdersUser,
-                OrderItems = await OrderItemService.GetAll()
-            });
+            return Ok(OrdersUser);
         }
 
         // GET api/<OrderController>/5
