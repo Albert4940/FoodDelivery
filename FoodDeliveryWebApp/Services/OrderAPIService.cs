@@ -30,7 +30,33 @@ namespace FoodDeliveryWebApp.Services
                 return await JsonSerializer.DeserializeAsync<T>(contentStream);
             }
             else
-                throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception(errorContent.ToString());
+            }
+        }
+
+        public async Task<List<T>> Get<T>(string token = null) where T : class
+        {
+            if (string.IsNullOrWhiteSpace(token) || token == "")
+                throw new ArgumentOutOfRangeException(nameof(token), "The token cannot be null or empty.");
+
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            //string endPoint = typeof(T).Name.ToLower();
+
+            using HttpResponseMessage response = await _httpClient.GetAsync($"{endPoint}/");
+
+            if (response.IsSuccessStatusCode)
+            {
+                using var contentStream = await response.Content.ReadAsStreamAsync();
+                return await JsonSerializer.DeserializeAsync<List<T>>(contentStream);
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception(errorContent.ToString());
+            }                
         }
 
         public async Task<Order> Add(OrderViewModel model, string token)

@@ -14,6 +14,9 @@
 
         public double ShippingPrice {  get; set; }
         public double TotalPrice { get; set;}
+        public bool IsDelivered { get; set; } = false;
+        public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
 
         //public string PaymentMethod { get; set; }
     }

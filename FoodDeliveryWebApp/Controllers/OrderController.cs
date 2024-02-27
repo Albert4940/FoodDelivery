@@ -16,7 +16,7 @@ namespace FoodDeliveryWebApp.Controllers
     {
         private OrderAPIService _orderAPIService;
         private readonly BaseService _baseService;
-
+        private readonly BaseAPIService _baseAPIService;
         public OrderController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
         {
             FoodService.InitailizeHttp(httpClientFactory);
@@ -25,25 +25,30 @@ namespace FoodDeliveryWebApp.Controllers
             ShippingAddressService.InintializeContextDb(context);
 
             _orderAPIService = new OrderAPIService(httpClientFactory);
+            _baseAPIService = new BaseAPIService(httpClientFactory);
             _baseService = new BaseService(context);
             //BaseAPIService.InitailizeHttp(httpClientFactory);
             OrderService.InitailizeHttp(httpClientFactory);
         }
 
-        /*public async Task<ActionResult> Index()
+        [SessionExpire]
+        public async Task<ActionResult> Index()
         {
             try
             {
-                await _baseService.Get<>
+                var token = HttpContext.Session.GetString("JWToken");
+                var Orders = await _orderAPIService.Get<Order>(token);
+                return View(Orders);
             }catch(Exception ex)
             {
                 TempData["Error"] = ex;
             }
-        }*/
+            return View();
+        }
 
         // GET: OrderController
         [SessionExpire]
-        public async Task<ActionResult> Details(long OrderId = 0)
+        public async Task<ActionResult> Details(long Id = 0)
         {
             try
             {
@@ -54,7 +59,7 @@ namespace FoodDeliveryWebApp.Controllers
 
                 //var Order = await OrderService.Get(OrderId, token);
 
-                var Order = await _orderAPIService.Get<OrderViewModel>(OrderId, token);
+                var Order = await _orderAPIService.Get<OrderViewModel>(Id, token);
 
                 // Order.ShippingAddress = ShippingAddressService.Get();
                 Order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
@@ -216,7 +221,7 @@ namespace FoodDeliveryWebApp.Controllers
                 await _baseService.Remove<Order>();
                 
 
-                return RedirectToAction("Details", new { OrderId = OrderResult.Id });
+                return RedirectToAction("Details", new { Id = OrderResult.Id });
             }
             catch (Exception ex)
             {
@@ -228,6 +233,22 @@ namespace FoodDeliveryWebApp.Controllers
             }*/
 
             return RedirectToAction(nameof(Create));
+        }
+
+        [HttpPost]
+        [SessionExpire]
+        public async Task<ActionResult> Delete(long Id)
+        {
+            /* try
+             {
+                 await _baseAPIService.Delete<Order>(Id);
+             }
+             catch(Exception ex)
+             {
+                 TempData["Error"] = ex.Message.ToString();
+             }*/
+            TempData["Error"] = Id.ToString();
+            return RedirectToAction(nameof(Index));
         }
 
     }

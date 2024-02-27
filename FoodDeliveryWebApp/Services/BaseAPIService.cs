@@ -71,5 +71,16 @@ namespace FoodDeliveryWebApp.Services
                 throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
         }
 
+        public async Task Delete<T>(long Id) where T : class
+        {
+            using HttpResponseMessage response = await _httpClient.DeleteAsync($"{typeof(T).Name.ToLower()}/{Id.ToString()}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
+
+            }
+        }
+
     }
 }

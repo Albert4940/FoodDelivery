@@ -4,37 +4,66 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>List Orders</h1>
+@{
+    if(TempData["Error"] != null && TempData["Error"] != "")
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-xs-12 col-md-9 mx-auto table-responsive">
+                <h1 >Orders</h1>
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Id)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.CreatedDate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.TotalPrice)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.IsDelivered)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.CreatedDate</td>
+                                <td> @Html.DisplayFor(modelItem => item.TotalPrice)</td>
+                                <td>
+                                    @{
+                                        if (item.IsDelivered)
+                                        {
+                                            //item.IsDelivered.ToString();
+                                            <strong class="text-success">V</strong>
+                                        }                                        
+                                        else
+                                        {
+                                            <strong class="text-danger">X</strong>
+                                        }                                        
+                                    }
+                                </td>
+                                <td>
+                                    <!--<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>-->
+                                    <a asp-action="Details" asp-route-id="@item.Id">Detail</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}
 
-<div class="row">
-    <div class="col-xs-12 col-md-9 mx-auto">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Id)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.TotalPrice)
-                    </th>
-
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.Id</td>
-                        <td> @Html.DisplayFor(modelItem => item.TotalPrice)</td>
-                        <td>
-                            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
