@@ -39,9 +39,10 @@ namespace FoodDeliveryWebApp.Controllers
             try
             {
                 //var token = await UserService.Auth(user);
-                var token = await _userAPIService.Auth(user);
+                var userAuth = await _userAPIService.Auth(user);
 
-                HttpContext.Session.SetString("JWToken", token);
+                HttpContext.Session.SetString("JWToken", userAuth.Token);
+                HttpContext.Session.SetString("UserId", userAuth.Id);
                 HttpContext.Session.SetString("UserName", user.UserName);
 
                 return Redirect("~/Home/Index");

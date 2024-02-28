@@ -99,8 +99,8 @@ namespace FoodDeliveryAPI.Controllers
             }
             else
             {
-                var token = TokenService.Generate(user, _configuration);
-                return Ok(new { userId = user.Id,token });
+                var Token = TokenService.Generate(user, _configuration);
+                return Ok(new { Id = user.Id,Token });
             }
             /*if (user != null )
             {

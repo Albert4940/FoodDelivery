@@ -10,7 +10,7 @@ namespace FoodDeliveryWebApp.Services
 
         public UserAPIService(IHttpClientFactory httpClientFactory) : base(httpClientFactory) { }
 
-        public  async Task<string> Auth(User user)
+        public  async Task<User> Auth(User user)
         {
             user.Id = "01";
             var jsonContent = new StringContent(
@@ -22,8 +22,9 @@ namespace FoodDeliveryWebApp.Services
 
             if (response.IsSuccessStatusCode)
             {
-               return await response.Content.ReadAsStringAsync();
-                //return await JsonSerializer.DeserializeAsync<T>(contentStream);
+               //return await response.Content.ReadAsStringAsync();
+                using var contentStream = await response.Content.ReadAsStreamAsync();
+                return await JsonSerializer.DeserializeAsync<User>(contentStream);
                 //return item;
             }
             else
