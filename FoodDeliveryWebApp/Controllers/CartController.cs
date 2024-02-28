@@ -60,6 +60,7 @@ namespace FoodDeliveryWebApp.Controllers
         }
 
         [HttpPost]
+        [SessionExpire]
         // Post: CartController
         public async Task<ActionResult> Index(long Id, int CountInStock)
         {
@@ -80,6 +81,7 @@ namespace FoodDeliveryWebApp.Controllers
             {
                 /*var cart = CartService.Get();
                 var orderItems = await OrderItemService.GetAll();*/
+
                 var cart = await _baseService.Get<Order>(0);
                 var orderItems = await _baseService.Get<OrderItem>();
 
@@ -117,6 +119,8 @@ namespace FoodDeliveryWebApp.Controllers
 
         public async Task AddToCart(long FoodId, int Qty)
         {
+            var UserId = HttpContext.Session.GetString("UserId");
+
             try
             {
                 var food = await _baseAPIService.Get<Food>(FoodId);
@@ -124,7 +128,7 @@ namespace FoodDeliveryWebApp.Controllers
 
                 if (cart is null)
                 {
-                    await _baseService.Add<Order>(new Order() { ItemsPrice = 0, TaxPrice = 0, ShippingPrice = 0, TotalPrice = 0 });
+                    await _baseService.Add<Order>(new Order() { UserId=UserId, ItemsPrice = 0, TaxPrice = 0, ShippingPrice = 0, TotalPrice = 0 });
                     cart = await _baseService.Get<Order>(0);
                 }
 

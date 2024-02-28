@@ -24,10 +24,4 @@
     <None Include="Views\Shared\_PaymentMethod.cshtml" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="foodDelivery.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
