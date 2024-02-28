@@ -41,7 +41,7 @@ namespace FoodDeliveryWebApp.Services
             var jsonContent = new StringContent(
                 JsonSerializer.Serialize(new
                 {
-                    Order = model.cart,
+                    Order = model.Order,
                     OrderItems = model.OrderItems,
                     ShippingAddress = model.ShippingAddress
                 }),

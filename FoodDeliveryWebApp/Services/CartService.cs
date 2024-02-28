@@ -1,22 +1,38 @@
 ﻿using FoodDeliveryWebApp.Data;
 using FoodDeliveryWebApp.Models;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Common;
 
 namespace FoodDeliveryWebApp.Services
 {
-    public static class CartService
+    public class CartService : BaseService
     {
-        private static  FoodDeliveryWebAppDbContext _context;
 
-        public static void InintializeContextDb( FoodDeliveryWebAppDbContext context)
-        {
-            _context = context;
+        public CartService(FoodDeliveryWebAppDbContext context) : base(context) { }
 
+        public async Task<Order> Get(string UserId)
+            {
+                if (string.IsNullOrWhiteSpace(UserId) || UserId == "")
+                    throw new ArgumentOutOfRangeException(nameof(UserId), "The UserId cannot be null or empty.");
+
+                var carts = await base.Get<Order>();
+               
+                return carts.FirstOrDefault(c => c.UserId == UserId);
         }
 
-        public static Order Get() => _context.Orders.FirstOrDefault();
+        public async Task<Order> Add(string UserId)
+        {
+            var cart = await Get(UserId);
 
-        public static async Task Add(Order cart)
+            if (cart is null)
+            {
+                await base.Add<Order>(new Order() { UserId = UserId, ItemsPrice = 0, TaxPrice = 0, ShippingPrice = 0, TotalPrice = 0 });
+                return await Get(UserId);
+            }
+
+            return cart;
+        }
+        /*public static async Task Add(Order cart)
         {
             _context.Add(cart);
             await _context.SaveChangesAsync();
@@ -27,6 +43,6 @@ namespace FoodDeliveryWebApp.Services
             _context.Entry(cart).State = EntityState.Modified;
             _context.Update(cart);
             await _context.SaveChangesAsync();
-        }
+        }*/
     }
 }

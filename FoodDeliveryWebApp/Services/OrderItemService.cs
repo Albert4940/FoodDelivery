@@ -37,6 +37,16 @@ namespace FoodDeliveryWebApp.Services
         }*/
 
         public OrderItemService(FoodDeliveryWebAppDbContext context) : base(context) { }
+
+        public async Task<List<OrderItem>> Get(long CartId)
+        {
+            //put it into helpers class
+            if (CartId == 0)
+                throw new ArgumentOutOfRangeException(nameof(CartId), "The UserId cannot be zero.");
+
+            var OrderItemList = await base.Get<OrderItem>();
+            return OrderItemList.FindAll(o => o.CartId == CartId);
+        }
         public async Task AddOrderItem(Food food, long cartId, int qty)
         {
 
