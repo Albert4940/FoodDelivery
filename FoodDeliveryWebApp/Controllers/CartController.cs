@@ -31,23 +31,31 @@ namespace FoodDeliveryWebApp.Controllers
         }
         //Get
         [HttpGet]
+        [SessionExpire]
         public async Task<ActionResult> Index()
         {
             try
             {
                 //var cart = CartService.Get();
-                var cart = await _baseService.Get<Order>(0);
+                //var cart = await _baseService.Get<Order>(0);
+
+                var UserId = HttpContext.Session.GetString("UserId");
+
+                var carts = await _baseService.Get<Order>();
+                var cart = carts.FirstOrDefault(c => c.UserId == UserId);
 
                 //var orderItems = await OrderItemService.GetAll();
 
-                var orderItems = await _baseService.Get<OrderItem>();
+                var OrderItemList = await _baseService.Get<OrderItem>();
+
+                var OrderItems = OrderItemList.FindAll(o => o.CartId == cart.Id);
 
                 if (cart != null)
                 {
                     var CartViewModel = new OrderViewModel()
                     {
                         cart = cart,
-                        OrderItems = orderItems
+                        OrderItems = OrderItems
                     };
                     return View(CartViewModel);
                 }
@@ -82,15 +90,24 @@ namespace FoodDeliveryWebApp.Controllers
                 /*var cart = CartService.Get();
                 var orderItems = await OrderItemService.GetAll();*/
 
-                var cart = await _baseService.Get<Order>(0);
-                var orderItems = await _baseService.Get<OrderItem>();
+                /*var cart = await _baseService.Get<Order>(0);
+                var orderItems = await _baseService.Get<OrderItem>();*/
+                var UserId = HttpContext.Session.GetString("UserId");
+                var carts = await _baseService.Get<Order>();
+                var cart = carts.FirstOrDefault(c => c.UserId == UserId);
+
+                //var orderItems = await OrderItemService.GetAll();
+
+                var OrderItemList = await _baseService.Get<OrderItem>();
+
+                var OrderItems = OrderItemList.FindAll(o => o.CartId == cart.Id);
 
                 if (cart != null)
                 {
                     var CartViewModel = new OrderViewModel()
                     {
                         cart = cart,
-                        OrderItems = orderItems
+                        OrderItems = OrderItems
                     };
 
                     return View(CartViewModel);
@@ -124,7 +141,10 @@ namespace FoodDeliveryWebApp.Controllers
             try
             {
                 var food = await _baseAPIService.Get<Food>(FoodId);
-                var cart = await _baseService.Get<Order>(0);
+                //var cart = await _baseService.Get<Order>(0);
+                var carts = await _baseService.Get<Order>();
+
+                var cart = carts.FirstOrDefault(c => c.UserId == UserId);
 
                 if (cart is null)
                 {
@@ -141,6 +161,8 @@ namespace FoodDeliveryWebApp.Controllers
                 throw;
             }
         }
+        
+
        /* public async Task AddToCart(long FoodId, int Qty)
         {
             /* if (HttpContext.Session.GetString("JWToken") is null || HttpContext.Session.GetString("JWToken") == "")
