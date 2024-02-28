@@ -20,7 +20,7 @@ namespace FoodDeliveryWebApp.Controllers
         public OrderController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
         {
             FoodService.InitailizeHttp(httpClientFactory);
-            CartService.InintializeContextDb(context);
+            //CartService.InintializeContextDb(context);
             //OrderItemService.InintializeContextDb(context);
             ShippingAddressService.InintializeContextDb(context);
 
@@ -169,7 +169,7 @@ namespace FoodDeliveryWebApp.Controllers
                 {
                     OrderItems = await _baseService.Get<OrderItem>(),
                     ShippingAddress = Address,
-                    cart = await _baseService.Get<Order>(0)
+                    Order = await _baseService.Get<Order>(0)
                 });
             }
             catch(Exception ex)
@@ -209,7 +209,7 @@ namespace FoodDeliveryWebApp.Controllers
                 {
                     OrderItems = await _baseService.Get<OrderItem>(),
                     ShippingAddress = ShippingAddress,
-                    cart = CartOrder
+                    Order = CartOrder
                 };
 
                 //var OrderResult = await OrderService.Add(model, token);

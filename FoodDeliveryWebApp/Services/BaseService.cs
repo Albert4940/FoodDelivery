@@ -27,6 +27,7 @@ namespace FoodDeliveryWebApp.Services
 
         public async Task<List<T>> Get<T>() where T : class => await _context.Set<T>().AsNoTracking().ToListAsync();
 
+        //return entity
         public async Task Add<T>(T item) where T : class
         {
             _context.Add(item);
