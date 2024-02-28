@@ -17,17 +17,19 @@ namespace FoodDeliveryWebApp.Controllers
         private readonly BaseAPIService _baseAPIService;
         private readonly BaseService _baseService;
         private readonly OrderItemService _orderItemService;
+        private readonly CartService _cartService;
         public CartController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
         {
            
-            FoodService.InitailizeHttp(httpClientFactory);
-            CartService.InintializeContextDb(context);
+           // FoodService.InitailizeHttp(httpClientFactory);
+            //CartService.InintializeContextDb(context);
             //OrderItemService.InintializeContextDb(context);
 
             _baseAPIService = new BaseAPIService(httpClientFactory);
 
             _baseService = new BaseService(context);
             _orderItemService = new OrderItemService(context);
+            _cartService = new CartService(context);
         }
         //Get
         [HttpGet]
@@ -39,27 +41,33 @@ namespace FoodDeliveryWebApp.Controllers
                 //var cart = CartService.Get();
                 //var cart = await _baseService.Get<Order>(0);
 
-                var UserId = HttpContext.Session.GetString("UserId");
+                //var UserId = HttpContext.Session.GetString("UserId");
 
-                var carts = await _baseService.Get<Order>();
-                var cart = carts.FirstOrDefault(c => c.UserId == UserId);
+                /*var carts = await _baseService.Get<Order>();
+                var cart = carts.FirstOrDefault(c => c.UserId == UserId);*/
 
                 //var orderItems = await OrderItemService.GetAll();
 
-                var OrderItemList = await _baseService.Get<OrderItem>();
 
-                var OrderItems = OrderItemList.FindAll(o => o.CartId == cart.Id);
+                /*if (UserId != null)
+                {
+                    var CartViewModel = await _cartService.Get(UserId);
+                    return View(CartViewModel);
+                }*/
+                // var cart = await _cartService.Get(UserId);
+                var cart = await GetCartByUserId();
 
                 if (cart != null)
                 {
                     var CartViewModel = new OrderViewModel()
                     {
-                        cart = cart,
-                        OrderItems = OrderItems
+                        Order = cart,
+                        OrderItems = await _orderItemService.Get(cart.Id)
                     };
                     return View(CartViewModel);
                 }
-            }catch(Exception ex)
+            }
+            catch(Exception ex)
             {
                 TempData["Error"] = ex.Message.ToString();
                 return View();
@@ -79,7 +87,7 @@ namespace FoodDeliveryWebApp.Controllers
             try
             {
                 await AddToCart(FoodId, Qty);
-                await UpdateCart();
+                await UpdateCartPrices();
             }catch(Exception ex)
             {               
                 TempData["Error"] = $"Error : {ex}";
@@ -106,7 +114,7 @@ namespace FoodDeliveryWebApp.Controllers
                 {
                     var CartViewModel = new OrderViewModel()
                     {
-                        cart = cart,
+                        Order = cart,
                         OrderItems = OrderItems
                     };
 
@@ -130,27 +138,21 @@ namespace FoodDeliveryWebApp.Controllers
         public async Task<long> CountOrderItems()
         {
             //var OrderItems = await OrderItemService.GetAll();
-            var OrderItems = await _baseService.Get<OrderItem>();
+            var Cart = await GetCartByUserId();
+            var OrderItems = await _orderItemService.Get(Cart.Id);
             return OrderItems.Sum(o => o.Qty);
         }
 
         public async Task AddToCart(long FoodId, int Qty)
         {
+            //replace by inner method
             var UserId = HttpContext.Session.GetString("UserId");
 
             try
             {
                 var food = await _baseAPIService.Get<Food>(FoodId);
                 //var cart = await _baseService.Get<Order>(0);
-                var carts = await _baseService.Get<Order>();
-
-                var cart = carts.FirstOrDefault(c => c.UserId == UserId);
-
-                if (cart is null)
-                {
-                    await _baseService.Add<Order>(new Order() { UserId=UserId, ItemsPrice = 0, TaxPrice = 0, ShippingPrice = 0, TotalPrice = 0 });
-                    cart = await _baseService.Get<Order>(0);
-                }
+                var cart = await _cartService.Add(UserId);
 
                 await _orderItemService.AddOrderItem(food, cart.Id, Qty);
 
@@ -162,7 +164,11 @@ namespace FoodDeliveryWebApp.Controllers
             }
         }
         
-
+        public async Task<Order> GetCartByUserId()
+        {
+            var UserId = HttpContext.Session.GetString("UserId");
+            return await _cartService.Add(UserId);
+        }
        /* public async Task AddToCart(long FoodId, int Qty)
         {
             /* if (HttpContext.Session.GetString("JWToken") is null || HttpContext.Session.GetString("JWToken") == "")
@@ -212,16 +218,17 @@ namespace FoodDeliveryWebApp.Controllers
             
         }*/
 
-        public async Task<Order> UpdateCart()
+        public async Task<Order> UpdateCartPrices()
         {
             // var cart = await _context.Carts.FirstOrDefaultAsync();
             try
             {
-               // var cart = CartService.Get();
-                var cart = await _baseService.Get<Order>(0);
+                // var cart = CartService.Get();
+                var UserId = HttpContext.Session.GetString("UserId");
+                var cart = await _cartService.Get(UserId);
 
                 //var OrderItems = await OrderItemService.GetAll();
-                var OrderItems = await _baseService.Get<OrderItem>();
+                var OrderItems = await _orderItemService.Get(cart.Id);
 
                 double itemsPrice = 0;
                 double shippingPrice = 0;
@@ -233,6 +240,7 @@ namespace FoodDeliveryWebApp.Controllers
                     {
                         itemsPrice += item.Price * item.Qty;
                     }
+
                     totalPrice = itemsPrice + shippingPrice;
                     cart.ItemsPrice = itemsPrice;
                     cart.ShippingPrice = shippingPrice;
@@ -262,7 +270,7 @@ namespace FoodDeliveryWebApp.Controllers
 
                 //await OrderItemService.Update(OrderItem);
                 await _baseService.Update<OrderItem>(OrderItem);
-                var cart = await UpdateCart();
+                var cart = await UpdateCartPrices();
 
                 var countItems = await CountOrderItems();
 
@@ -287,7 +295,7 @@ namespace FoodDeliveryWebApp.Controllers
 
                 //await OrderItemService.Remove(OrderItem);
                 await _baseService.Remove<OrderItem>(OrderItem);
-                await UpdateCart();
+                await UpdateCartPrices();
 
                 return Json(OrderItem);
             }

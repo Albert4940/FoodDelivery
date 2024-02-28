@@ -7,6 +7,6 @@
 
         //public string PaymentMethod { get; set; }
 
-        public Order cart { get; set; }
+        public Order Order { get; set; }
     }
 }
