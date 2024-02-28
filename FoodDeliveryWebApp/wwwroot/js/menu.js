@@ -7,6 +7,7 @@
 
         })
     }
+
     showFoods();
 
     function showNoFoodMesage() {
@@ -19,6 +20,7 @@
         if (CountCard == CountCardHide)
             $(".alert-no-food").show();
     }
+
     function filterFood(categoryId) {
         
         if (categoryId == 0) {
@@ -54,4 +56,7 @@
         filterFood(categoryId);
 
     })
+
+
+
 })
