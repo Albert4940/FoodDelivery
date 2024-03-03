@@ -32,22 +32,23 @@
                                 foreach (var item in Model.OrderItems)
                                 {
                                     idForm++;
-                                    <li class="list-group-item">
-                                        <div class="row">
-                                            <div class="col-md-2">
-                                                <img src="@Url.Content("~/img/" + item.ImageURL)" class="w-50" />
+                                    <li class="list-group-item text-center text-md-start">
+                                        <div class="row  align-items-center justify-content-center justify-content-md-start">
+                                            <div class="col col-md-2">
+                                                <img src="@Url.Content("~/img/" + item.ImageURL)" class="w-75" />
                                             </div>
                                             <div class="col-md-3">
                                                 @Html.DisplayFor(modelItem => item.Title)
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-2 my-2">
                                                 @Html.DisplayFor(modelItem => item.Price)
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-4 col-md-2">
                                                 <form id="@idForm" class="CountInStock">
                                                     <input type="hidden" value="@item.Qty" />
                                                     <input type="hidden" value="@item.Id" />
-                                                    <select>
+
+                                                    <select class="form-select">
                                                         @{
                                                             for (var i = 1; i <= item.CountInStock; i++)
                                                             {
@@ -57,7 +58,7 @@
                                                     </select>
                                                 </form>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-2 my-2">
                                                 <button class="btn btn-danger" id="@item.Id">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                                                         <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
@@ -78,13 +79,16 @@
             </div>
             <div class="col-md-4">
                 <div class="card">
-                    <ul class="list-group">
+                    <ul class="list-group text-center">
                         <li class="list-group-item">
                             <h2>Subtotal ()</h2>
                             <span id="total-price">@(Cart is null ? "0.00" : $"{Cart.TotalPrice:N2}")</span>
                         </li>
-                        <li class="list-group-item">
-                            <a class="btn btn-primary btn-block @(OrderItems.Count == 0 ? "disabled" : "")" asp-controller="Order" asp-action="PaymentMethod">
+                        <li class="list-group-item p-2">
+                            <a class="btn btn-dark d-inline @(OrderItems.Count == 0 ? "disabled" : "")" asp-controller="Order" asp-action="PaymentMethod" style="display: flex;align-items: center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card-fill me-2 " viewBox="0 0 16 16">
+                                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0zm0 3v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zm3 2h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1" />
+                                </svg>
                                 Proceed To Checkout
                             </a>
                         </li>

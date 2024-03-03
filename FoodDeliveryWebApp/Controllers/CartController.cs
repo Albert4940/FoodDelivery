@@ -83,7 +83,13 @@ namespace FoodDeliveryWebApp.Controllers
             long FoodId = Id;
             int Qty = CountInStock;
 
-            
+            //Check both params
+            if(FoodId <= 0 || Qty <= 0)
+            {
+                TempData["Error"] = "Bad request";
+                return View();
+            }
+
             try
             {
                 await AddToCart(FoodId, Qty);
