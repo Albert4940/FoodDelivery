@@ -5,7 +5,7 @@
         public List<OrderItem> OrderItems { get; set; }
         public ShippingAddress ShippingAddress { get; set; }
 
-        //public string PaymentMethod { get; set; }
+        public Payment PaymentPaypal { get; set; }
 
         public Order Order { get; set; }
     }
