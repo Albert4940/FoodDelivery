@@ -19,16 +19,16 @@ namespace FoodDeliveryWebApp.Controllers
         private readonly BaseAPIService _baseAPIService;
         public OrderController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
         {
-            FoodService.InitailizeHttp(httpClientFactory);
+            //FoodService.InitailizeHttp(httpClientFactory);
             //CartService.InintializeContextDb(context);
             //OrderItemService.InintializeContextDb(context);
-            ShippingAddressService.InintializeContextDb(context);
+           // ShippingAddressService.InintializeContextDb(context);
 
             _orderAPIService = new OrderAPIService(httpClientFactory);
             _baseAPIService = new BaseAPIService(httpClientFactory);
             _baseService = new BaseService(context);
             //BaseAPIService.InitailizeHttp(httpClientFactory);
-            OrderService.InitailizeHttp(httpClientFactory);
+            //OrderService.InitailizeHttp(httpClientFactory);
         }
 
         [SessionExpire]
@@ -129,11 +129,15 @@ namespace FoodDeliveryWebApp.Controllers
 
             try
             {
-                if(Address.Id == model.Id)
+                
+                if(Address is not null)
                 {
-                    //await ShippingAddressService.Update(model);
-                    model.UserId = "string";
-                    await _baseService.Update<ShippingAddress>(model);
+                    if (Address.Id == model.Id)
+                    {
+                        //await ShippingAddressService.Update(model);
+                        model.UserId = "string";
+                        await _baseService.Update<ShippingAddress>(model);
+                    }
                 }
                 else
                 {

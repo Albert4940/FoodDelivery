@@ -44,7 +44,7 @@ namespace FoodDeliveryWebApp.Controllers
 
             JsonObject amount = new JsonObject();
             amount.Add("currency_code", "USD");
-            amount.Add("value", 120);
+            amount.Add("value", 40);
 
             JsonObject purchaseUnit1 = new JsonObject();
             purchaseUnit1.Add("amount", amount);
@@ -55,7 +55,6 @@ namespace FoodDeliveryWebApp.Controllers
             createOrderRequest.Add("purchase_units", purchaseUnits);
 
             string accessToken = GetPayPalAccessToken();
-            //string accessToken = "A21AAKwmgGCg1Tk0wa24ZpZuupn4kHBObg4nluGGlYf_QQTp9wtWXHhJ8W6HGtEtvO6oiCNGdjRmPLabjQbNrrjsnw0WVKvTw";
             string url = PayPalUrl + "/v2/checkout/orders";
 
             string orderId = "";
@@ -81,7 +80,7 @@ namespace FoodDeliveryWebApp.Controllers
                     {
                         orderId = jsonResponse["id"]?.ToString() ?? "";
 
-                        //save the order in the database
+                        //save the order id in the database
                     }
 
                 }
@@ -100,7 +99,45 @@ namespace FoodDeliveryWebApp.Controllers
             if(data is null || data["orderID"] is null) return new JsonResult("");
 
             var orderID = data["orderID"]!.ToString();
-            
+
+            string accessToken = GetPayPalAccessToken();
+
+            string url = $"{PayPalUrl}/v2/checkout/orders/{orderID}/capture";
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
+
+                var requestMessage = new HttpRequestMessage(HttpMethod.Post, url);
+                requestMessage.Content = new StringContent("", null, "application/json");
+
+
+                var responseTask = client.SendAsync(requestMessage);
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+
+                    var strResponse = readTask.Result;
+
+                    var jsonResponse = JsonNode.Parse(strResponse);
+
+                    if (jsonResponse is not null)
+                    {
+                        string paypalOrderStatus = jsonResponse["status"]?.ToString() ?? "";
+                        if (paypalOrderStatus == "COMPLETED")
+                        {
+                            //update payment status in the databse
+
+                            return new JsonResult("success");
+                        }
+                    }                        
+                }
+            }
+
             return new JsonResult("");
         }
 
@@ -145,15 +182,6 @@ namespace FoodDeliveryWebApp.Controllers
 
                     if (jsonResponse is not null)
                         accessToken = jsonResponse["access_token"]?.ToString() ?? "";
-                }
-                else
-                {
-                    var readTaskError = result.Content.ReadAsStringAsync();
-                    readTaskError.Wait();
-                    var strResponseError = readTaskError.Result;
-
-                    var jsonResponseError = JsonNode.Parse(strResponseError);
-                    return jsonResponseError.ToString();
                 }
             }
                 return accessToken;

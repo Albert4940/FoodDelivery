@@ -35,6 +35,9 @@
                 // This function captures the funds from the transaction.
                 return fetch("/Checkout/Complete", {
                     method: "POST",
+                    headers: {
+                        "Content-Type":"application/json",
+                    },
                     body: JSON.stringify({
                         orderID: data.orderID
                     })
@@ -46,7 +49,7 @@
                         if (details == "success")
                             $("#notification-container").text('<div class="alert alert-success" role="alert">The order is created successfully!</div>');
                         else
-                            $("#notification-container").text('<div class="alert alert-danger" role="alert">Failed created successfully!</div>');
+                            $("#notification-container").text('<div class="alert alert-danger" role="alert">Failed Approuve Order!</div>');
                     });
             },
             onCancel(data) {
