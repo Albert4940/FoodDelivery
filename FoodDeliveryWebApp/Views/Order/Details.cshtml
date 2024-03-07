@@ -22,7 +22,7 @@
     {
         <h1>OrderScreen : @Cart.Id</h1>
         <div class="row">
-            <div class="col-8">
+            <div class="col-12 col-md-8">
                 <ul class="list-group">
                     <li class="list-group-item">
                         <h2>Shipping</h2>
@@ -60,8 +60,8 @@
                                     {
                                         <li class="list-group-item">
                                             <div class="row">
-                                                <div class="col-1">
-                                                    <img src="@Url.Content("~/img/" + item.ImageURL)" />
+                                                <div class="col-3">
+                                                    <img src="@Url.Content("~/img/" + item.ImageURL)" class="w-75" />
                                                 </div>
                                                 <div class="col">
                                                     @item.Title
@@ -78,7 +78,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-4">
+            <div class="col-12 col-md-4">
                 <div class="card">
                     <ul class="list-group">
                         <li class="list-group-item">

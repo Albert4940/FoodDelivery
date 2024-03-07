@@ -48,7 +48,7 @@ namespace FoodDeliveryAPI.Controllers
              if (Order is null)
                   return NotFound();
 
-             return Ok(new {cart = Order,OrderItems});            
+             return Ok(new {Order,OrderItems});            
         }
 
         // POST api/<OrderController>
