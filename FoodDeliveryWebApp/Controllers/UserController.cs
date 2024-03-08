@@ -28,7 +28,6 @@ namespace FoodDeliveryWebApp.Controllers
                 return View(user);
             }
               
-
             return View();
         }
 
