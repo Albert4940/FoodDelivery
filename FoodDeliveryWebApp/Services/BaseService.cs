@@ -25,6 +25,17 @@ namespace FoodDeliveryWebApp.Services
             return entity;
         }
 
+        /*public async Task<T> Get<T>(string UserId = null) where T : IEntity
+        {
+            var entity = UserId is null
+                ? await _context.Set<T>().AsNoTracking().FirstOrDefaultAsync()
+                : await _context.Set<T>().AsNoTracking().FirstOrDefaultAsync(t => t.Id == Id);
+
+            DetachContext();
+
+            return entity;
+        }*/
+
         public async Task<List<T>> Get<T>() where T : class => await _context.Set<T>().AsNoTracking().ToListAsync();
 
         //return entity

@@ -43,12 +43,12 @@
                                             <div class="col-md-2 my-2">
                                                 @Html.DisplayFor(modelItem => item.Price)
                                             </div>
-                                            <div class="col-4 col-md-2">
+                                            <div class="col-4 col-md-3">
                                                 <form id="@idForm" class="CountInStock">
                                                     <input type="hidden" value="@item.Qty" />
                                                     <input type="hidden" value="@item.Id" />
 
-                                                    <select class="form-select">
+                                                    <select class="form-select text-center">
                                                         @{
                                                             for (var i = 1; i <= item.CountInStock; i++)
                                                             {
@@ -85,11 +85,11 @@
                             <span id="total-price">@(Cart is null ? "0.00" : $"{Cart.TotalPrice:N2}")</span>
                         </li>
                         <li class="list-group-item p-2">
-                            <a class="btn btn-dark d-inline @(OrderItems.Count == 0 ? "disabled" : "")" asp-controller="Order" asp-action="PaymentMethod" style="display: flex;align-items: center;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card-fill me-2 " viewBox="0 0 16 16">
+                            <a class="btn btn-dark d-block d-flex justify-content-center @(OrderItems.Count == 0 ? "disabled" : "")" asp-controller="Order" asp-action="Address">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card-fill me-2  align-self-center" viewBox="0 0 16 16">
                                     <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0zm0 3v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zm3 2h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1" />
                                 </svg>
-                                Proceed To Checkout
+                                Checkout
                             </a>
                         </li>
                     </ul>

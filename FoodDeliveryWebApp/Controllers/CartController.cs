@@ -26,7 +26,6 @@ namespace FoodDeliveryWebApp.Controllers
             //OrderItemService.InintializeContextDb(context);
 
             _baseAPIService = new BaseAPIService(httpClientFactory);
-
             _baseService = new BaseService(context);
             _orderItemService = new OrderItemService(context);
             _cartService = new CartService(context);
