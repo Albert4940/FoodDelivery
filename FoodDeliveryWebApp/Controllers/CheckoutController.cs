@@ -8,6 +8,7 @@ using System.Text.Json.Nodes;
 
 namespace FoodDeliveryWebApp.Controllers
 {
+    [SessionExpire]
     public class CheckoutController : Controller
     {
         /*public string PayPalCientId { get; set; } = "";
@@ -153,6 +154,7 @@ namespace FoodDeliveryWebApp.Controllers
             if (long.TryParse(data["Id"].ToString(), out long OrderId))
             {
                 var OrderUser = await GetOrder(OrderId);
+                //check if order already paid
                 var orderAmount = OrderUser.Order.TotalPrice;
                 var orderPaypalId = _paymentService.CreateOrder(orderAmount);
 
