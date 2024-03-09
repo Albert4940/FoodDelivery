@@ -1,0 +1,33 @@
+﻿@model IEnumerable<FoodDeliveryWebApp.Models.OrderItem>;
+
+<h2>Order Items </h2>
+@{
+    var OrderItems = Model ;
+    if (OrderItems is null )
+    {
+        <div class="alert alert-info" role="alert">
+            Order is empty
+        </div>
+    }
+    else
+    {
+        <ul class="list-group">
+            @foreach (var item in OrderItems)
+            {
+                <li class="list-group-item">
+                    <div class="row align-items-center justify-content-center justify-content-md-start">
+                        <div class="col-3">
+                            <img src="@Url.Content("~/img/" + item.ImageURL)" class="w-75" />
+                        </div>
+                        <div class="col">
+                            @item.Title
+                        </div>
+                        <div class="col-4">
+                            @item.Qty X @item.Price = $ @(item.Qty * (item.Price * 100) / 100)
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+}

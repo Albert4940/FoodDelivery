@@ -45,36 +45,7 @@
                         </p>
                     </li>
                     <li class="list-group-item">
-                        <h2>Order Items</h2>
-                        @{
-                            if (OrderItems is null || OrderItems.Count == 0)
-                            {
-                                <div class="alert alert-info" role="alert">
-                                    Order is empty
-                                </div>
-                            }
-                            else
-                            {
-                                <ul class="list-group">
-                                    @foreach (var item in OrderItems)
-                                    {
-                                        <li class="list-group-item">
-                                            <div class="row">
-                                                <div class="col-3">
-                                                    <img src="@Url.Content("~/img/" + item.ImageURL)" class="w-75" />
-                                                </div>
-                                                <div class="col">
-                                                    @item.Title
-                                                </div>
-                                                <div class="col-4">
-                                                    @item.Qty X @item.Price = $ @(item.Qty * (item.Price * 100) / 100)
-                                                </div>
-                                            </div>
-                                        </li>
-                                    }
-                                </ul>
-                            }
-                        }
+                        @await Html.PartialAsync("_OrderItemsPartial", OrderItems)                        
                     </li>
                 </ul>
             </div>

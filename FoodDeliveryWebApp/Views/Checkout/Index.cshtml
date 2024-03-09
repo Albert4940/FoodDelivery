@@ -1,12 +1,94 @@
 ﻿@model FoodDeliveryWebApp.Models.OrderViewModel;
 @{
-        <p>@ViewData["id"]</p>
-    var clientId = @TempData["Result"];
+    var Cart = Model?.Order;
+    var Address = Model?.ShippingAddress;
+    var OrderItems = Model?.OrderItems;
+    var Payment = Model?.Payment;
+
+    var clientId = Payment.PayPalCientId.ToString();
 }
 
 <script src="https://www.paypal.com/sdk/js?client-id=@(clientId)&components=buttons"></script>
+<div id ="notification-container">
 
-<div class="p-5">
+</div>
+<div class="row">
+    <div class="col-12 mb-3 col-md-8">
+        <ul class="list-group">
+            <li class="list-group-item">
+                <h2>Shipping</h2>
+                <p>
+                    <strong>Address: </strong>
+                    @Address.Address, @Address.City,
+                    @Address.PostalCode,
+                    @Address.Country
+                </p>
+            </li>
+
+            <li class="list-group-item">
+                @await Html.PartialAsync("_OrderItemsPartial", OrderItems)
+            </li>
+        </ul>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <h2>Order Summary</h2>
+                </li>
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col">Items</div>
+                        <div class="col">$@($"{Cart.ItemsPrice:N2}")</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col">Tax</div>
+                        <div class="col">$@Cart.TaxPrice</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col">Shipping</div>
+                        <div class="col">$@Cart.ShippingPrice</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col">Total</div>
+                        <div class="col">@(Cart is null ? "0.00" : $"{Cart.TotalPrice:N2}")</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <!--Remove this block inside li -->
+                    <form>
+                        <h5 for="exampleFormControlInput1" class="form-label">Payment Method</h5>
+                        @foreach (var item in Model.Payment.PaymentMethodes)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input payment-check" type="radio" asp-for="Payment.PaymentMethodSelected" value="@item" />
+                                @item
+                            </div>
+                        }
+                    </form>
+
+                    <div id="payment-container">
+                        <div id="paypal-container"></div>
+                        <div id="creditcard-container">
+                            <!--Add a partial message to show message-->
+                            <div class="alert alert-info" role="alert">
+                                Feature implement soon!
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!--<div class="p-5">
     <div class="mx-auto p-3 bg-primary w-50">
         <h2 class="text-center mb-5">Complete your order</h2>
         <div class="row mb-3">
@@ -15,19 +97,38 @@
         <div id="notification-container">
 
         </div>
-        <div id="paypal-button-container"></div>
+        
     </div>
-</div>
+</div>-->
 
 @section Scripts {
     <script>
+        //Payment method script
+        //check if user login beacause if is no the paypal container don't show
+        $("#payment-container > div").hide();
+        $("#payment-container #paypal-container").show();
+
+        $(".payment-check").click(function(){
+            let payment = $(this).val();
+            
+            $("#payment-container > div").hide();
+            $("#payment-container #" + payment.toLowerCase() + "-container").show();
+        })
+
+
         let paypal_buttons = paypal.Buttons({
             createOrder() {
-                return fetch("/Checkout/Create", {
-                    method: "POST"
+                return fetch("/Checkout/Create/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body:JSON.stringify({
+                        Id: @Cart.Id
+                    })
                 })
                     .then((response) => response.json())
-                    .then((order) =>  order.id );
+                    .then((order) => { console.log(order); return order.id } );
             },
             onApprove(data) {
                 paypal_buttons.close();
@@ -46,15 +147,16 @@
                     .then((details) => {
                         // This function shows a transaction success message to your buyer.
                         //Add this method into utils or helper
+                        //hide payment container
                         if (details == "success")
-                            $("#notification-container").text('<div class="alert alert-success" role="alert">The order is created successfully!</div>');
+                            $("#notification-container").html('<div class="alert alert-success" role="alert">The order is created successfully!</div>');
                         else
-                            $("#notification-container").text('<div class="alert alert-danger" role="alert">Failed Approuve Order!</div>');
+                            $("#notification-container").html('<div class="alert alert-danger" role="alert">Failed Approuve Order!</div>');
                     });
             },
             onCancel(data) {
                 // Show a cancel page, or return to cart
-                $("#notification-container").text('<div class="alert alert-info" role="alert">Order Canceled!</div>');
+                $("#notification-container").html('<div class="alert alert-info" role="alert">Order Canceled!</div>');
 
                 return fetch("/checkout/Cancel", {
                     method: "POST",
@@ -66,9 +168,9 @@
 
             onError(err) {
                 // For example, redirect to a specific error page
-                $("#notification-container").text('<div class="alert alert-danger" role="alert">Failed created !!' + err + ' - </div>');
+                $("#notification-container").html('<div class="alert alert-danger" role="alert">Failed created !!' + err + ' - </div>');
             }
         });
-        paypal_buttons.render('#paypal-button-container');
+        paypal_buttons.render('#paypal-container');
     </script>
 }

@@ -12,11 +12,14 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FoodDeliveryWebApp.Controllers
 {
+    [SessionExpire]
     public class OrderController : Controller
     {
         private OrderAPIService _orderAPIService;
         private readonly BaseService _baseService;
         private readonly BaseAPIService _baseAPIService;
+        private readonly CartService _cartService;
+        private readonly OrderItemService _orderItemService;
         public OrderController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
         {
             //FoodService.InitailizeHttp(httpClientFactory);
@@ -27,11 +30,13 @@ namespace FoodDeliveryWebApp.Controllers
             _orderAPIService = new OrderAPIService(httpClientFactory);
             _baseAPIService = new BaseAPIService(httpClientFactory);
             _baseService = new BaseService(context);
+            _cartService = new CartService(context);
+            _orderItemService = new OrderItemService(context);
+
             //BaseAPIService.InitailizeHttp(httpClientFactory);
             //OrderService.InitailizeHttp(httpClientFactory);
         }
-
-        [SessionExpire]
+       
         public async Task<ActionResult> Index()
         {
             try
@@ -47,7 +52,7 @@ namespace FoodDeliveryWebApp.Controllers
         }
 
         // GET: OrderController
-        [SessionExpire]
+       
         public async Task<ActionResult> Details(long Id = 0)
         {
             try
@@ -75,8 +80,8 @@ namespace FoodDeliveryWebApp.Controllers
         public IActionResult PaymentMethod()
         {
             
-            var model = new Payment();
-            return View(model);
+            ///var model = new Payment();
+            return View();
         }
 
         [HttpPost]
@@ -95,13 +100,14 @@ namespace FoodDeliveryWebApp.Controllers
             return RedirectToAction("Address");
         }
 
+        
         public async Task<IActionResult> Address()
         {
             //var model = TempData["PaymentMethod"] as Payment;
-            if (TempData["PaymentMethod"] is null || TempData["PaymentMethod"] == "")
+            /*if (TempData["PaymentMethod"] is null || TempData["PaymentMethod"] == "")
             {
                 return RedirectToAction("PaymentMethod");
-            }
+            }*/
 
             try
             {
@@ -115,6 +121,7 @@ namespace FoodDeliveryWebApp.Controllers
             return View();
         }
 
+        //[SessionExpire]
         [HttpPost]
         public async Task<IActionResult> Address(ShippingAddress model)
         {
@@ -126,6 +133,7 @@ namespace FoodDeliveryWebApp.Controllers
 
             // var Address = ShippingAddressService.Get();
             var Address = await _baseService.Get<ShippingAddress>(0);
+            var UserId = HttpContext.Session.GetString("UserId");
 
             try
             {
@@ -135,23 +143,61 @@ namespace FoodDeliveryWebApp.Controllers
                     if (Address.Id == model.Id)
                     {
                         //await ShippingAddressService.Update(model);
-                        model.UserId = "string";
+                        model.UserId = UserId;
                         await _baseService.Update<ShippingAddress>(model);
                     }
                 }
                 else
                 {
                     //await ShippingAddressService.Add(model);
-                    model.UserId = "string";
+                    model.UserId = UserId ?? null; 
                     await _baseService.Add<ShippingAddress>(model);
                 }
-                return RedirectToAction("Create");
+
+                var OrderResult = await CreateOrder(UserId);
+
+                return Redirect($"~/Checkout/Index/{OrderResult.Id}");
+                //return RedirectToAction("Create");
             }
             catch(Exception ex)
             {
                 TempData["Error"] = ex.Message.ToString();
                 return View(model);
             }
+        }
+
+        private async Task<Order> CreateOrder(string UserId)
+        {
+            //try
+            //{
+                var token = HttpContext.Session.GetString("JWToken");
+
+                var ShippingAddress = await _baseService.Get<ShippingAddress>(0);
+
+                var CartOrder = await _cartService.Get(UserId);
+
+                var model = new OrderViewModel
+                {
+                    OrderItems = await _orderItemService.Get(CartOrder.Id),
+                    ShippingAddress = ShippingAddress,
+                    Order = CartOrder
+                };
+
+                var OrderResult = await _orderAPIService.Add(model, token);
+
+            //remove specific cart and orderitem 
+            await _baseService.Remove<OrderItem>();
+                await _baseService.Remove<Order>();
+
+                return OrderResult;
+                //return RedirectToAction("Details", new { Id = OrderResult.Id });
+           /* }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message.ToString();
+            }
+
+            return null;*/
         }
 
         // GET: OrderController/Create
@@ -240,7 +286,6 @@ namespace FoodDeliveryWebApp.Controllers
         }
 
         [HttpPost]
-        [SessionExpire]
         public async Task<ActionResult> Delete(long Id)
         {
             /* try

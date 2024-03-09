@@ -22,7 +22,7 @@
                 <a class="navbar-brand m-3" asp-area="" asp-controller="Home" asp-action="Index">Foodvery</a>
                 <div class="d-flex "> 
                     <!--Mobile cart device-->
-                    @await Html.PartialAsync("_CartPartial", "mobile")
+                    @await Html.PartialAsync("_NavBarIconCartPartial", "mobile")
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
@@ -39,7 +39,7 @@
                         </li>
                         <!--Desktop cart device-->
                         <li>
-                             @await Html.PartialAsync("_CartPartial","desktop")
+                             @await Html.PartialAsync("_NavBarIconCartPartial","desktop")
                         </li>
                     </ul>
                     <!--<div>

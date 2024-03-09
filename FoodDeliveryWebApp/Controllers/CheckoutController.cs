@@ -1,33 +1,96 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FoodDeliveryWebApp.Data;
+using FoodDeliveryWebApp.Models;
+using FoodDeliveryWebApp.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.Json.Nodes;
 
 namespace FoodDeliveryWebApp.Controllers
 {
+    [SessionExpire]
     public class CheckoutController : Controller
     {
-        public string PayPalCientId { get; set; } = "";
+        /*public string PayPalCientId { get; set; } = "";
         private string PayPalSecret { get; set; } = "";
-        public string PayPalUrl { get; set; } = "";
+        public string PayPalUrl { get; set; } = "";*/
 
+        private OrderAPIService _orderAPIService;
+        private readonly BaseService _baseService;
+        private PaymentService _paymentService;
+        private readonly Payment _payment;
+        private  OrderViewModel _order;
         //public Order 
-        public CheckoutController(IConfiguration configuration) 
+        public CheckoutController(IConfiguration configuration, FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory) 
         {
-            PayPalCientId = configuration["PayPalSettings:ClientId"];
+            /*PayPalCientId = configuration["PayPalSettings:ClientId"];
             PayPalSecret = configuration["PayPalSettings:SecretKey"];
 
             //get that dynamicly
-            PayPalUrl = configuration["PayPalSettings:UrlSandBox"];
+            PayPalUrl = configuration["PayPalSettings:UrlSandBox"];*/
 
+            _orderAPIService = new OrderAPIService(httpClientFactory);
+            _baseService = new BaseService(context);
+
+            _payment = new Payment(configuration["PayPalSettings:ClientId"]);
+            _paymentService = new PaymentService(configuration);
         }
         // GET: CheckoutController
-        public ActionResult Index()
+        public async Task<ActionResult> Index(long Id = 0)
         {
-            TempData["Result"] = PayPalCientId;
+           // TempData["Result"] = PayPalCientId;
+
+            try
+            {
+                var token = HttpContext.Session.GetString("JWToken");
+
+                /*if (token is null || token == "")
+                    return Redirect("/User/Index?redirect=Order");*/
+
+                //var Order = await OrderService.Get(OrderId, token);
+
+                //var Order = await _orderAPIService.Get<OrderViewModel>(Id, token);
+                _order = await _orderAPIService.Get<OrderViewModel>(Id, token);
+
+                // Order.ShippingAddress = ShippingAddressService.Get();
+                _order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
+                _order.Payment = _payment;
+                return _order is null ? View() : View(_order);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error INDEX: {ex.Message}";
+            }
+            
             return View();
         }
 
+        public async Task<OrderViewModel> GetOrder(long Id = 0)
+        {
+            try
+            {
+                var token = HttpContext.Session.GetString("JWToken");
+
+                /*if (token is null || token == "")
+                    return Redirect("/User/Index?redirect=Order");*/
+
+                //var Order = await OrderService.Get(OrderId, token);
+
+                //var Order = await _orderAPIService.Get<OrderViewModel>(Id, token);
+                _order = await _orderAPIService.Get<OrderViewModel>(Id, token);
+
+                // Order.ShippingAddress = ShippingAddressService.Get();
+                _order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
+                _order.Payment = _payment;
+                return _order;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return null;
+        }
         // GET: CheckoutController/Details/5
         public ActionResult Details(int id)
         {
@@ -35,11 +98,11 @@ namespace FoodDeliveryWebApp.Controllers
         }
 
         // Post: CheckoutController/Create
-        public JsonResult Create()
+        public async Task<JsonResult> Create([FromBody] JsonObject data)
         {
             //check address
 
-            JsonObject createOrderRequest = new JsonObject();
+            /*JsonObject createOrderRequest = new JsonObject();
             createOrderRequest.Add("intent", "CAPTURE");
 
             JsonObject amount = new JsonObject();
@@ -84,15 +147,27 @@ namespace FoodDeliveryWebApp.Controllers
                     }
 
                 }
-            }
+            }*/
 
+            //return new JsonResult($"ClientID-{_paymentService.PayPalCientId} - PayPalSecret-{_paymentService.PayPalSecret} PayPalUrl-{_paymentService.PayPalUrl}");
 
-            var response = new
+            if (long.TryParse(data["Id"].ToString(), out long OrderId))
             {
-                Id = orderId
-            };
-            
-            return new JsonResult(response);
+                var OrderUser = await GetOrder(OrderId);
+                //check if order already paid
+                var orderAmount = OrderUser.Order.TotalPrice;
+                var orderPaypalId = _paymentService.CreateOrder(orderAmount);
+
+                var response = new
+                {
+                    Id = orderPaypalId
+                };
+
+                return new JsonResult(response);
+            }
+            else
+                return new JsonResult("");              
+  
         }
         public JsonResult Complete([FromBody] JsonObject data)
         {
@@ -100,7 +175,8 @@ namespace FoodDeliveryWebApp.Controllers
 
             var orderID = data["orderID"]!.ToString();
 
-            string accessToken = GetPayPalAccessToken();
+
+            /*string accessToken = GetPayPalAccessToken();
 
             string url = $"{PayPalUrl}/v2/checkout/orders/{orderID}/capture";
 
@@ -136,9 +212,12 @@ namespace FoodDeliveryWebApp.Controllers
                         }
                     }                        
                 }
-            }
-
-            return new JsonResult("");
+            }*/
+            //pass payment to update field if success
+            var response = _paymentService.CompleteOrder(orderID) ?? "";
+            
+            
+            return new JsonResult(response);
         }
 
         public JsonResult Cancel([FromBody] JsonObject data)
@@ -149,42 +228,6 @@ namespace FoodDeliveryWebApp.Controllers
 
             return new JsonResult("");
         }
-
-        private string GetPayPalAccessToken()
-        {
-            var accessToken = string.Empty;
-            string url = PayPalUrl + "/v1/oauth2/token";
-            
-            using (var client = new HttpClient())
-            {
-                string credentials64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(PayPalCientId + ":" + PayPalSecret));
-               
-
-                client.DefaultRequestHeaders.Add("Authorization", "Basic " + credentials64);
-
-                var requestMessage = new HttpRequestMessage(HttpMethod.Post, url);
-                requestMessage.Content = new StringContent("grant_type=client_credentials", null, "application/x-www-form-urlencoded");
-               
-
-                var responseTask = client.SendAsync(requestMessage);
-                responseTask.Wait();
-
-                var result = responseTask.Result;
-                
-                if (result.IsSuccessStatusCode)
-                {
-                    var readTask = result.Content.ReadAsStringAsync();
-                    readTask.Wait();
-
-                    var strResponse = readTask.Result;
-
-                    var jsonResponse = JsonNode.Parse(strResponse);
-
-                    if (jsonResponse is not null)
-                        accessToken = jsonResponse["access_token"]?.ToString() ?? "";
-                }
-            }
-                return accessToken;
-        }
+      
     }
 }
