@@ -11,7 +11,6 @@ namespace FoodDeliveryWebApp.Models
         public double TaxPrice { get; set; }        
         public decimal TotalPrice { get; set; }
 
-        public string PaymentMethod { get; set; } = "PayPal";
         public bool IsPaid { get; set; } = false;
         public bool IsDelivered { get; set; } = false;
        // public 
