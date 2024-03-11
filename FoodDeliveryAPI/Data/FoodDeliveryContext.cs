@@ -17,6 +17,8 @@ namespace FoodDeliveryAPI.Data
         public DbSet<OrderItem> order_items { get; set; } = null;
         public DbSet<ShippingAddress> shipping_addresses { get; set; } = null;
 
+        public DbSet<Payment> payments { get; set; } = null;
+
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var entries = ChangeTracker.Entries()
@@ -78,6 +80,12 @@ namespace FoodDeliveryAPI.Data
                 .HasOne<User>()
                 .WithMany()
                 .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Payment>()
+                .HasOne<Order>()
+                .WithMany()
+                .HasForeignKey(p => p.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
