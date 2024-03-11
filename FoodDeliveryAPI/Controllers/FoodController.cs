@@ -13,26 +13,30 @@ namespace FoodDeliveryAPI.Controllers
     [ApiController]
     public class FoodController : ControllerBase
     {
-
+        private readonly BaseService _baseService;
         public FoodController(FoodDeliveryContext context)
         {
             FoodService.InitializeContext(context);
             CategoryService.InitializeContext(context);
             UserService.InitializeContext(context);
+
+            _baseService = new BaseService(context);
+
         }
         // GET: api/<FoodController>
         [HttpGet]
         public async Task<ActionResult<List<Food>>> Get()
         {
-            return Ok(await FoodService.GetAll());
+            return Ok(await _baseService.Get<Food>());
+            //return Ok(await FoodService.GetAll());
         }
 
         // GET api/<FoodController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Food>> Get(long id)
         {
-            var food = await FoodService.GetByID(id);
-
+            //var food = await FoodService.GetByID(id);
+            var food = await _baseService.Get<Food>(id);
             if (food is null)
                 return NotFound();
 

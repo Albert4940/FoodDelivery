@@ -23,7 +23,8 @@ namespace FoodDeliveryAPI.Services
 
         public static async Task Add(Category category)
         {
-            //That generate by database    
+            //That generate by database
+            //fount way to pass item without indicat id because it generate by db
             category.Id = 0;
             _context.Add(category);
             await _context.SaveChangesAsync();
