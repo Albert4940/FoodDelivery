@@ -15,6 +15,7 @@ namespace FoodDeliveryAPI.Data
         public DbSet<Order> orders { get; set; } = null;
 
         public DbSet<OrderItem> order_items { get; set; } = null;
+        public DbSet<ShippingAddress> shipping_addresses { get; set; } = null;
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
@@ -38,37 +39,46 @@ namespace FoodDeliveryAPI.Data
             modelBuilder.Entity<Category>()
                 .HasIndex(c => c.Title)
                 .IsUnique();
+
             modelBuilder.Entity<Category>()
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(c => c.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Food>()
-            .HasIndex(f => f.Title)
-            .IsUnique();
+                .HasIndex(f => f.Title)
+                .IsUnique();
+
             modelBuilder.Entity<Food>()
-            .HasOne<Category>()
-            .WithMany()
-            .HasForeignKey(f => f.CategoryId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne<Category>()
+                .WithMany()
+                .HasForeignKey(f => f.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
             modelBuilder.Entity<Food>()
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(f => f.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Order>()
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(o => o.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<OrderItem>()
-            .HasOne<Order>()
-            .WithMany()
-            .HasForeignKey(o => o.OrderId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne<Order>()
+                .WithMany()
+                .HasForeignKey(o => o.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ShippingAddress>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

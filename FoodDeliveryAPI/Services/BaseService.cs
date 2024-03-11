@@ -6,7 +6,7 @@ namespace FoodDeliveryAPI.Services
 {
     public class BaseService
     {
-        protected static FoodDeliveryContext _context;
+        protected FoodDeliveryContext _context;
         public BaseService(FoodDeliveryContext context)
         {
             _context = context;
@@ -33,7 +33,7 @@ namespace FoodDeliveryAPI.Services
             _context.Set<T>().Update(item);
             await _context.SaveChangesAsync();
         }
-        public async Task Remove<T>(T item) where T : class
+        public async Task Delete<T>(T item) where T : class
         {
             _context.Set<T>().Remove(item);
             await _context.SaveChangesAsync();
