@@ -5,6 +5,7 @@
     var Cart = Model?.Order;
     var Address = Model?.ShippingAddress;
     var OrderItems = Model?.OrderItems;
+    var Payment = Model?.Payment;
 
     if (TempData["Result"] != null && TempData["Result"] != "")
     {
@@ -39,10 +40,26 @@
 
                     <li class="list-group-item">
                         <h2>Payment Method</h2>
-                        <p>
+                        
                             <strong>Method: </strong>
-                            @TempData["PaymentMethod"]
-                        </p>
+                            @{
+                                if (Cart.IsPaid)
+                                {
+                                    <p>@Payment.PaymentMethod</p>
+                                    <div class="alert alert-success" role="alert">
+                                        Paid on @Payment.CreatedDate
+                                    </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    Not Paid
+                                </div>
+                            }
+                        }
+                           
+                            @Payment.PaymentMethod
+                        
                     </li>
                     <li class="list-group-item">
                         @await Html.PartialAsync("_OrderItemsPartial", OrderItems)                        
