@@ -5,7 +5,7 @@
     var OrderItems = Model?.OrderItems;
     var Payment = Model?.Payment;
 
-    var clientId = Payment.PayPalCientId.ToString();
+    var clientId = Payment?.PayPalCientId.ToString() ?? null;
 }
 
 <script src="https://www.paypal.com/sdk/js?client-id=@(clientId)&components=buttons"></script>
@@ -14,6 +14,14 @@
 </div>
 <div class="row">
     <div class="col-12 mb-3 col-md-8">
+        @{
+            if (Cart.IsPaid)
+            {
+                <div class="alert alert-info" role="alert">
+                    This order is already paid!
+                </div>
+            }
+        }
         <ul class="list-group">
             <li class="list-group-item">
                 <h2>Shipping</h2>
@@ -60,29 +68,34 @@
                         <div class="col">@(Cart is null ? "0.00" : $"{Cart.TotalPrice:N2}")</div>
                     </div>
                 </li>
-                <li class="list-group-item">
-                    <!--Remove this block inside li -->
-                    <form>
-                        <h5 for="exampleFormControlInput1" class="form-label">Payment Method</h5>
-                        @foreach (var item in Model.Payment.PaymentMethodes)
-                        {
-                            <div class="form-check">
-                                <input class="form-check-input payment-check" type="radio" asp-for="Payment.PaymentMethodSelected" value="@item" />
-                                @item
-                            </div>
-                        }
-                    </form>
+                @{
+                    if(!Cart.IsPaid)
+                    {
+                        <li id="payment-li" class="list-group-item">
+                            <!--Remove this block inside li my be put it inside -->
+                            <form>
+                                <h5 for="exampleFormControlInput1" class="form-label">Payment Method</h5>
+                                @foreach (var item in Model.Payment.PaymentMethodes)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input payment-check" type="radio" asp-for="Payment.PaymentMethod" value="@item" />
+                                        @item
+                                    </div>
+                                }
+                            </form>
 
-                    <div id="payment-container">
-                        <div id="paypal-container"></div>
-                        <div id="creditcard-container">
-                            <!--Add a partial message to show message-->
-                            <div class="alert alert-info" role="alert">
-                                Feature implement soon!
+                            <div id="payment-container">
+                                <div id="paypal-container"></div>
+                                <div id="creditcard-container">
+                                    <!--Add a partial message to show message-->
+                                    <div class="alert alert-info" role="alert">
+                                        Feature implement soon!
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </li>
+                        </li>
+                    }                    
+                }                
             </ul>
         </div>
     </div>
@@ -128,7 +141,7 @@
                     })
                 })
                     .then((response) => response.json())
-                    .then((order) => { console.log(order); return order.id } );
+                    .then((order) =>  order.id );
             },
             onApprove(data) {
                 paypal_buttons.close();
@@ -140,7 +153,8 @@
                         "Content-Type":"application/json",
                     },
                     body: JSON.stringify({
-                        orderID: data.orderID
+                        orderID: data.orderID,
+                        orderUserID:@Cart.Id
                     })
                 })
                     .then((response) => response.json())
@@ -149,7 +163,10 @@
                         //Add this method into utils or helper
                         //hide payment container
                         if (details == "success")
+                        {
+                            $("#payment-li").remove();
                             $("#notification-container").html('<div class="alert alert-success" role="alert">The order is created successfully!</div>');
+                        }
                         else
                             $("#notification-container").html('<div class="alert alert-danger" role="alert">Failed Approuve Order!</div>');
                     });
