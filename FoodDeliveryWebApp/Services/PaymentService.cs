@@ -72,9 +72,13 @@ namespace FoodDeliveryWebApp.Services
             return orderId;
         }
 
-        public string CompleteOrder(string OrderID)
+        /*
+            get tansaction id and payer email address if payment is completed 
+            and return payment in order to add it in database
+        */
+        public Payment CompleteOrder(string OrderID)
         {
-            string response = string.Empty;
+            Payment Payment = null;
 
             string accessToken = GetPayPalAccessToken();
 
@@ -104,16 +108,21 @@ namespace FoodDeliveryWebApp.Services
                     if (jsonResponse is not null)
                     {
                         string paypalOrderStatus = jsonResponse["status"]?.ToString() ?? "";
-                        if (paypalOrderStatus == "COMPLETED")
-                        {
-                            //update payment status in the databse
+                        string PayerEmailAddress = jsonResponse["payer"]["email_address"]?.ToString() ?? "";
+                        var transactionID = jsonResponse["purchase_units"][0]["payments"]["captures"][0]["id"]?.ToString();
 
-                            response = "success";
+                        if (paypalOrderStatus == "COMPLETED")
+                        {                          
+                            return new Payment {
+                                Status = paypalOrderStatus,
+                                TransactionID = transactionID,
+                                EmailAddress = PayerEmailAddress
+                            };
                         }
                     }
                 }
             }
-            return response;
+            return Payment;
         }
         public string GetPayPalAccessToken()
         {

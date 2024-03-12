@@ -59,9 +59,9 @@ namespace FoodDeliveryWebApp.Services
         }
 
         //Remove this function and place it into orderitemService
-        public async Task Remove<T>() where T : class
+        public async Task RemoveRange<T>(List<T> items) where T : class
         {
-            var items = await Get<T>();
+            //var items = await Get<T>();
 
             _context.Set<T>().RemoveRange(items);
             await _context.SaveChangesAsync();

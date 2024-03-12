@@ -3,6 +3,7 @@ using FoodDeliveryWebApp.Models;
 using FoodDeliveryWebApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.DependencyResolver;
 using System.Text;
 using System.Text.Json.Nodes;
 
@@ -14,12 +15,14 @@ namespace FoodDeliveryWebApp.Controllers
         /*public string PayPalCientId { get; set; } = "";
         private string PayPalSecret { get; set; } = "";
         public string PayPalUrl { get; set; } = "";*/
-
+        private BaseAPIService _baseAPIService;
         private OrderAPIService _orderAPIService;
         private readonly BaseService _baseService;
         private PaymentService _paymentService;
         private readonly Payment _payment;
+        //remove it and use it locally
         private  OrderViewModel _order;
+        private string PayPalCientId;
         //public Order 
         public CheckoutController(IConfiguration configuration, FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory) 
         {
@@ -28,11 +31,13 @@ namespace FoodDeliveryWebApp.Controllers
 
             //get that dynamicly
             PayPalUrl = configuration["PayPalSettings:UrlSandBox"];*/
-
+            _baseAPIService = new BaseAPIService(httpClientFactory);
             _orderAPIService = new OrderAPIService(httpClientFactory);
             _baseService = new BaseService(context);
 
-            _payment = new Payment(configuration["PayPalSettings:ClientId"]);
+            //Get this from api instead from setting
+            _payment = new Payment { PayPalCientId = configuration["PayPalSettings:ClientId"] };
+
             _paymentService = new PaymentService(configuration);
         }
         // GET: CheckoutController
@@ -54,7 +59,9 @@ namespace FoodDeliveryWebApp.Controllers
 
                 // Order.ShippingAddress = ShippingAddressService.Get();
                 _order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
-                _order.Payment = _payment;
+
+                _order.Payment = _order.Order.IsPaid ? null : _payment;
+
                 return _order is null ? View() : View(_order);
             }
             catch (Exception ex)
@@ -81,7 +88,7 @@ namespace FoodDeliveryWebApp.Controllers
 
                 // Order.ShippingAddress = ShippingAddressService.Get();
                 _order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
-                _order.Payment = _payment;
+                _order.Payment = new Payment { OrderId = _order.Order.Id};
                 return _order;
             }
             catch (Exception ex)
@@ -100,61 +107,14 @@ namespace FoodDeliveryWebApp.Controllers
         // Post: CheckoutController/Create
         public async Task<JsonResult> Create([FromBody] JsonObject data)
         {
-            //check address
-
-            /*JsonObject createOrderRequest = new JsonObject();
-            createOrderRequest.Add("intent", "CAPTURE");
-
-            JsonObject amount = new JsonObject();
-            amount.Add("currency_code", "USD");
-            amount.Add("value", 40);
-
-            JsonObject purchaseUnit1 = new JsonObject();
-            purchaseUnit1.Add("amount", amount);
-
-            JsonArray purchaseUnits = new JsonArray();
-            purchaseUnits.Add(purchaseUnit1);
-
-            createOrderRequest.Add("purchase_units", purchaseUnits);
-
-            string accessToken = GetPayPalAccessToken();
-            string url = PayPalUrl + "/v2/checkout/orders";
-
-            string orderId = "";
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
-
-                var requestMessage = new HttpRequestMessage(HttpMethod.Post, url);
-                requestMessage.Content = new StringContent(createOrderRequest.ToString(), null, "application/json");
-
-                var responseTask = client.SendAsync(requestMessage);
-                responseTask.Wait();
-
-                var result = responseTask.Result;
-                if(result.IsSuccessStatusCode)
-                {
-                    var readTask = result.Content.ReadAsStringAsync();
-                    readTask.Wait();
-
-                    var strResponse = readTask.Result;
-                    var jsonResponse = JsonNode.Parse(strResponse);
-                    if(jsonResponse is not null)
-                    {
-                        orderId = jsonResponse["id"]?.ToString() ?? "";
-
-                        //save the order id in the database
-                    }
-
-                }
-            }*/
-
-            //return new JsonResult($"ClientID-{_paymentService.PayPalCientId} - PayPalSecret-{_paymentService.PayPalSecret} PayPalUrl-{_paymentService.PayPalUrl}");
-
             if (long.TryParse(data["Id"].ToString(), out long OrderId))
             {
                 var OrderUser = await GetOrder(OrderId);
-                //check if order already paid
+
+                //check if order already paid and return Error
+                if(OrderUser.Order.IsPaid)
+                    return new JsonResult(new { error = "Order is already paid!" });
+
                 var orderAmount = OrderUser.Order.TotalPrice;
                 var orderPaypalId = _paymentService.CreateOrder(orderAmount);
 
@@ -169,54 +129,40 @@ namespace FoodDeliveryWebApp.Controllers
                 return new JsonResult("");              
   
         }
-        public JsonResult Complete([FromBody] JsonObject data)
+        public async Task<JsonResult> Complete([FromBody] JsonObject data)
         {
+            string response = string.Empty;
+
             if(data is null || data["orderID"] is null) return new JsonResult("");
 
-            var orderID = data["orderID"]!.ToString();
+            var orderPaymentID = data["orderID"]!.ToString();
 
+            if(long.TryParse(data["orderUserID"].ToString(), out long OrderUserID))
+            {                              
 
-            /*string accessToken = GetPayPalAccessToken();
+                //get payment oject if payment complete in order to add it in db
+                var result = _paymentService.CompleteOrder(orderPaymentID) ?? null;
+                var OrderViewModel = await GetOrder(OrderUserID);
+                var OrderUser = OrderViewModel.Order;
 
-            string url = $"{PayPalUrl}/v2/checkout/orders/{orderID}/capture";
-
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
-
-                var requestMessage = new HttpRequestMessage(HttpMethod.Post, url);
-                requestMessage.Content = new StringContent("", null, "application/json");
-
-
-                var responseTask = client.SendAsync(requestMessage);
-                responseTask.Wait();
-
-                var result = responseTask.Result;
-                if (result.IsSuccessStatusCode)
+                if(result is not null && OrderViewModel is not null)
                 {
-                    var readTask = result.Content.ReadAsStringAsync();
-                    readTask.Wait();
+                    var Payment = result;
+                    //fix it api side
+                    Payment.Id = 0;
+                    Payment.OrderId = OrderUserID;
+                    //get it from data request
+                    Payment.PaymentMethod = "PayPal"; 
 
-                    var strResponse = readTask.Result;
-
-                    var jsonResponse = JsonNode.Parse(strResponse);
-
-                    if (jsonResponse is not null)
-                    {
-                        string paypalOrderStatus = jsonResponse["status"]?.ToString() ?? "";
-                        if (paypalOrderStatus == "COMPLETED")
-                        {
-                            //update payment status in the databse
-
-                            return new JsonResult("success");
-                        }
-                    }                        
+                    //store to api
+                    
+                    //await _orderAPIService.
+                    await _baseAPIService.Add<Payment>(Payment);
+                    response = "success";
                 }
-            }*/
-            //pass payment to update field if success
-            var response = _paymentService.CompleteOrder(orderID) ?? "";
-            
-            
+               
+            }
+
             return new JsonResult(response);
         }
 
