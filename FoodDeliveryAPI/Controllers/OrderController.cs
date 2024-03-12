@@ -16,13 +16,14 @@ namespace FoodDeliveryAPI.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
+        private BaseService _baseService;
         public OrderController(FoodDeliveryContext context)
         {
             OrderService.InitializeContext(context);
             OrderItemService.InitializeContext(context);
             FoodService.InitializeContext(context);
             UserService.InitializeContext(context);
-            
+            _baseService = new BaseService(context);
         }
         // GET: api/<OrderController>
         [HttpGet]
@@ -45,10 +46,17 @@ namespace FoodDeliveryAPI.Controllers
 
             var Order = await OrderService.GetByID(id);
             var OrderItems = await OrderItemService.GetByOrderID(id);
+
+            var Addresses = await _baseService.Get<ShippingAddress>();
+            var ShippingAddress = Addresses.FirstOrDefault(a => a.UserId == Order.UserId);
+
+            var Payments = await _baseService.Get<Payment>();
+            var Payment = Payments.FirstOrDefault(p => p.OrderId == Order.Id);
+
              if (Order is null)
                   return NotFound();
 
-             return Ok(new {Order,OrderItems});            
+             return Ok(new {Order, OrderItems, ShippingAddress, Payment});            
         }
 
         // POST api/<OrderController>
@@ -71,7 +79,11 @@ namespace FoodDeliveryAPI.Controllers
                     if (OrderItems is null || OrderItems.Count == 0)
                         return BadRequest("OrderItems empty");
 
-                   // return Ok(Order);
+                    if(Address is null)
+                        return BadRequest("Shipping Address is empty");
+
+
+                    // return Ok(Order);
                     try
                     {
                         Order.UserId = CurrentUser.Id;
@@ -83,7 +95,7 @@ namespace FoodDeliveryAPI.Controllers
                         //return BadRequest(new { ErrorMessage = ex.Message });
                     }
 
-                    //return Ok(Order);
+                    
                     try
                     {
                         OrderCreated = await OrderService.Add(Order);
@@ -100,6 +112,11 @@ namespace FoodDeliveryAPI.Controllers
                         return BadRequest(ex.Message);
                     }
 
+                    Address.Id = 0;
+                    Address.UserId = CurrentUser.Id;
+
+                    await _baseService.Add<ShippingAddress>(Address);
+
                     return Ok(OrderCreated);
                     //return Ok(await Get(OrderCreated.Id));
                 }
@@ -112,29 +129,20 @@ namespace FoodDeliveryAPI.Controllers
             return Ok();
         }
 
-        [HttpPost("AddRange")]
-        public async Task<ActionResult> AddRange()
-        {
 
-            return Ok("OK");
-                    //try
-                    //{
-                        //OrderCreated = await OrderService.Add(Order);
-
-                        //await OrderItemService.AddRange(orders, 40);
-                        //return Ok(orders);
-
-                        //Sawait FoodService.UpdateCountInStock(OrderItems);
-
-                        /* Address.UserId = CurrentUser.Id;
-                         await AddressService.Add(Address);*/
-                    
-
-        }
         // PUT api/<OrderController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put(long id, Order Order)
         {
+            if (id != Order.Id)
+                return BadRequest();
+
+            var OrderExisting = await _baseService.Get<Order>(id);
+            if (OrderExisting is null)
+                return NotFound();
+
+            await _baseService.Update<Order>(OrderExisting);
+            return NoContent();
         }
 
         // DELETE api/<OrderController>/5
