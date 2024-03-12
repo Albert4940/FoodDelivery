@@ -39,27 +39,24 @@
                     </li>
 
                     <li class="list-group-item">
-                        <h2>Payment Method</h2>
-                        
-                            <strong>Method: </strong>
+                        <h2>Payment Method</h2>                       
+                            
                             @{
                                 if (Cart.IsPaid)
                                 {
-                                    <p>@Payment.PaymentMethod</p>
+                                    <p><strong>Method: </strong>@Payment.PaymentMethod</p>
+                                    <p><strong>Transaction Number: </strong>@Payment.TransactionID</p>
                                     <div class="alert alert-success" role="alert">
                                         Paid on @Payment.CreatedDate
                                     </div>
-                            }
-                            else
-                            {
-                                <div class="alert alert-danger" role="alert">
-                                    Not Paid
-                                </div>
-                            }
-                        }
-                           
-                            @Payment.PaymentMethod
-                        
+                                }
+                                else
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        Not Paid
+                                    </div>
+                                }
+                            }                       
                     </li>
                     <li class="list-group-item">
                         @await Html.PartialAsync("_OrderItemsPartial", OrderItems)                        
