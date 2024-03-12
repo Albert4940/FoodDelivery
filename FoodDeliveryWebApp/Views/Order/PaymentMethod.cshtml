@@ -37,7 +37,7 @@
                     @foreach (var item in Model.PaymentMethodes)
                     {
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" asp-for="PaymentMethodSelected" value="@item" />
+                            <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@item" />
                             @item
                         </div>
                     }

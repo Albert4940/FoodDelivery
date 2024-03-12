@@ -93,8 +93,8 @@ namespace FoodDeliveryWebApp.Controllers
             }
 
             // Validate and process payment method data
-            TempData["Result"] = model.PaymentMethodSelected.ToString();
-            TempData["PaymentMethod"] = model.PaymentMethodSelected.ToString();
+            //TempData["Result"] = model.PaymentMethodSelected.ToString();
+            //TempData["PaymentMethod"] = model.PaymentMethodSelected.ToString();
 
             //return View(method);
             return RedirectToAction("Address");
@@ -176,18 +176,20 @@ namespace FoodDeliveryWebApp.Controllers
 
                 var CartOrder = await _cartService.Get(UserId);
 
+                var OrderItems = await _orderItemService.Get(CartOrder.Id);
+
                 var model = new OrderViewModel
                 {
-                    OrderItems = await _orderItemService.Get(CartOrder.Id),
+                    OrderItems = OrderItems,
                     ShippingAddress = ShippingAddress,
                     Order = CartOrder
                 };
 
                 var OrderResult = await _orderAPIService.Add(model, token);
 
-            //remove specific cart and orderitem 
-            await _baseService.Remove<OrderItem>();
-                await _baseService.Remove<Order>();
+                //remove specific cart and orderitem 
+                await _baseService.RemoveRange<OrderItem>(OrderItems);
+                await _baseService.Remove<Order>(CartOrder);
 
                 return OrderResult;
                 //return RedirectToAction("Details", new { Id = OrderResult.Id });
@@ -267,8 +269,8 @@ namespace FoodDeliveryWebApp.Controllers
                 //TempData["Result"] = $"{OrderResult.Id.ToString()}-{OrderResult.UserId.ToString()}-{OrderResult.TotalPrice.ToString()}-{OrderResult.ItemsPrice.ToString()}";
 
                 //remove cart
-                await _baseService.Remove<OrderItem>();
-                await _baseService.Remove<Order>();
+               // await _baseService.Remove<OrderItem>();
+                //await _baseService.Remove<Order>();
                 
 
                 return RedirectToAction("Details", new { Id = OrderResult.Id });
