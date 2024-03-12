@@ -67,7 +67,7 @@ namespace FoodDeliveryWebApp.Controllers
                 var Order = await _orderAPIService.Get<OrderViewModel>(Id, token);
 
                 // Order.ShippingAddress = ShippingAddressService.Get();
-                Order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
+                //Order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
                 return Order is null ? View() : View(Order);
             }catch(Exception ex)
             {
