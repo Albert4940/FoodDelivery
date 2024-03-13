@@ -8,6 +8,7 @@
         public Payment Payment { get; set; }
 
         public Order Order { get; set; }
+        public Configuration Configuration { get; set; }
         //user
     }
 }
