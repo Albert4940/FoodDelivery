@@ -4,8 +4,8 @@
     var Address = Model?.ShippingAddress;
     var OrderItems = Model?.OrderItems;
     var Payment = Model?.Payment;
-
-    var clientId = Payment?.PayPalCientId.ToString() ?? null;
+    var Configuration = Model?.Configuration;
+    var clientId = Configuration?.PayPalCientId.ToString() ?? null;
 }
 
 <script src="https://www.paypal.com/sdk/js?client-id=@(clientId)&components=buttons"></script>
