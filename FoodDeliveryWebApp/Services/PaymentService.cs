@@ -10,13 +10,13 @@ namespace FoodDeliveryWebApp.Services
         public string PayPalCientId { get; set; } = "";
         public string PayPalSecret { get; set; } = "";
         public string PayPalUrl { get; set; } = "";
-        public PaymentService(IConfiguration configuration)
+        public PaymentService(Configuration configuration)
         {
-            PayPalCientId = configuration["PayPalSettings:ClientId"];
-            PayPalSecret = configuration["PayPalSettings:SecretKey"];
+            PayPalCientId = configuration.PayPalCientId;
+            PayPalSecret = configuration.PayPalSecret;
 
             //get that dynamicly
-            PayPalUrl = configuration["PayPalSettings:UrlSandBox"];
+            PayPalUrl = configuration.PayPalUrl;
         }
 
         public string CreateOrder(double orderAmount)

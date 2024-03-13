@@ -98,5 +98,17 @@ namespace FoodDeliveryWebApp.Services
             }
         }
 
+        public async Task<Configuration> GetConfiguration()
+        {
+            using HttpResponseMessage response = await _httpClient.GetAsync($"Configuration/");
+
+            if(response.IsSuccessStatusCode) 
+            {
+                using var contentStream = await response.Content.ReadAsStreamAsync();
+                return await JsonSerializer.DeserializeAsync<Configuration>(contentStream);
+            }
+            return null;
+        }
+
     }
 }

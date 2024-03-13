@@ -36,9 +36,9 @@ namespace FoodDeliveryWebApp.Controllers
             _baseService = new BaseService(context);
 
             //Get this from api instead from setting
-            _payment = new Payment { PayPalCientId = configuration["PayPalSettings:ClientId"] };
+            //_payment = new Payment { PayPalCientId = configuration["PayPalSettings:ClientId"] };
 
-            _paymentService = new PaymentService(configuration);
+            //_paymentService = new PaymentService(configuration);
         }
         // GET: CheckoutController
         public async Task<ActionResult> Index(long Id = 0)
@@ -58,9 +58,10 @@ namespace FoodDeliveryWebApp.Controllers
                 _order = await _orderAPIService.Get<OrderViewModel>(Id, token);
 
                 // Order.ShippingAddress = ShippingAddressService.Get();
-                _order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
+               // _order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
 
-                _order.Payment = _order.Order.IsPaid ? null : _payment;
+                _order.Payment =  new Payment();
+                _order.Configuration = _order.Order.IsPaid ? null : await _baseAPIService.GetConfiguration();
 
                 return _order is null ? View() : View(_order);
             }
@@ -72,6 +73,7 @@ namespace FoodDeliveryWebApp.Controllers
             return View();
         }
 
+        //put it into order services
         public async Task<OrderViewModel> GetOrder(long Id = 0)
         {
             try
@@ -89,6 +91,7 @@ namespace FoodDeliveryWebApp.Controllers
                 // Order.ShippingAddress = ShippingAddressService.Get();
                 _order.ShippingAddress = await _baseService.Get<ShippingAddress>(0);
                 _order.Payment = new Payment { OrderId = _order.Order.Id};
+                
                 return _order;
             }
             catch (Exception ex)
@@ -107,6 +110,9 @@ namespace FoodDeliveryWebApp.Controllers
         // Post: CheckoutController/Create
         public async Task<JsonResult> Create([FromBody] JsonObject data)
         {
+            var Configuration = await _baseAPIService.GetConfiguration();
+            _paymentService = new PaymentService(Configuration);
+
             if (long.TryParse(data["Id"].ToString(), out long OrderId))
             {
                 var OrderUser = await GetOrder(OrderId);
@@ -131,6 +137,9 @@ namespace FoodDeliveryWebApp.Controllers
         }
         public async Task<JsonResult> Complete([FromBody] JsonObject data)
         {
+            var Configuration = await _baseAPIService.GetConfiguration();
+            _paymentService = new PaymentService(Configuration);
+
             string response = string.Empty;
 
             if(data is null || data["orderID"] is null) return new JsonResult("");
