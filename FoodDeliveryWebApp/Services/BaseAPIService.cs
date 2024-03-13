@@ -71,6 +71,22 @@ namespace FoodDeliveryWebApp.Services
                 throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
         }
 
+        public async Task Update<T>(long Id, T item) where T : class
+        {
+            var jsonContent = new StringContent(
+                    JsonSerializer.Serialize(item),
+                    Encoding.UTF8,
+                    "application/json"
+                 );
+
+            using HttpResponseMessage response = await _httpClient.PutAsync($"{typeof(T).Name.ToLower()}/{Id.ToString()}", jsonContent);
+            if(response.IsSuccessStatusCode)
+            {
+                using var contentStream = await response.Content.ReadAsStreamAsync();
+                //return item;
+            }            
+        }
+
         public async Task Delete<T>(long Id) where T : class
         {
             using HttpResponseMessage response = await _httpClient.DeleteAsync($"{typeof(T).Name.ToLower()}/{Id.ToString()}");

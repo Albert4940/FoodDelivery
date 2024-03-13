@@ -134,14 +134,12 @@ namespace FoodDeliveryAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(long id, Order Order)
         {
-            if (id != Order.Id)
-                return BadRequest();
-
+            
             var OrderExisting = await _baseService.Get<Order>(id);
             if (OrderExisting is null)
                 return NotFound();
 
-            await _baseService.Update<Order>(OrderExisting);
+            await _baseService.Update<Order>(Order);
             return NoContent();
         }
 
