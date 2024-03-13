@@ -152,12 +152,15 @@ namespace FoodDeliveryWebApp.Controllers
                     Payment.Id = 0;
                     Payment.OrderId = OrderUserID;
                     //get it from data request
-                    Payment.PaymentMethod = "PayPal"; 
+                    Payment.PaymentMethod = "PayPal";
 
                     //store to api
-                    
-                    //await _baseAPIService.Upd
+                    OrderUser.IsPaid = true;
+
+                    //Add try catch
+                    await _baseAPIService.Update<Order>(OrderUser.Id, OrderUser);
                     await _baseAPIService.Add<Payment>(Payment);
+
                     response = "success";
                 }
                
