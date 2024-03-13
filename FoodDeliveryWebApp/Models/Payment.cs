@@ -13,7 +13,7 @@
         public string PaymentMethod { get; set; } = "PayPal";
 
         //Add this in paymentConfiguration class
-        public string PayPalCientId { get; set; } = "";
+        //public string PayPalCientId { get; set; } = "";
 
         /*public Payment(string _payPalCientId)
         {
