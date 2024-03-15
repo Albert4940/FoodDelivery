@@ -34,7 +34,18 @@ namespace FoodDeliveryAPI.Services
             }
 
         }
+        public static async Task<decimal> GetItemsPrice(List<OrderItem> OrderItems)
+        {
+            decimal total = 0;
 
+            foreach (var item in OrderItems)
+            {
+                if (await FoodService.ComapreQty(item))
+                    total += item.Price * item.Qty;
+            }
+
+            return total;
+        }
         public static async Task<List<OrderItem>> GetAll()
         {
             return await _context.order_items.ToListAsync();

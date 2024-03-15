@@ -1,7 +1,7 @@
 ﻿using FoodDeliveryAPI.Data;
 using FoodDeliveryAPI.Models;
 using FoodDeliveryAPI.Services;
-using FoodDeliveryWebApp.Models;
+using FoodDeliveryAPI.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -17,12 +17,16 @@ namespace FoodDeliveryAPI.Controllers
     public class OrderController : ControllerBase
     {
         private BaseService _baseService;
-        public OrderController(FoodDeliveryContext context)
+        private IConfiguration _configuration;
+        public OrderController(FoodDeliveryContext context, IConfiguration configuration)
         {
+            _configuration = configuration;
+
             OrderService.InitializeContext(context);
             OrderItemService.InitializeContext(context);
             FoodService.InitializeContext(context);
             UserService.InitializeContext(context);
+
             _baseService = new BaseService(context);
         }
         // GET: api/<OrderController>
@@ -84,10 +88,36 @@ namespace FoodDeliveryAPI.Controllers
 
 
                     // return Ok(Order);
+                    //Add order inside a single try catch
                     try
                     {
                         Order.UserId = CurrentUser.Id;
-                        Order.TotalPrice = await OrderService.GetTotalPrice(OrderItems);
+                        //Check qty Validity:CompareQty 
+                        //Order.TotalPrice = await OrderService.GetTotalPrice(OrderItems);
+                        //var Configuration = (Configuration)ConfigurationUtil.GetConfiguration(_configuration);
+
+                        var DeliveryFeeConfig = _configuration["OrderSettings:DeliveryFee"].ToString();
+                        var TaxPercentConfig = _configuration["OrderSettings:TaxPercent"].ToString();
+
+                        if (!decimal.TryParse(DeliveryFeeConfig, out decimal DeliveryFee))
+                            DeliveryFee = 0m;
+
+                        if (!int.TryParse(TaxPercentConfig, out int TaxPercent))
+                            TaxPercent = 0;
+
+                        /*int TaxPercent = Configuration.TaxPercent;
+                        decimal DeliveryFee = Configuration.DeliveryFee;*/
+
+                        decimal ItemsPrice = await OrderItemService.GetItemsPrice(OrderItems);
+                        decimal TaxPrice = ((DeliveryFee + ItemsPrice) * TaxPercent) / 100;
+                        decimal TotalPrice = TaxPrice + DeliveryFee + ItemsPrice;
+
+                        Order.DeliveryFee = DeliveryFee;                        
+                        Order.ItemsPrice = ItemsPrice;
+                        Order.TaxPrice = TaxPrice;
+                        Order.TotalPrice = TotalPrice;
+
+                        //return Ok(Order);
                     }
                     catch (Exception ex)
                     {

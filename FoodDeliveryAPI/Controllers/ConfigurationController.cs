@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
+using FoodDeliveryAPI.Utils;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace FoodDeliveryAPI.Controllers
@@ -18,11 +18,7 @@ namespace FoodDeliveryAPI.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(new  { 
-                PayPalCientId = _configuration["PayPalSettings:ClientId"], 
-                PayPalSecret = _configuration["PayPalSettings:SecretKey"], 
-                PayPalUrl = _configuration["PayPalSettings:Url"]
-            });
+            return Ok( ConfigurationUtil.GetConfiguration(_configuration));
         }
         
     }
