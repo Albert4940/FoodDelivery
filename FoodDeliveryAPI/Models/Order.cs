@@ -1,6 +1,4 @@
-﻿using FoodDeliveryAPI.Models;
-
-namespace FoodDeliveryWebApp.Models
+﻿namespace FoodDeliveryAPI.Models
 {
     public class Order : BaseEntity
     {
