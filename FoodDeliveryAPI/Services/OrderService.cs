@@ -1,6 +1,5 @@
 ﻿using FoodDeliveryAPI.Data;
 using FoodDeliveryAPI.Models;
-using FoodDeliveryWebApp.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodDeliveryAPI.Services

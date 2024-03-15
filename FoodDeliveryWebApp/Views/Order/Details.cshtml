@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Order Page";
 
-    var Cart = Model?.Order;
+    var Order = Model?.Order;
     var Address = Model?.ShippingAddress;
     var OrderItems = Model?.OrderItems;
     var Payment = Model?.Payment;
@@ -21,9 +21,9 @@
     }
     else
     {
-        <h1>OrderScreen : @Cart.Id</h1>
+        <h1>OrderScreen : @Order.Id</h1>
         <div class="row">
-            <div class="col-12 col-md-8">
+            <div class="col-12 mb-3 col-md-8">
                 <ul class="list-group">
                     <li class="list-group-item">
                         <h2>Shipping</h2>
@@ -36,13 +36,28 @@
                             @Address.PostalCode,
                             @Address.Country
                         </p>
+
+                        @{
+                            if (Order.IsDelivered)
+                            {
+                                <div class="alert alert-success" role="alert">
+                                    Delivered on <i>Delivery Date Soon</i>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    Not Delivered
+                                </div>
+                            }
+                        }
                     </li>
 
                     <li class="list-group-item">
                         <h2>Payment Method</h2>                       
                             
                             @{
-                                if (Cart.IsPaid)
+                                if (Order.IsPaid)
                                 {
                                     <p><strong>Method: </strong>@Payment.PaymentMethod</p>
                                     <p><strong>Transaction Number: </strong>@Payment.TransactionID</p>
@@ -72,25 +87,25 @@
                         <li class="list-group-item">
                             <div class="row">
                                 <div class="col">Items</div>
-                                <div class="col">$@($"{Cart.ItemsPrice:N2}")</div>
+                                <div class="col">$@($"{Order.ItemsPrice:N2}")</div>
                             </div>
                         </li>
                         <li class="list-group-item">
                             <div class="row">
                                 <div class="col">Tax</div>
-                                <div class="col">$@Cart.TaxPrice</div>
+                                <div class="col">$@Order.TaxPrice</div>
                             </div>
                         </li>
                         <li class="list-group-item">
                             <div class="row">
                                 <div class="col">Shipping</div>
-                                <div class="col">$@Cart.ShippingPrice</div>
+                                <div class="col">$@Order.DeliveryFee</div>
                             </div>
                         </li>
                         <li class="list-group-item">
                             <div class="row">
                                 <div class="col">Total</div>
-                                <div class="col">@(Cart is null ? "0.00" : $"{Cart.TotalPrice:N2}")</div>
+                                <div class="col">@(Order is null ? "0.00" : $"{Order.TotalPrice:N2}")</div>
                             </div>
                         </li>
                     </ul>
