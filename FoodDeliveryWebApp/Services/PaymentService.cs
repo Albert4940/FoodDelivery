@@ -19,7 +19,7 @@ namespace FoodDeliveryWebApp.Services
             PayPalUrl = configuration.PayPalUrl;
         }
 
-        public string CreateOrder(double orderAmount)
+        public string CreateOrder(decimal orderAmount)
         {
             string orderId = string.Empty;
 

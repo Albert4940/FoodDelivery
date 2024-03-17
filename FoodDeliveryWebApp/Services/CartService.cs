@@ -26,7 +26,7 @@ namespace FoodDeliveryWebApp.Services
 
             if (cart is null)
             {
-                await base.Add<Order>(new Order() { UserId = UserId, ItemsPrice = 0, TaxPrice = 0, ShippingPrice = 0, TotalPrice = 0 });
+                await base.Add<Order>(new Order() { UserId = UserId, ItemsPrice = 0, TaxPrice = 0, DeliveryFee = 0, TotalPrice = 0 });
                 return await Get(UserId);
             }
 

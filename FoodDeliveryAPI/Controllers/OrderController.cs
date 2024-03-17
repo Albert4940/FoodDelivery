@@ -2,7 +2,6 @@
 using FoodDeliveryAPI.Models;
 using FoodDeliveryAPI.Services;
 using FoodDeliveryAPI.Utils;
-using FoodDeliveryWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;

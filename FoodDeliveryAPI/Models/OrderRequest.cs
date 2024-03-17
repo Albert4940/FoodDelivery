@@ -1,6 +1,4 @@
-﻿using FoodDeliveryWebApp.Models;
-
-namespace FoodDeliveryAPI.Models
+﻿namespace FoodDeliveryAPI.Models
 {
     public class OrderRequest
     {

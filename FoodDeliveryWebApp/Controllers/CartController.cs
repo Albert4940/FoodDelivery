@@ -235,20 +235,20 @@ namespace FoodDeliveryWebApp.Controllers
                 //var OrderItems = await OrderItemService.GetAll();
                 var OrderItems = await _orderItemService.Get(cart.Id);
 
-                double itemsPrice = 0;
-                double shippingPrice = 0;
-                double totalPrice = 0;
+                decimal itemsPrice = 0;
+                decimal deliveryFee = 0;
+                decimal totalPrice = 0;
 
                 if (cart != null && OrderItems != null)
                 {
                     foreach (var item in OrderItems)
                     {
-                        itemsPrice += item.Price * item.Qty;
+                        itemsPrice += (decimal)item.Price * item.Qty;
                     }
 
-                    totalPrice = itemsPrice + shippingPrice;
+                    totalPrice = itemsPrice + deliveryFee;
                     cart.ItemsPrice = itemsPrice;
-                    cart.ShippingPrice = shippingPrice;
+                    cart.DeliveryFee = deliveryFee;
                     cart.TotalPrice = totalPrice;
                 }
 
