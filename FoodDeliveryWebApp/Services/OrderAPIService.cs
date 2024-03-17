@@ -90,7 +90,8 @@ namespace FoodDeliveryWebApp.Services
             else
             {
                 //throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
-                string errorMessage = $"{response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                //string errorMessage = $"{response.StatusCode.ToString()} - {response.ReasonPhrase}";
+                string errorMessage  = await response.Content.ReadAsStringAsync();
                 throw new HttpRequestException(errorMessage);
             }
         }

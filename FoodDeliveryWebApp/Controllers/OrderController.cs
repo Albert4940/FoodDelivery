@@ -161,7 +161,7 @@ namespace FoodDeliveryWebApp.Controllers
             }
             catch(Exception ex)
             {
-                TempData["Error"] = ex.Message.ToString();
+                TempData["Error"] = $"{ex.Message.ToString()}";
                 return View(model);
             }
         }
@@ -186,9 +186,8 @@ namespace FoodDeliveryWebApp.Controllers
                 };
 
                 var OrderResult = await _orderAPIService.Add(model, token);
-
-                //remove specific cart and orderitem 
-                await _baseService.RemoveRange<OrderItem>(OrderItems);
+            //remove specific cart and orderitem 
+            await _baseService.RemoveRange<OrderItem>(OrderItems);
                 await _baseService.Remove<Order>(CartOrder);
 
                 return OrderResult;
