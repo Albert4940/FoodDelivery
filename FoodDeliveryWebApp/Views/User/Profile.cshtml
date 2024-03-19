@@ -1,6 +1,8 @@
-﻿@model FoodDeliveryWebApp.Models.User
+﻿@model FoodDeliveryWebApp.Models.OrderViewModel
 @{
     ViewData["Title"] = "Profile Page";
+    var User = Model?.User;
+    var ShippingAddress = Model?.ShippingAddress;
 
     if (TempData["Result"] != null && TempData["Result"] != "")
     {
@@ -19,25 +21,27 @@
 
 <div class="row ">
     <div class="col-md-3">
-        <ul class="nav nav-pills flex-column ">
+        <ul class="nav nav-pills flex-column fs-5">
             <li class="nav-item">
                 <a class="nav-link active" id="profile" aria-current="page" href="#">Profile</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="password" href="#">Password</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="address" href="#">Address</a>
+            </li>
         </ul>
     </div>
-    <div class="col-md-9">
-        <form asp-action="Profile" asp-controller="User" method="post">
+    <div class="form-group col-md-9">
 
-            <!--Profile-->
-            
+        <!--Profile-->
+        <form class="profile-form form-inner" method="post">
             <div class="profile-form form-inner">
                 <h2>Profile</h2>
                 <div class="mb-3">
-                    <label for="UserName" class="form-label">User Name</label>
-                    <input asp-for="UserName" class="form-control" disabled />
+                    <label for="User.UserName" class="form-label">User Name</label>
+                    <input asp-for="User.UserName" class="form-control" disabled />
                     <div id="UserName" class="form-text">We'll never share your user name with anyone else.</div>
                 </div>
                <!-- <div class="mb-3 input-group-lg">
@@ -45,23 +49,60 @@
                     <input asp-for="UserName" class="form-control" disabled />
                     <div id="UserName" class="form-text">We'll never share your user name with anyone else.</div>
                  </div>-->
+                <div class=" mb-3">
+                    <input type="submit" class="btn btn-dark  input-group-lg" value="Update Profile" />
+                </div>
             </div>
+        </form>
+
+        <!--Password-->
+        <form class="password-form form-inner" method="post">
             <div class="password-form form-inner">
                 <h2>Change password</h2>
                 <div class="mb-3">
-                    <label asp-for="Password" class="form-label">Password</label>
-                    <input type="password" class="form-control" asp-for="Password" />
+                    <label asp-for="User.Password" class="form-label">Password</label>
+                    <input type="password" class="form-control" asp-for="User.Password" />
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="confirmPassword">Confirm Password</label>
-                    <input type="password" class="form-control" name="confirmPassword"/>
+                    <input type="password" class="form-control" name="confirmPassword" />
+                </div>
+                <div class=" mb-3">
+                    <input type="submit" class="btn btn-dark  input-group-lg" value="Update Password" />
                 </div>
             </div>
+        </form>
 
-            <div class=" mb-3">
-                <input type="submit" class="btn btn-dark  input-group-lg" value="Update" />
+        <!--Address-->
+        <form class="address-form form-inner" method="post">
+            <div class="password-form form-inner card mb-3">
+                <div class="card-header">
+                    Shipping Address
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="ShippingAddress.Address" class="form-label">Address</label>
+                        <input type="text" class="form-control" asp-for="ShippingAddress.Address" placeholder="323, Rue Jhon Doe">
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ShippingAddress.City" class="form-label">City</label>
+                        <input type="text" class="form-control" asp-for="ShippingAddress.City" placeholder="Quebec">
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ShippingAddress.PostalCode" class="form-label">PostalCode</label>
+                        <input type="text" class="form-control" asp-for="ShippingAddress.PostalCode" placeholder="Z0S1S0">
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ShippingAddress.Country" class="form-label">County</label>
+                        <input type="text" class="form-control" asp-for="ShippingAddress.Country" placeholder="Canada">
+                    </div>
+                </div>
+                <div class=" mb-3 ms-3">
+                    <input type="submit" class="btn btn-dark  input-group-lg" value="Update Address" />
+                </div>
             </div>
         </form>
+       
     </div>
 
 </div>
@@ -69,9 +110,9 @@
 @section Scripts {
     <script>
         jQuery(document).ready(function () {
-
-            $("form div.form-inner").hide();
-            $("form  div.form-inner:first-child").show();
+            let selector = ".form-group form.form-inner";
+            $(selector).hide();
+            $(selector + ":first-child").show();
 
             $(".nav-pills .nav-link").click(function(e){
                 e.preventDefault();
@@ -80,10 +121,10 @@
                     $(this).removeClass("active");
                 })
 
-                $("form div.form-inner").hide();
+                $(selector).hide();
 
                 let formId = $(this).attr("id");
-                $("form ." + formId + "-form").show(); 
+                $(".form-group ." + formId + "-form").show(); 
 
                 $(this).addClass("active");
             });

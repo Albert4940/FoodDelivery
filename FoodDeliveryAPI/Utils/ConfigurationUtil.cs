@@ -1,8 +1,10 @@
-﻿namespace FoodDeliveryAPI.Utils
+﻿using FoodDeliveryAPI.Models;
+
+namespace FoodDeliveryAPI.Utils
 {
     public static class ConfigurationUtil
     {
-        public static Object GetConfiguration(IConfiguration _configuration)
+        public static Configuration GetConfiguration(IConfiguration _configuration)
         {
             //trhow error
             var DeliveryFeeConfig = _configuration["OrderSettings:DeliveryFee"].ToString();
@@ -16,13 +18,13 @@
             
 
 
-            return new
+            return new Configuration
             {
                 PayPalCientId = _configuration["PayPalSettings:ClientId"].ToString(),
                 PayPalSecret = _configuration["PayPalSettings:SecretKey"].ToString(),
                 PayPalUrl = _configuration["PayPalSettings:Url"].ToString(),
-                DeliveryFee,
-                TaxPercent
+                DeliveryFee = DeliveryFee,
+                TaxPercent = TaxPercent
             };
         }
     }

@@ -14,10 +14,11 @@ namespace FoodDeliveryWebApp.Controllers
     public class UserController : Controller
     {
         private readonly UserAPIService _userAPIService;
-
+        private readonly BaseAPIService _baseAPIService;
         public UserController(IHttpClientFactory httpClientFactory)
         {
             _userAPIService = new UserAPIService(httpClientFactory);
+            _baseAPIService = new BaseAPIService(httpClientFactory);
         }
 
         public IActionResult Index(string UserName = null, string Password = null)
@@ -87,9 +88,31 @@ namespace FoodDeliveryWebApp.Controllers
             return View(user);
         }
 
+        [SessionExpire]
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
+            var UserId = HttpContext.Session.GetString("UserId");
+            var UserName = HttpContext.Session.GetString("UserName");
+
+            try
+            {
+                var Addresses = await _baseAPIService.Get<ShippingAddress>();
+                var ShippingAddress = Addresses.FirstOrDefault(a => a.UserId == UserId);
+
+                var UserInfo = new OrderViewModel
+                {
+                    User = new User { UserName = UserName },
+                    ShippingAddress = ShippingAddress
+                };
+
+                return View(UserInfo);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message.ToString();
+            }
+
             return View();
         }
 
@@ -104,5 +127,7 @@ namespace FoodDeliveryWebApp.Controllers
 
             return View();
         }
+
+
     }
 }

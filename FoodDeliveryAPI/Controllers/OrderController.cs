@@ -36,10 +36,14 @@ namespace FoodDeliveryAPI.Controllers
         {
             var CurrentUser = UserService.GetCurrent(HttpContext);
 
-            var Orders = await OrderService.GetAll();
+            //var Orders = await OrderService.GetAll();
+            var Orders = await _baseService.Get<Order>();
             var OrdersUser = Orders.FindAll(o => o.UserId == CurrentUser.Id);
 
-            return Ok(OrdersUser);
+            if (OrdersUser != null)
+                return Ok(OrdersUser);
+            else
+                return NotFound();
         }
 
         // GET api/<OrderController>/5
@@ -48,8 +52,15 @@ namespace FoodDeliveryAPI.Controllers
         public async Task<ActionResult> Get(long id)
         {
 
-            var Order = await OrderService.GetByID(id);
-            var OrderItems = await OrderItemService.GetByOrderID(id);
+           // var Order = await OrderService.GetByID(id);
+            var Order = await _baseService.Get<Order>(id);
+
+            if (Order is null)
+                return NotFound();
+
+            //var OrderItems = await OrderItemService.GetByOrderID(id);
+            var OrderItems = await _baseService.Get<OrderItem>();
+            var OrderItemsFilter = OrderItems.FindAll(oI => oI.OrderId == Order.Id);
 
             var Addresses = await _baseService.Get<ShippingAddress>();
             var ShippingAddress = Addresses.FirstOrDefault(a => a.UserId == Order.UserId);
@@ -57,10 +68,7 @@ namespace FoodDeliveryAPI.Controllers
             var Payments = await _baseService.Get<Payment>();
             var Payment = Payments.FirstOrDefault(p => p.OrderId == Order.Id);
 
-             if (Order is null)
-                  return NotFound();
-
-             return Ok(new {Order, OrderItems, ShippingAddress, Payment});            
+             return Ok(new {Order, OrderItems = OrderItemsFilter, ShippingAddress, Payment});            
         }
 
         // POST api/<OrderController>
@@ -92,21 +100,10 @@ namespace FoodDeliveryAPI.Controllers
                     try
                     {
                         Order.UserId = CurrentUser.Id;
-                        //Check qty Validity:CompareQty 
-                        //Order.TotalPrice = await OrderService.GetTotalPrice(OrderItems);
-                        //var Configuration = (Configuration)ConfigurationUtil.GetConfiguration(_configuration);
+                        var Configuration = ConfigurationUtil.GetConfiguration(_configuration);
 
-                        var DeliveryFeeConfig = _configuration["OrderSettings:DeliveryFee"].ToString();
-                        var TaxPercentConfig = _configuration["OrderSettings:TaxPercent"].ToString();
-
-                        if (!decimal.TryParse(DeliveryFeeConfig, out decimal DeliveryFee))
-                            DeliveryFee = 0m;
-
-                        if (!int.TryParse(TaxPercentConfig, out int TaxPercent))
-                            TaxPercent = 0;
-
-                        /*int TaxPercent = Configuration.TaxPercent;
-                        decimal DeliveryFee = Configuration.DeliveryFee;*/
+                        int TaxPercent = Configuration.TaxPercent;
+                        decimal DeliveryFee = Configuration.DeliveryFee;
 
                         decimal ItemsPrice = await OrderItemService.GetItemsPrice(OrderItems);
                         decimal TaxPrice = ((DeliveryFee + ItemsPrice) * TaxPercent) / 100;
@@ -128,7 +125,9 @@ namespace FoodDeliveryAPI.Controllers
                     
                     try
                     {
-                        OrderCreated = await OrderService.Add(Order);
+                        // OrderCreated = await OrderService.Add(Order);
+                        Order.Id = 0;
+                        OrderCreated = await _baseService.Add<Order>(Order);
                         await OrderItemService.AddRange(OrderItems, OrderCreated.Id);
 
                         await FoodService.UpdateCountInStock(OrderItems);

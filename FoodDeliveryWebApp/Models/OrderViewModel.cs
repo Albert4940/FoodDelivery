@@ -2,6 +2,7 @@
 {
     public class OrderViewModel
     {
+        public User User { get; set; } = null;
         public List<OrderItem> OrderItems { get; set; }
         public ShippingAddress ShippingAddress { get; set; }
 

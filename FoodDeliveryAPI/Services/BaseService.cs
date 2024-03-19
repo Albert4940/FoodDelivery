@@ -20,12 +20,13 @@ namespace FoodDeliveryAPI.Services
             return entity;
         }
 
-        public async Task Add<T>(T item) where T : class
+        public async Task<T> Add<T>(T item) where T : class
         {
             //That generate by database    
             //food.Id = 0;
             _context.Add(item);
             await _context.SaveChangesAsync();
+            return item;
         }
 
         public async Task Update<T>(T item) where T : class

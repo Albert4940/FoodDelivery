@@ -8,11 +8,11 @@ namespace FoodDeliveryAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AddressController : ControllerBase
+    public class ShippingAddressController : ControllerBase
     {
         private BaseService _baseService;
 
-        public AddressController(FoodDeliveryContext context)
+        public ShippingAddressController(FoodDeliveryContext context)
         {
             _baseService = new BaseService(context);
         }
