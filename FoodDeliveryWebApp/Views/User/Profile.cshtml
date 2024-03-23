@@ -3,19 +3,20 @@
     ViewData["Title"] = "Profile Page";
     var User = Model?.User;
     var ShippingAddress = Model?.ShippingAddress;
+    var ActivedForm = TempData["ActiveForm"] ?? null;
 
     if (TempData["Result"] != null && TempData["Result"] != "")
     {
-        <div class="alert alert-success" role="alert">
-            @TempData["Result"]
-        </div>
+                            <div class="alert alert-success" role="alert">
+                                @TempData["Result"]
+                            </div>
     }
 
     if (TempData["Error"] != null && TempData["Error"] != "")
     {
-        <div class="alert alert-danger" role="alert">
-            @TempData["Error"]
-        </div>
+                            <div class="alert alert-danger" role="alert">
+                                @TempData["Error"]
+                            </div>
     }
 }
 
@@ -74,7 +75,9 @@
         </form>
 
         <!--Address-->
-        <form class="address-form form-inner" method="post">
+        <form class="address-form form-inner" asp-action="Address" asp-controller="User"  method="post">
+            <input type="hidden" asp-for="ShippingAddress.Id"/>
+            <input type="hidden" asp-for="ShippingAddress.UserId"/>
             <div class="password-form form-inner card mb-3">
                 <div class="card-header">
                     Shipping Address
@@ -98,7 +101,7 @@
                     </div>
                 </div>
                 <div class=" mb-3 ms-3">
-                    <input type="submit" class="btn btn-dark  input-group-lg" value="Update Address" />
+                    <input id="update-address" type="submit" class="btn btn-dark  input-group-lg" value="Update Address" />
                 </div>
             </div>
         </form>
@@ -112,14 +115,29 @@
         jQuery(document).ready(function () {
             let selector = ".form-group form.form-inner";
             $(selector).hide();
-            $(selector + ":first-child").show();
+            
+            function removeActiveClass() {
+                $(".nav-pills .nav-link").each(function () {
+                    $(this).removeClass("active");
+                })
+            }
+            //Select first form by default or the form name send by server
+            let activeForm = ":first-child";
+            let currentForm = "@Html.Raw(ActivedForm)"
+
+            if (currentForm) {
+                removeActiveClass()
+                $(".form-group ." + currentForm + "-form").show();
+                $("#" + currentForm).addClass("active");
+            }               
+            else
+                $(selector + ":first-child").show();
+
 
             $(".nav-pills .nav-link").click(function(e){
                 e.preventDefault();
-                
-                $(".nav-pills .nav-link").each(function(){
-                    $(this).removeClass("active");
-                })
+
+                removeActiveClass();
 
                 $(selector).hide();
 
@@ -128,6 +146,30 @@
 
                 $(this).addClass("active");
             });
+
+            $("#updat-address").click(function(e){
+                e.preventDefault();
+                
+                /*$.post("/User/Address",
+                    {
+                        name:"OK"
+                    }
+                )*/
+                $.get("/User/Address").done(function (data) {
+                    console.log("Data Loaded: " + data)
+                }).fail(
+                    function (jqXHR, textStatus, errorThrown) {
+                        if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+                            // Handle the error message
+                            var errorMessage = jqXHR.responseJSON.error;
+                            console.log(errorMessage);
+                        } else {
+                            // Fallback error handling
+                            console.log(jqXHR.responseJSON);
+                        }
+                    }
+                );
+            })
         })
     </script>
 }

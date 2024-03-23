@@ -15,7 +15,7 @@
     {
         <div class="row">
             <div class="col-md-8">
-
+                
                 @{
                     //ViewData when data update without relod page
                     if (OrderItems is null || OrderItems.Count == 0)
@@ -118,8 +118,14 @@
                     //$('#cart-alert').load(document.URL + ' #cart-alert');
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
-                    location.href = "/Cart/Index";
-                    console.log(jqXHR.status);
+                    if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+                        // Handle the error message
+                        var errorMessage = jqXHR.responseJSON.error;
+                        console.log(errorMessage);
+                    } else {
+                        // Fallback error handling
+                        alert("An error occurred while processing your request.");
+                    }
                })
            }) 
 
@@ -142,7 +148,8 @@
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     console.log(jqXHR.status);
-                    location.href = "/Cart/Index";
+                    //$("#error").text(jqXHR.status);
+                   // location.href = "/Cart/Index";
                 })
                
             })
