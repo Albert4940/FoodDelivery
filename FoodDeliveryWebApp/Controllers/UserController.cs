@@ -1,11 +1,13 @@
 ﻿using FoodDeliveryWebApp.Models;
 using FoodDeliveryWebApp.Services;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Net;
 using System.Text;
+using System.Text.Json.Nodes;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FoodDeliveryWebApp.Controllers
@@ -116,7 +118,7 @@ namespace FoodDeliveryWebApp.Controllers
             return View();
         }
 
-        [HttpPost]
+        /*[HttpPost]
         public async Task<IActionResult> Profile(User user, string confirmPassword)
         {
             if(user.Password != confirmPassword)
@@ -126,8 +128,25 @@ namespace FoodDeliveryWebApp.Controllers
             }
 
             return View();
-        }
+        }*/
 
+        [SessionExpire]
+        [HttpPost]
+        public async Task<IActionResult> Address(OrderViewModel Order)
+        {
+            var Address = Order.ShippingAddress;
+            
+            try
+            {
+                await _baseAPIService.Update<ShippingAddress>(Address.Id, Address);
+            }catch(Exception ex)
+            {
+                TempData["Error"] = ex.ToString();
+            }
+
+            TempData["ActiveForm"] = "address";
+            return RedirectToAction(nameof(Profile));
+        }
 
     }
 }
