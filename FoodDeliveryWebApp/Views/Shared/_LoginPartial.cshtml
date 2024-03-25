@@ -24,7 +24,15 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Login</a>
+            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group me-2" role="group" aria-label="First group">
+                    <a type="button" asp-controller="User" asp-action="Index" class="btn btn-light border-dark">Sign In</a>
+                </div>
+                <div class="btn-group me-2" role="group" aria-label="Second group">
+                    <a type="button" asp-controller="User" asp-action="Register" class="btn btn-dark">Sign Up</a>
+                </div>
+            </div>
+            @* <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Login</a> *@
         </li>
     }
 
