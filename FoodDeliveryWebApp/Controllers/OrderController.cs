@@ -108,12 +108,14 @@ namespace FoodDeliveryWebApp.Controllers
             {
                 return RedirectToAction("PaymentMethod");
             }*/
+            var UserId = HttpContext.Session.GetString("UserId");
 
             try
             {
                 //var ShippingAddress = ShippingAddressService.Get();
-                var ShippingAddress = await _baseService.Get<ShippingAddress>(0);
-                return View(ShippingAddress);
+                var ShippingAddresses = await _baseAPIService.Get<ShippingAddress>();
+                var Address = ShippingAddresses.FirstOrDefault(a => a.UserId == UserId);
+                return View(Address);
             }catch(Exception ex)
             {
                 TempData["Error"] = ex.Message.ToString();
@@ -131,9 +133,9 @@ namespace FoodDeliveryWebApp.Controllers
                 return View(model);
             }*/
 
-            // var Address = ShippingAddressService.Get();
-            var Address = await _baseService.Get<ShippingAddress>(0);
             var UserId = HttpContext.Session.GetString("UserId");
+            var ShippingAddresses = await _baseAPIService.Get<ShippingAddress>();
+            var Address = ShippingAddresses.FirstOrDefault(a => a.UserId == UserId);
 
             try
             {
@@ -144,14 +146,14 @@ namespace FoodDeliveryWebApp.Controllers
                     {
                         //await ShippingAddressService.Update(model);
                         model.UserId = UserId;
-                        await _baseService.Update<ShippingAddress>(model);
+                        await _baseAPIService.Update<ShippingAddress>(model.Id,model);
                     }
                 }
                 else
                 {
                     //await ShippingAddressService.Add(model);
                     model.UserId = UserId ?? null; 
-                    await _baseService.Add<ShippingAddress>(model);
+                    await _baseAPIService.Add<ShippingAddress>(model);
                 }
 
                 var OrderResult = await CreateOrder(UserId);

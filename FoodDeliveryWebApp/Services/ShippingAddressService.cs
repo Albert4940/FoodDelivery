@@ -6,7 +6,7 @@ namespace FoodDeliveryWebApp.Services
 {
     public class ShippingAddressService
     {
-        private static FoodDeliveryWebAppDbContext _context;
+        /*private static FoodDeliveryWebAppDbContext _context;
 
         public static void InintializeContextDb(FoodDeliveryWebAppDbContext context)
         {
@@ -29,6 +29,6 @@ namespace FoodDeliveryWebApp.Services
             _context.Entry(entity).State = EntityState.Modified;
             _context.Update(entity);
             await _context.SaveChangesAsync();
-        }
+        }*/
     }
 }
