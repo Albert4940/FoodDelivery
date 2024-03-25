@@ -4,14 +4,14 @@
 
     if (TempData["Result"] != null && TempData["Result"] != "")
     {
-        <div class="alert alert-success" role="alert">
+        <div class="alert alert-success w-50 mx-auto" role="alert">
             @TempData["Result"]
         </div>
     }
 
     if (TempData["Error"] != null && TempData["Error"] != "")
     {
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger w-50 mx-auto" role="alert">
             @TempData["Error"]
         </div>
     }
@@ -27,9 +27,13 @@
             <label for="UserName" class="form-label">User Name</label>
             <input asp-for="UserName" class="form-control" />
         </div>
-        <div class="mb-5 input-group-lg">
+        <div class="mb-3 input-group-lg">
             <label asp-for="Password" class="form-label">Password</label>
             <input type="password" class="form-control" asp-for="Password" />
+        </div>
+        <div class="mb-5 input-group-lg">
+            <label for="ConfirmPassword" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" name="ConfirmPassword" />
         </div>
         <div class="input-group-lg mb-3">
             <input type="submit" class="btn btn-dark btn-block w-100  input-group-lg" value="Register" />

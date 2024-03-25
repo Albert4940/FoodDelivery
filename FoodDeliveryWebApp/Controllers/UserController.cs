@@ -69,8 +69,13 @@ namespace FoodDeliveryWebApp.Controllers
 
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([Bind("Id,UserName,Password")] User user)
+        public async Task<IActionResult> Register([Bind("Id,UserName,Password")] User user, string ConfirmPassword)
         {
+            if (user.Password != ConfirmPassword)
+            {
+                TempData["Error"] = "The two passwords must match!";
+                return View(user);
+            }
             try
             {
                 //var data = await UserService.Register(user);
