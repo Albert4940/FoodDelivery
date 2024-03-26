@@ -104,8 +104,7 @@ namespace FoodDeliveryWebApp.Controllers
 
             try
             {
-                var Addresses = await _baseAPIService.Get<ShippingAddress>();
-                var ShippingAddress = Addresses.FirstOrDefault(a => a.UserId == UserId);
+                var ShippingAddress = await _userAPIService.GetUserShippingAddress(UserId);
 
                 var UserInfo = new OrderViewModel
                 {

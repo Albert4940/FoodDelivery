@@ -30,5 +30,11 @@ namespace FoodDeliveryWebApp.Services
             else
                 throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}");
         }
+
+        public async Task<ShippingAddress> GetUserShippingAddress(string UserId)
+        {
+            var Addresses = await base.Get<ShippingAddress>();
+            return Addresses.FirstOrDefault(a => a.UserId == UserId);
+        }
     }
 }

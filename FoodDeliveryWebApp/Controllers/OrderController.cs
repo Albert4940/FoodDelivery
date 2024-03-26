@@ -16,8 +16,9 @@ namespace FoodDeliveryWebApp.Controllers
     public class OrderController : Controller
     {
         private OrderAPIService _orderAPIService;
-        private readonly BaseService _baseService;
         private readonly BaseAPIService _baseAPIService;
+        private readonly UserAPIService _userAPIService;
+        private readonly BaseService _baseService;
         private readonly CartService _cartService;
         private readonly OrderItemService _orderItemService;
         public OrderController(FoodDeliveryWebAppDbContext context, IHttpClientFactory httpClientFactory)
@@ -29,6 +30,8 @@ namespace FoodDeliveryWebApp.Controllers
 
             _orderAPIService = new OrderAPIService(httpClientFactory);
             _baseAPIService = new BaseAPIService(httpClientFactory);
+            _userAPIService = new UserAPIService(httpClientFactory);
+
             _baseService = new BaseService(context);
             _cartService = new CartService(context);
             _orderItemService = new OrderItemService(context);
@@ -77,29 +80,6 @@ namespace FoodDeliveryWebApp.Controllers
             return View();
         }
 
-        public IActionResult PaymentMethod()
-        {
-            
-            ///var model = new Payment();
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult PaymentMethod(Payment model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            // Validate and process payment method data
-            //TempData["Result"] = model.PaymentMethodSelected.ToString();
-            //TempData["PaymentMethod"] = model.PaymentMethodSelected.ToString();
-
-            //return View(method);
-            return RedirectToAction("Address");
-        }
-
         
         public async Task<IActionResult> Address()
         {
@@ -112,9 +92,7 @@ namespace FoodDeliveryWebApp.Controllers
 
             try
             {
-                //var ShippingAddress = ShippingAddressService.Get();
-                var ShippingAddresses = await _baseAPIService.Get<ShippingAddress>();
-                var Address = ShippingAddresses.FirstOrDefault(a => a.UserId == UserId);
+                var Address = await _userAPIService.GetUserShippingAddress(UserId);
                 return View(Address);
             }catch(Exception ex)
             {
@@ -133,9 +111,8 @@ namespace FoodDeliveryWebApp.Controllers
                 return View(model);
             }*/
 
-            var UserId = HttpContext.Session.GetString("UserId");
-            var ShippingAddresses = await _baseAPIService.Get<ShippingAddress>();
-            var Address = ShippingAddresses.FirstOrDefault(a => a.UserId == UserId);
+            var UserId = HttpContext.Session.GetString("UserId");       
+            var Address = await _userAPIService.GetUserShippingAddress(UserId);
 
             try
             {
@@ -174,7 +151,7 @@ namespace FoodDeliveryWebApp.Controllers
             //{
                 var token = HttpContext.Session.GetString("JWToken");
 
-                var ShippingAddress = await _baseService.Get<ShippingAddress>(0);
+                var ShippingAddress = await _userAPIService.GetUserShippingAddress(UserId);
 
                 var CartOrder = await _cartService.Get(UserId);
 

@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using static FoodDeliveryWebApp.Services.OrderAPIService;
 
 namespace FoodDeliveryWebApp.Services
 {
