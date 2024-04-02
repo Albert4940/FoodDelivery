@@ -26,8 +26,7 @@ Creating a cohesive and versatile solution for efficient operations.
 | Challenge Description                         | Solution                                                                                         |
 |-----------------------------------------------|--------------------------------------------------------------------------------------------------|
 | Error: The instance of entity type 'Cart' cannot be tracked because another instance with the same key value for {'Id'} is already being tracked| Detaching the DbContext instance after each method execution help prevent conflicts related to tracking instances. |
-|Get a specific error message from api not only a simple BadRequest|replace this code : throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}"); by this :var errorContent = await response.Content.ReadAsStringAsync();
-                |
+|Get a specific error message from api not only a simple BadRequest|replace this code : throw new Exception($"{response.StatusCode.ToString()} - {response.ReasonPhrase}"); by this :var errorContent = await response.Content.ReadAsStringAsync();|
 
 ## Future Features
 
