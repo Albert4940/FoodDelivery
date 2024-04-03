@@ -6,7 +6,7 @@ Application allow users that order the food online.
 Has an ASP.NET MVC website for frontoffice using, an API for order processing and a MAUI desktop application for backoffice task, a mobile version for inprove user experience,
 Creating a cohesive and versatile solution for efficient operations.
 
-![Screen cast gif](https://github.com/Albert4940/Portfolio-v2/blob/main/public/images/screenGif.gif)
+![Screen cast](https://github.com/Albert4940/FoodDelivery/blob/master/media/ScreenApp1.png)
 
 ## Technologies Used
 
