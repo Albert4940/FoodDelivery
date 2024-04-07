@@ -5,7 +5,7 @@
 }
 <div class="row justify-content-md-center">
     <div class="col-xs-12 col-md-6">
-        <h1 class="text-start">Payment Method Page</h1>
+        <h1 class="text-start">Shipping Address</h1>
         @{
             if (TempData["Result"] != null && TempData["Result"] != "")
             {
@@ -22,34 +22,27 @@
         }
         <form asp-action="Address" asp-controller="Order">
             <input type="hidden" asp-for="Id" value="@Model?.Id" />
-            <div class="card mb-3">
-                <div class="card-header">
-                    Shipping Address
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label asp-for="Address" class="form-label">Address</label>
-                        <input type="text" class="form-control" asp-for="Address" placeholder="323, Rue Jhon Doe">
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="City" class="form-label">City</label>
-                        <input type="text" class="form-control" asp-for="City" placeholder="Quebec">
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="PostalCode" class="form-label">PostalCode</label>
-                        <input type="text" class="form-control" asp-for="PostalCode" placeholder="Z0S1S0">
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="Country" class="form-label">County</label>
-                        <input type="text" class="form-control" asp-for="Country" placeholder="Canada">
-                    </div>
-                </div>
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label">Address</label>
+                <input type="text" class="form-control" asp-for="Address" placeholder="323, Rue Jhon Doe">
+            </div>
+            <div class="mb-3">
+                <label asp-for="City" class="form-label">City</label>
+                <input type="text" class="form-control" asp-for="City" placeholder="Quebec">
+            </div>
+            <div class="mb-3">
+                <label asp-for="PostalCode" class="form-label">PostalCode</label>
+                <input type="text" class="form-control" asp-for="PostalCode" placeholder="Z0S1S0">
+            </div>
+            <div class="mb-3">
+                <label asp-for="Country" class="form-label">County</label>
+                <input type="text" class="form-control" asp-for="Country" placeholder="Canada">
             </div>
 
-            <div class="d-flex">
-                <a class="btn btn-light border-dark flex-grow-1 m-2" asp-controller="Order" asp-action="PaymentMethod">Prev</a>
-                <input type="submit" value="Continue" class="btn btn-dark flex-grow-1 m-2" />
-            </div>            
+            <div class="d-flex mt-5">
+                <a class="btn btn-light border-dark flex-grow-1 me-2" asp-controller="Order" asp-action="PaymentMethod">Prev</a>
+                <input type="submit" value="Continue" class="btn btn-dark flex-grow-1 ms-2" />
+            </div>
         </form>
     </div>
 </div>
